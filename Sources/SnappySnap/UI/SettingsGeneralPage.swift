@@ -3,7 +3,7 @@ import SnapCore
 import SwiftUI
 import SystemAdapters
 
-/// The app's own icon, then starting up, updates, and the way out.
+/// The app's own icon, then starting up, updates, the tip jar, and the way out.
 struct GeneralPage: View {
     @ObservedObject var store: SettingsStore
     /// The login item's state lives in `SMAppService` alone, not in our settings file: the user can
@@ -38,6 +38,14 @@ struct GeneralPage: View {
                 }
             }
             UpdatesGroup()
+            // One row, so the hint carries the whole group: the button alone does not say that the app
+            // is free, and it opens a web page rather than doing something in the app.
+            SettingsGroup(title: L("Support"),
+                          hint: L("SnappySnap is free. If it saves you trouble, you can leave a tip on Ko-fi.")) {
+                ButtonRow {
+                    Button(L("Buy Me a Coffee")) { NSWorkspace.shared.open(SupportLink.koFi) }
+                }
+            }
             SettingsGroup(title: L("Quit")) {
                 // Through `NSApplication.terminate`, as the menu item does, so `applicationWillTerminate`
                 // runs and puts back any window Snap Assist has parked off-screen. No confirmation:

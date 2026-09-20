@@ -1482,6 +1482,14 @@ same team keeps.
 Every check, the fetch, the unpacking and the hand-over to the helper are logged to the `update`
 category, at `notice`; the helper keeps its own account in `updates/install.log`.
 
+### Supporting the app
+
+Between Updates and Quitting, General carries a **Support** group: one hint saying the app is free and
+that a tip can be left on Ko-fi, and one **Buy Me a Coffee** button that opens
+`https://ko-fi.com/bambidotexe` in the default browser. The app stores nothing about it, asks nothing
+back, and shows it whatever the state of anything else. Its address is `SupportLink.koFi` in `SnapCore`,
+the same page for every app of this author.
+
 ### Quitting
 
 The last group of General is a single **Quit SnappySnap** button, styled as destructive, with no

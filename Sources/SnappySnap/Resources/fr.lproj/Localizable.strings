@@ -63,6 +63,11 @@
 "The update is not signed by the same developer." = "La mise à jour n’est pas signée par le même développeur.";
 "The update’s signature is not valid." = "La signature de la mise à jour n’est pas valide.";
 
+/* SettingsGeneralPage.swift — Soutien */
+"Support" = "Soutien";
+"SnappySnap is free. If it saves you trouble, you can leave a tip on Ko-fi." = "SnappySnap est gratuit. S’il vous rend service, vous pouvez laisser un pourboire sur Ko-fi.";
+"Buy Me a Coffee" = "Offrir un café";
+
 /* SettingsGeneralPage.swift, AppDelegate.swift — Quitter */
 "Quit" = "Quitter";
 "Quit SnappySnap" = "Quitter SnappySnap";
