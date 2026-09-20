@@ -318,6 +318,11 @@ the window list, the second by two one-pixel sentinel panels that slide away wit
 - `docs/manual-test-checklist.md`: the app target's only verification
 - `docs/private-api-index.md`: the hidden macOS features, what each buys, and how the app works without it
 
+## Support
+
+SnappySnap is free and carries no ads. If it saves you trouble, you can leave a tip on
+[Ko-fi](https://ko-fi.com/bambidotexe).
+
 ## Notes
 
 - Personal build: English and French, no licensing.
