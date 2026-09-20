@@ -1,0 +1,74 @@
+/* SnapCore, français. La clé est la phrase anglaise du code ; la valeur est ce que la personne lit. */
+
+/* Settings.swift — les trois réglages d'animation, un par segment */
+"Smooth" = "Fluide";
+"Balanced" = "Équilibré";
+"Battery" = "Batterie";
+
+/* Settings.swift — les trois allures de la barre, et l'explication de celle qui est choisie */
+"Notch or island" = "Encoche ou îlot";
+"Floating bar" = "Barre flottante";
+"Notch or floating bar" = "Encoche ou barre flottante";
+"On a Mac with a notch, the bar grows out of the notch, and the rest of the top edge still fills the screen. A display without a notch shows a small island under its top edge while you drag, and the bar grows out of that." = "Sur un Mac avec encoche, la barre sort de l’encoche, et le reste du bord haut remplit toujours l’écran. Un écran sans encoche affiche un petit îlot sous son bord haut pendant que vous faites glisser, et la barre sort de cet îlot.";
+"A bar slides down below the menu bar when you drag a window to the top of the screen. It looks the same on every display." = "Une barre descend sous la barre des menus quand vous faites glisser une fenêtre vers le haut de l’écran. Elle a la même allure sur tous les écrans.";
+"The bar grows out of the notch on a Mac that has one. Every other display gets the floating bar." = "La barre sort de l’encoche sur un Mac qui en a une. Tous les autres écrans reçoivent la barre flottante.";
+
+/* UpdateCheck.swift — pourquoi la recherche d'une nouvelle version n'a pas abouti */
+"GitHub answered with status %lld." = "GitHub a répondu avec le statut %lld.";
+"The release information could not be read." = "Impossible de lire les informations de la version.";
+
+/* CustomZones.swift — ce qu'une valeur des zones s'est révélée être */
+"a boolean" = "un booléen";
+"a number" = "un nombre";
+"a string" = "un texte";
+"an array" = "une liste";
+"an object" = "un objet";
+
+/* CustomZones.swift — ce qui ne va pas dans les zones écrites par la personne */
+"the top level must be an array of areas, but it is %@" = "le niveau supérieur doit être une liste de zones, mais c’est %@";
+"an area must be an object of screen selectors, but it is %@" = "une zone doit être un objet de sélecteurs d’écran, mais c’est %@";
+"not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\"" = "ce n’est pas un sélecteur d’écran ; utilisez \"screenName:<nom>\", \"screenResolution:<L>x<H>\" ou \"*\"";
+"expected an object or null, but it is %@" = "un objet ou null était attendu, mais c’est %@";
+"\"bounds\" cannot be combined with \"%@\"" = "\"bounds\" ne peut pas être combiné avec \"%@\"";
+"needs either \"bounds\", or \"anchor\" with a \"size\"" = "il faut soit \"bounds\", soit \"anchor\" avec un \"size\"";
+"expected a string, but it is %@" = "un texte était attendu, mais c’est %@";
+"\"%@\" is not an anchor; use one of %@" = "\"%@\" n’est pas un point d’ancrage ; utilisez l’un de %@";
+"\"anchor\" needs a \"size\"" = "\"anchor\" a besoin d’un \"size\"";
+"must be greater than 0, but it is %@" = "doit être supérieur à 0, mais vaut %@";
+"give either \"%@\" or \"%@\", not both" = "donnez soit \"%@\", soit \"%@\", pas les deux";
+"needs \"%@\" (points) or \"%@\" (a fraction of the working area)" = "il faut \"%@\" (en points) ou \"%@\" (une fraction de la zone de travail)";
+"must be a fraction between 0 and 1, but it is %@" = "doit être une fraction entre 0 et 1, mais vaut %@";
+"expected an object, but it is %@" = "un objet était attendu, mais c’est %@";
+"unknown key \"%@\"; expected %@" = "clé inconnue \"%@\" ; attendu : %@";
+"missing \"%@\"" = "\"%@\" manquant";
+"expected a number, but it is %@" = "un nombre était attendu, mais c’est %@";
+
+/* CustomZones.swift — là où le texte cesse d'être du JSON */
+"not valid JSON, line %lld column %lld%@: %@" = "JSON non valide, ligne %lld colonne %lld%@ : %@";
+" (in %@)" = " (dans %@)";
+"end of the text" = "la fin du texte";
+"character 0x%@" = "le caractère 0x%@";
+"the text is empty" = "le texte est vide";
+"unexpected %@ after the end of the value" = "%@ inattendu après la fin de la valeur";
+"this comment is never closed" = "ce commentaire n’est jamais fermé";
+"nested more than %lld levels deep" = "imbrication de plus de %lld niveaux";
+"the text ends where a value was expected" = "le texte se termine là où une valeur était attendue";
+"unexpected %@ where a value was expected" = "%@ inattendu là où une valeur était attendue";
+"expected %@" = "%@ attendu";
+"expected a key in double quotes, found %@" = "une clé entre guillemets droits était attendue, trouvé %@";
+"expected \":\" after the key \"%@\", found %@" = "\":\" était attendu après la clé \"%@\", trouvé %@";
+"the text ends inside an object" = "le texte se termine à l’intérieur d’un objet";
+"expected \",\" or \"}\", found %@" = "\",\" ou \"}\" était attendu, trouvé %@";
+"the text ends inside an array" = "le texte se termine à l’intérieur d’une liste";
+"expected \",\" or \"]\", found %@" = "\",\" ou \"]\" était attendu, trouvé %@";
+"this string is never closed" = "ce texte n’est jamais fermé";
+"\"\\%@\" is not a valid escape" = "\"\\%@\" n’est pas une séquence d’échappement valide";
+"a line break or control character inside a string" = "un retour à la ligne ou un caractère de contrôle dans un texte";
+"a high surrogate escape must be followed by a low one" = "une séquence de substitution haute doit être suivie d’une basse";
+"a low surrogate escape with no high one before it" = "une séquence de substitution basse sans haute avant elle";
+"not a valid unicode escape" = "séquence unicode non valide";
+"a \\u escape needs four hex digits" = "une séquence \\u a besoin de quatre chiffres hexadécimaux";
+"a number needs a digit here" = "un nombre a besoin d’un chiffre ici";
+"a number needs a digit after the decimal point" = "un nombre a besoin d’un chiffre après la virgule";
+"a number needs a digit in its exponent" = "un nombre a besoin d’un chiffre dans son exposant";
+"this number is out of range" = "ce nombre est hors limites";

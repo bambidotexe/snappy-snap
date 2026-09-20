@@ -1,0 +1,10 @@
+/* SystemAdapters, français. La clé est la phrase anglaise du code.
+
+   Les quatre titres sont au masculin singulier à dessein : la page Système les fait suivre de
+   « Disponible » ou « Absent », un seul mot pour les quatre lignes. */
+
+/* PrivateAPI.swift — une ligne par partie cachée de macOS, sur la page Système */
+"Exact window matching" = "Repérage exact des fenêtres";
+"Pointer over the handles" = "Pointeur sur les poignées";
+"Snap bar above other notch apps" = "Affichage de la barre devant les autres apps de l’encoche";
+"Blur behind the snap bar" = "Flou derrière la barre";

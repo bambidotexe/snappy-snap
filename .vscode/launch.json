@@ -1,0 +1,44 @@
+{
+  "configurations": [
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:snappy-snap}",
+      "name": "Debug axprobe",
+      "target": "axprobe",
+      "configuration": "debug",
+      "preLaunchTask": "swift: Build Debug axprobe"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:snappy-snap}",
+      "name": "Release axprobe",
+      "target": "axprobe",
+      "configuration": "release",
+      "preLaunchTask": "swift: Build Release axprobe"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:snappy-snap}",
+      "name": "Debug SnappySnap",
+      "target": "SnappySnap",
+      "configuration": "debug",
+      "preLaunchTask": "swift: Build Debug SnappySnap"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:snappy-snap}",
+      "name": "Release SnappySnap",
+      "target": "SnappySnap",
+      "configuration": "release",
+      "preLaunchTask": "swift: Build Release SnappySnap"
+    }
+  ]
+}

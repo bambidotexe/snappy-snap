@@ -1,0 +1,220 @@
+/* SnappySnap, English. The key is the English sentence as it is written at the call site, so every
+   line here maps a sentence to itself. Its purpose is to be the list a translator works from. */
+
+/* SettingsView.swift — the six pages, in toolbar order. Also the window's title. */
+"General" = "General";
+"Snapping" = "Snapping";
+"Snap Bar" = "Snap Bar";
+"Handles" = "Handles";
+"Custom Areas" = "Custom Areas";
+"System" = "System";
+
+/* SettingsRows.swift — how the kit writes a number the window reports */
+"%lld pt" = "%lld pt";
+
+/* SettingsGeneralPage.swift — Startup */
+"Startup" = "Startup";
+"With the icon hidden, SnappySnap keeps working. Open it again from the Applications folder or Spotlight to get back to this window." = "With the icon hidden, SnappySnap keeps working. Open it again from the Applications folder or Spotlight to get back to this window.";
+"Launch at login" = "Launch at login";
+"Show in menu bar" = "Show in menu bar";
+"Failed" = "Failed";
+
+/* SettingsGeneralPage.swift — Updates */
+"Updates" = "Updates";
+"Checking" = "Checking";
+"Up to date" = "Up to date";
+"Version %@ is available" = "Version %@ is available";
+"No release published yet" = "No release published yet";
+"Could not check: %@" = "Could not check: %@";
+"Downloading" = "Downloading";
+"Update failed: %@" = "Update failed: %@";
+"Update" = "Update";
+"Check for Updates" = "Check for Updates";
+
+/* UpdateWindow.swift, UpdateController.swift, UpdateNotifier.swift — the update window and its notification */
+"Software Update" = "Software Update";
+"Click Update to download and install it." = "Click Update to download and install it.";
+"Downloading: %@ of %@" = "Downloading: %@ of %@";
+"Preparing the update" = "Preparing the update";
+"Ready to install. SnappySnap will quit and reopen." = "Ready to install. SnappySnap will quit and reopen.";
+"SnappySnap cannot replace itself where it is installed. Open the disk image and drag SnappySnap to Applications, then quit and reopen it." = "SnappySnap cannot replace itself where it is installed. Open the disk image and drag SnappySnap to Applications, then quit and reopen it.";
+"Installing" = "Installing";
+"SnappySnap did not quit. Close its open dialogs, then try again." = "SnappySnap did not quit. Close its open dialogs, then try again.";
+"Install and Relaunch" = "Install and Relaunch";
+"Open Disk Image" = "Open Disk Image";
+"Try Again" = "Try Again";
+"The update is installed. SnappySnap is running the new version." = "The update is installed. SnappySnap is running the new version.";
+"Version %@ was not installed. %@" = "Version %@ was not installed. %@";
+"Done" = "Done";
+"The download is damaged." = "The download is damaged.";
+"The new version could not be put in place." = "The new version could not be put in place.";
+"The new version did not start, so the previous one was put back." = "The new version did not start, so the previous one was put back.";
+"The new version did not start and the previous one could not be put back. Download SnappySnap again." = "The new version did not start and the previous one could not be put back. Download SnappySnap again.";
+"The disk image could not be opened." = "The disk image could not be opened.";
+"The disk image does not contain SnappySnap." = "The disk image does not contain SnappySnap.";
+"The disk image does not hold a newer version." = "The disk image does not hold a newer version.";
+"This version needs macOS %@ or later." = "This version needs macOS %@ or later.";
+"The update is not signed by the same developer." = "The update is not signed by the same developer.";
+"The update’s signature is not valid." = "The update’s signature is not valid.";
+
+/* SettingsGeneralPage.swift, AppDelegate.swift — Quit */
+"Quit" = "Quit";
+"Quit SnappySnap" = "Quit SnappySnap";
+
+/* SettingsSnappingPage.swift — Edges and corners */
+"Edges and corners" = "Edges and corners";
+"Drag a window until the pointer reaches the edge of the screen. A preview shows where it will land before you let go." = "Drag a window until the pointer reaches the edge of the screen. A preview shows where it will land before you let go.";
+"Drag to the left or right edge for a half" = "Drag to the left or right edge for a half";
+"Drag to the top edge to fill the screen" = "Drag to the top edge to fill the screen";
+"Drag to a corner for a quarter" = "Drag to a corner for a quarter";
+
+/* SettingsSnappingPage.swift — the ⌥ Option key */
+"⌥ Option key" = "⌥ Option key";
+"While you drag with ⌥ Option held, the whole left side of the screen snaps left and the whole right side snaps right, so you never have to reach the edge. Corners and the top edge still work." = "While you drag with ⌥ Option held, the whole left side of the screen snaps left and the whole right side snaps right, so you never have to reach the edge. Corners and the top edge still work.";
+"The snap bar stays hidden while ⌥ Option is held." = "The snap bar stays hidden while ⌥ Option is held.";
+"Hold ⌥ Option to snap to halves from anywhere" = "Hold ⌥ Option to snap to halves from anywhere";
+
+/* SettingsSnappingPage.swift — Unsnapping */
+"Unsnapping" = "Unsnapping";
+"On, a window you pull out of its snapped place goes back to the size it had before. Off, it keeps its snapped size." = "On, a window you pull out of its snapped place goes back to the size it had before. Off, it keeps its snapped size.";
+"Only applies while the window is still exactly where the snap left it." = "Only applies while the window is still exactly where the snap left it.";
+"Restore a window's size when you drag it away" = "Restore a window's size when you drag it away";
+
+/* SettingsSnappingPage.swift — Gap */
+"Gap" = "Gap";
+"Snapped windows keep %@ from the screen edges and from each other. Off, they touch. With the second switch on, a window that macOS zooms or tiles flush against the screen edge is nudged back inside the gap a moment later." = "Snapped windows keep %@ from the screen edges and from each other. Off, they touch. With the second switch on, a window that macOS zooms or tiles flush against the screen edge is nudged back inside the gap a moment later.";
+"Also turn on “Tiled windows have margins” in Desktop & Dock. macOS then leaves the same gap when it places a window itself, like a double click on a title bar." = "Also turn on “Tiled windows have margins” in Desktop & Dock. macOS then leaves the same gap when it places a window itself, like a double click on a title bar.";
+"Leave a gap around snapped windows" = "Leave a gap around snapped windows";
+"Keep every window inside the gap" = "Keep every window inside the gap";
+"macOS margins for tiled windows" = "macOS margins for tiled windows";
+
+/* SettingsSnapBarPage.swift */
+"Snap bar" = "Snap bar";
+"Drag a window to the top of the screen and a bar of layouts appears. Drop the window on a layout to place it there." = "Drag a window to the top of the screen and a bar of layouts appears. Drop the window on a layout to place it there.";
+"Haptic feedback needs a Force Touch trackpad." = "Haptic feedback needs a Force Touch trackpad.";
+"Show the snap bar when dragging to the top" = "Show the snap bar when dragging to the top";
+"Haptic feedback when it appears" = "Haptic feedback when it appears";
+"Style" = "Style";
+"Snap Assist" = "Snap Assist";
+"After you drop a window on a layout, your other windows line up as cards so you can pick one for each remaining space. Animation is how fluid the cards move: Smooth follows your display and uses the most energy, Battery uses the least." = "After you drop a window on a layout, your other windows line up as cards so you can pick one for each remaining space. Animation is how fluid the cards move: Smooth follows your display and uses the most energy, Battery uses the least.";
+"Snap Assist only starts from a snap bar layout, so it needs the snap bar." = "Snap Assist only starts from a snap bar layout, so it needs the snap bar.";
+"Suggest windows for the remaining spaces" = "Suggest windows for the remaining spaces";
+"Animation" = "Animation";
+
+/* SettingsHandlesPage.swift — Handles */
+"A small pill appears between two windows that sit side by side. Drag it to resize both at once. Where three or four windows meet, a round knob moves them all." = "A small pill appears between two windows that sit side by side. Drag it to resize both at once. Where three or four windows meet, a round knob moves them all.";
+"Hold ⌘ Command to hide the handles and resize a window by its own edge." = "Hold ⌘ Command to hide the handles and resize a window by its own edge.";
+"Show handles between windows" = "Show handles between windows";
+
+/* SettingsHandlesPage.swift — Smallest window sizes */
+"Smallest window sizes" = "Smallest window sizes";
+"Every app has a smallest size its windows accept, and macOS does not say what it is. On, an unknown app's window blinks once while SnappySnap measures it, and handles then stop exactly where the window stops. Off, nothing blinks, but a handle can be dragged further than a window can shrink, and the windows settle after you let go." = "Every app has a smallest size its windows accept, and macOS does not say what it is. On, an unknown app's window blinks once while SnappySnap measures it, and handles then stop exactly where the window stops. Off, nothing blinks, but a handle can be dragged further than a window can shrink, and the windows settle after you let go.";
+"Apps already in the list below are never measured." = "Apps already in the list below are never measured.";
+"Measure an app the first time you use a handle next to it" = "Measure an app the first time you use a handle next to it";
+
+/* SettingsHandlesPage.swift — the Apps list, its columns and its buttons */
+"Apps" = "Apps";
+"The smallest size of each app's windows, in points. SnappySnap fills this in as it measures apps, and lowers a size whenever it sees a smaller window. Edit a size if a handle stops too early or too late." = "The smallest size of each app's windows, in points. SnappySnap fills this in as it measures apps, and lowers a size whenever it sees a smaller window. Edit a size if a handle stops too early or too late.";
+"Remove an app to have it measured again." = "Remove an app to have it measured again.";
+"Width" = "Width";
+"Height" = "Height";
+"pt" = "pt";
+"Built in" = "Built in";
+"Measured" = "Measured";
+"Edited" = "Edited";
+"Add…" = "Add…";
+"Remove" = "Remove";
+"Reset" = "Reset";
+
+/* SettingsHandlesPage.swift — the sheet behind Add… */
+"Add an app" = "Add an app";
+"App" = "App";
+"Other…" = "Other…";
+"Bundle identifier" = "Bundle identifier";
+"Name" = "Name";
+"Cancel" = "Cancel";
+"Add" = "Add";
+
+/* SettingsCustomAreasPage.swift */
+"Custom areas" = "Custom areas";
+"Define your own snap areas below, then hold ⌘ Command during a drag to see them and drop a window into one." = "Define your own snap areas below, then hold ⌘ Command during a drag to see them and drop a window into one.";
+"While ⌘ Command is held, only your areas are offered. Edges, corners and the snap bar are off." = "While ⌘ Command is held, only your areas are offered. Edges, corners and the snap bar are off.";
+"Hold ⌘ Command while dragging to use your own areas" = "Hold ⌘ Command while dragging to use your own areas";
+"Areas" = "Areas";
+"Areas are written as JSON. Verify checks your text and says what to fix." = "Areas are written as JSON. Verify checks your text and says what to fix.";
+"Text with a mistake is kept, but no areas are offered until it is valid." = "Text with a mistake is kept, but no areas are offered until it is valid.";
+"1 area" = "1 area";
+"%lld areas" = "%lld areas";
+"Valid" = "Valid";
+"Invalid" = "Invalid";
+"Verify" = "Verify";
+"Your displays" = "Your displays";
+"Copy a name or a size from here to aim an area at one display." = "Copy a name or a size from here to aim an area at one display.";
+"%@, built in" = "%@, built in";
+"Example" = "Example";
+
+/* SettingsSystemPage.swift — Accessibility */
+"Accessibility" = "Accessibility";
+"The only permission SnappySnap needs. It lets SnappySnap see the window you drag and move windows for you." = "The only permission SnappySnap needs. It lets SnappySnap see the window you drag and move windows for you.";
+"Nothing about your windows ever leaves your Mac." = "Nothing about your windows ever leaves your Mac.";
+"Accessibility permission" = "Accessibility permission";
+"Granted" = "Granted";
+"Denied" = "Denied";
+"Open Accessibility Settings" = "Open Accessibility Settings";
+
+/* SettingsSystemPage.swift, SettingsSnappingPage.swift — macOS tiling */
+"macOS tiling" = "macOS tiling";
+"macOS has its own window tiling. With it on, macOS and SnappySnap both grab the same drag. Margins should match your gap setting, so windows tiled by macOS line up with the ones SnappySnap places." = "macOS has its own window tiling. With it on, macOS and SnappySnap both grab the same drag. Margins should match your gap setting, so windows tiled by macOS line up with the ones SnappySnap places.";
+"macOS edge tiling" = "macOS edge tiling";
+"Margins around tiled windows" = "Margins around tiled windows";
+"Enabled" = "Enabled";
+"Disabled" = "Disabled";
+"Open Desktop & Dock Settings" = "Open Desktop & Dock Settings";
+"In Desktop & Dock, turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”." = "In Desktop & Dock, turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”.";
+"In Desktop & Dock, %@ “Tiled windows have margins”." = "In Desktop & Dock, %@ “Tiled windows have margins”.";
+"turn on" = "turn on";
+"turn off" = "turn off";
+
+/* SettingsSystemPage.swift — Compatibility */
+"Compatibility" = "Compatibility";
+"On, SnappySnap is smoother and more precise. Off, everything still works, a little less precisely." = "On, SnappySnap is smoother and more precise. Off, everything still works, a little less precisely.";
+"These are parts of macOS that Apple does not document, so a macOS update can break them." = "These are parts of macOS that Apple does not document, so a macOS update can break them.";
+"Use hidden macOS features" = "Use hidden macOS features";
+"Available" = "Available";
+"Missing" = "Missing";
+
+/* OnboardingWindow.swift — the window shown until Accessibility is granted */
+"Welcome to SnappySnap" = "Welcome to SnappySnap";
+"SnappySnap needs Accessibility access" = "SnappySnap needs Accessibility access";
+"It uses Accessibility to see which window you drag and to move and resize windows. Nothing about your windows leaves your Mac." = "It uses Accessibility to see which window you drag and to move and resize windows. Nothing about your windows leaves your Mac.";
+"1. Click “Open Accessibility Settings”.\n2. Enable SnappySnap in the list.\n3. Come back here and the app starts by itself." = "1. Click “Open Accessibility Settings”.\n2. Enable SnappySnap in the list.\n3. Come back here and the app starts by itself.";
+"macOS edge tiling is on and will fight SnappySnap. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”." = "macOS edge tiling is on and will fight SnappySnap. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”.";
+
+/* AppDelegate.swift — the menu bar's menu and the main menu */
+"Settings…" = "Settings…";
+"Window" = "Window";
+"Close" = "Close";
+
+/* AppDelegate.swift — the alert shown once, when macOS is still tiling */
+"macOS window tiling is still on" = "macOS window tiling is still on";
+"SnappySnap and the system's edge tiling will fight over the same drags. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen” in System Settings › Desktop & Dock." = "SnappySnap and the system's edge tiling will fight over the same drags. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen” in System Settings › Desktop & Dock.";
+"Open Desktop & Dock" = "Open Desktop & Dock";
+"Later" = "Later";
+
+/* SnapAssistView.swift — what VoiceOver says a card does */
+"Places this window in this area" = "Places this window in this area";
+
+/* SettingsGeneralPage.swift — the Uninstall group */
+"Uninstall" = "Uninstall";
+"Uninstall SnappySnap" = "Uninstall SnappySnap";
+"Uninstall SnappySnap?" = "Uninstall SnappySnap?";
+"Gives back the Accessibility permission, removes the entry in Login Items, and removes SnappySnap's settings and its update folder. SnappySnap then puts every parked window back, moves itself to the Trash and quits." = "Gives back the Accessibility permission, removes the entry in Login Items, and removes SnappySnap's settings and its update folder. SnappySnap then puts every parked window back, moves itself to the Trash and quits.";
+"Do not drag SnappySnap to the Trash. The Login Items entry and the Accessibility permission stay behind, pointing at an app that is gone." = "Do not drag SnappySnap to the Trash. The Login Items entry and the Accessibility permission stay behind, pointing at an app that is gone.";
+"SnappySnap gives back the Accessibility permission, removes the entry in Login Items, and removes its settings and its update folder. It then puts every parked window back, moves itself to the Trash and quits." = "SnappySnap gives back the Accessibility permission, removes the entry in Login Items, and removes its settings and its update folder. It then puts every parked window back, moves itself to the Trash and quits.";
+"SnappySnap has been removed" = "SnappySnap has been removed";
+"SnappySnap has been removed, except for this" = "SnappySnap has been removed, except for this";
+"SnappySnap is in the Trash, and nothing it set up is left on the Mac." = "SnappySnap is in the Trash, and nothing it set up is left on the Mac.";
+"The Accessibility permission could not be given back. Remove SnappySnap yourself in System Settings, Privacy & Security, Accessibility." = "The Accessibility permission could not be given back. Remove SnappySnap yourself in System Settings, Privacy & Security, Accessibility.";
+"The Login Items entry could not be removed: %@. Remove SnappySnap yourself in System Settings, General, Login Items." = "The Login Items entry could not be removed: %@. Remove SnappySnap yourself in System Settings, General, Login Items.";
+"SnappySnap could not move itself to the Trash: %@. Drag it there from the Applications folder; that is all that is left of it." = "SnappySnap could not move itself to the Trash: %@. Drag it there from the Applications folder; that is all that is left of it.";
+"The last step could not be started: %@. SnappySnap's settings and its folder in Application Support are still there; remove them by hand." = "The last step could not be started: %@. SnappySnap's settings and its folder in Application Support are still there; remove them by hand.";

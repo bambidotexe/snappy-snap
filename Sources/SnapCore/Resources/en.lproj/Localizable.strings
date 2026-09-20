@@ -1,0 +1,75 @@
+/* SnapCore, English. The key is the English sentence as it is written at the call site, so every
+   line here maps a sentence to itself. Its purpose is to be the list a translator works from. */
+
+/* Settings.swift — the animation presets, one segment each */
+"Smooth" = "Smooth";
+"Balanced" = "Balanced";
+"Battery" = "Battery";
+
+/* Settings.swift — the three snap bar appearances, and the hint under the one that is picked */
+"Notch or island" = "Notch or island";
+"Floating bar" = "Floating bar";
+"Notch or floating bar" = "Notch or floating bar";
+"On a Mac with a notch, the bar grows out of the notch, and the rest of the top edge still fills the screen. A display without a notch shows a small island under its top edge while you drag, and the bar grows out of that." = "On a Mac with a notch, the bar grows out of the notch, and the rest of the top edge still fills the screen. A display without a notch shows a small island under its top edge while you drag, and the bar grows out of that.";
+"A bar slides down below the menu bar when you drag a window to the top of the screen. It looks the same on every display." = "A bar slides down below the menu bar when you drag a window to the top of the screen. It looks the same on every display.";
+"The bar grows out of the notch on a Mac that has one. Every other display gets the floating bar." = "The bar grows out of the notch on a Mac that has one. Every other display gets the floating bar.";
+
+/* UpdateCheck.swift — why a check for a new release did not come back with an answer */
+"GitHub answered with status %lld." = "GitHub answered with status %lld.";
+"The release information could not be read." = "The release information could not be read.";
+
+/* CustomZones.swift — what a value in the areas configuration turned out to be */
+"a boolean" = "a boolean";
+"a number" = "a number";
+"a string" = "a string";
+"an array" = "an array";
+"an object" = "an object";
+
+/* CustomZones.swift — what is wrong with the areas the user wrote */
+"the top level must be an array of areas, but it is %@" = "the top level must be an array of areas, but it is %@";
+"an area must be an object of screen selectors, but it is %@" = "an area must be an object of screen selectors, but it is %@";
+"not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\"" = "not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\"";
+"expected an object or null, but it is %@" = "expected an object or null, but it is %@";
+"\"bounds\" cannot be combined with \"%@\"" = "\"bounds\" cannot be combined with \"%@\"";
+"needs either \"bounds\", or \"anchor\" with a \"size\"" = "needs either \"bounds\", or \"anchor\" with a \"size\"";
+"expected a string, but it is %@" = "expected a string, but it is %@";
+"\"%@\" is not an anchor; use one of %@" = "\"%@\" is not an anchor; use one of %@";
+"\"anchor\" needs a \"size\"" = "\"anchor\" needs a \"size\"";
+"must be greater than 0, but it is %@" = "must be greater than 0, but it is %@";
+"give either \"%@\" or \"%@\", not both" = "give either \"%@\" or \"%@\", not both";
+"needs \"%@\" (points) or \"%@\" (a fraction of the working area)" = "needs \"%@\" (points) or \"%@\" (a fraction of the working area)";
+"must be a fraction between 0 and 1, but it is %@" = "must be a fraction between 0 and 1, but it is %@";
+"expected an object, but it is %@" = "expected an object, but it is %@";
+"unknown key \"%@\"; expected %@" = "unknown key \"%@\"; expected %@";
+"missing \"%@\"" = "missing \"%@\"";
+"expected a number, but it is %@" = "expected a number, but it is %@";
+
+/* CustomZones.swift — where the text stopped being JSON at all */
+"not valid JSON, line %lld column %lld%@: %@" = "not valid JSON, line %lld column %lld%@: %@";
+" (in %@)" = " (in %@)";
+"end of the text" = "end of the text";
+"character 0x%@" = "character 0x%@";
+"the text is empty" = "the text is empty";
+"unexpected %@ after the end of the value" = "unexpected %@ after the end of the value";
+"this comment is never closed" = "this comment is never closed";
+"nested more than %lld levels deep" = "nested more than %lld levels deep";
+"the text ends where a value was expected" = "the text ends where a value was expected";
+"unexpected %@ where a value was expected" = "unexpected %@ where a value was expected";
+"expected %@" = "expected %@";
+"expected a key in double quotes, found %@" = "expected a key in double quotes, found %@";
+"expected \":\" after the key \"%@\", found %@" = "expected \":\" after the key \"%@\", found %@";
+"the text ends inside an object" = "the text ends inside an object";
+"expected \",\" or \"}\", found %@" = "expected \",\" or \"}\", found %@";
+"the text ends inside an array" = "the text ends inside an array";
+"expected \",\" or \"]\", found %@" = "expected \",\" or \"]\", found %@";
+"this string is never closed" = "this string is never closed";
+"\"\\%@\" is not a valid escape" = "\"\\%@\" is not a valid escape";
+"a line break or control character inside a string" = "a line break or control character inside a string";
+"a high surrogate escape must be followed by a low one" = "a high surrogate escape must be followed by a low one";
+"a low surrogate escape with no high one before it" = "a low surrogate escape with no high one before it";
+"not a valid unicode escape" = "not a valid unicode escape";
+"a \\u escape needs four hex digits" = "a \\u escape needs four hex digits";
+"a number needs a digit here" = "a number needs a digit here";
+"a number needs a digit after the decimal point" = "a number needs a digit after the decimal point";
+"a number needs a digit in its exponent" = "a number needs a digit in its exponent";
+"this number is out of range" = "this number is out of range";

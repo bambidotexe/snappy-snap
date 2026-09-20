@@ -1,0 +1,226 @@
+/* SnappySnap, français. La clé est la phrase anglaise du code ; la valeur est ce que la personne lit.
+
+   Trois règles tenues d'un bout à l'autre. On vouvoie, partout. Une touche s'écrit symbole puis nom,
+   « ⌘ Commande », y compris dans un titre. Et aucun tiret plus long que celui du clavier : là où
+   l'anglais couperait d'un tiret, le français fait deux phrases, une virgule ou deux points.
+
+   Les interrupteurs et les volets de macOS sont cités entre guillemets courbes, sous le nom exact
+   que macOS leur donne en français. */
+
+/* SettingsView.swift — les six pages, dans l'ordre de la barre d'outils. Aussi le titre de la fenêtre. */
+"General" = "Général";
+"Snapping" = "Aimantation";
+"Snap Bar" = "Barre d’aimantation";
+"Handles" = "Poignées";
+"Custom Areas" = "Zones personnalisées";
+"System" = "Système";
+
+/* SettingsRows.swift — la façon d'écrire un nombre que la fenêtre rapporte */
+"%lld pt" = "%lld pt";
+
+/* SettingsGeneralPage.swift — Démarrage */
+"Startup" = "Démarrage";
+"With the icon hidden, SnappySnap keeps working. Open it again from the Applications folder or Spotlight to get back to this window." = "Même avec l’icône masquée, SnappySnap continue de fonctionner. Ouvrez-le à nouveau depuis le dossier Applications ou avec Spotlight pour revenir à cette fenêtre.";
+"Launch at login" = "Démarrer à l’ouverture de session";
+"Show in menu bar" = "Afficher dans la barre des menus";
+"Failed" = "Échec";
+
+/* SettingsGeneralPage.swift — Mises à jour */
+"Updates" = "Mises à jour";
+"Checking" = "Recherche";
+"Up to date" = "À jour";
+"Version %@ is available" = "La version %@ est disponible";
+"No release published yet" = "Aucune version publiée pour l’instant";
+"Could not check: %@" = "Recherche impossible : %@";
+"Downloading" = "Téléchargement";
+"Update failed: %@" = "Échec de la mise à jour : %@";
+"Update" = "Mettre à jour";
+"Check for Updates" = "Rechercher les mises à jour";
+
+/* UpdateWindow.swift, UpdateController.swift, UpdateNotifier.swift — la fenêtre de mise à jour et sa notification */
+"Software Update" = "Mise à jour de logiciels";
+"Click Update to download and install it." = "Cliquez sur Mettre à jour pour la télécharger et l’installer.";
+"Downloading: %@ of %@" = "Téléchargement : %@ sur %@";
+"Preparing the update" = "Préparation de la mise à jour";
+"Ready to install. SnappySnap will quit and reopen." = "Prête à être installée. SnappySnap va quitter puis se rouvrir.";
+"SnappySnap cannot replace itself where it is installed. Open the disk image and drag SnappySnap to Applications, then quit and reopen it." = "SnappySnap ne peut pas se remplacer là où il est installé. Ouvrez l’image disque et faites glisser SnappySnap dans Applications, puis quittez-le et rouvrez-le.";
+"Installing" = "Installation";
+"SnappySnap did not quit. Close its open dialogs, then try again." = "SnappySnap n’a pas quitté. Fermez ses dialogues ouverts, puis réessayez.";
+"Install and Relaunch" = "Installer et relancer";
+"Open Disk Image" = "Ouvrir l’image disque";
+"Try Again" = "Réessayer";
+"The update is installed. SnappySnap is running the new version." = "La mise à jour est installée. SnappySnap utilise la nouvelle version.";
+"Version %@ was not installed. %@" = "La version %@ n’a pas été installée. %@";
+"Done" = "Terminé";
+"The download is damaged." = "Le téléchargement est endommagé.";
+"The new version could not be put in place." = "La nouvelle version n’a pas pu être mise en place.";
+"The new version did not start, so the previous one was put back." = "La nouvelle version n’a pas démarré, la précédente a donc été remise en place.";
+"The new version did not start and the previous one could not be put back. Download SnappySnap again." = "La nouvelle version n’a pas démarré et la précédente n’a pas pu être remise en place. Téléchargez à nouveau SnappySnap.";
+"The disk image could not be opened." = "L’image disque n’a pas pu être ouverte.";
+"The disk image does not contain SnappySnap." = "L’image disque ne contient pas SnappySnap.";
+"The disk image does not hold a newer version." = "L’image disque ne contient pas de version plus récente.";
+"This version needs macOS %@ or later." = "Cette version nécessite macOS %@ ou une version ultérieure.";
+"The update is not signed by the same developer." = "La mise à jour n’est pas signée par le même développeur.";
+"The update’s signature is not valid." = "La signature de la mise à jour n’est pas valide.";
+
+/* SettingsGeneralPage.swift, AppDelegate.swift — Quitter */
+"Quit" = "Quitter";
+"Quit SnappySnap" = "Quitter SnappySnap";
+
+/* SettingsSnappingPage.swift — Bords et coins */
+"Edges and corners" = "Bords et coins";
+"Drag a window until the pointer reaches the edge of the screen. A preview shows where it will land before you let go." = "Faites glisser une fenêtre jusqu’à ce que le pointeur atteigne le bord de l’écran. Un aperçu montre où elle va se poser avant que vous relâchiez.";
+"Drag to the left or right edge for a half" = "Glisser vers le bord gauche ou droit pour une moitié";
+"Drag to the top edge to fill the screen" = "Glisser vers le bord haut pour remplir l’écran";
+"Drag to a corner for a quarter" = "Glisser vers un coin pour un quart";
+
+/* SettingsSnappingPage.swift — la touche ⌥ Option */
+"⌥ Option key" = "Touche ⌥ Option";
+"While you drag with ⌥ Option held, the whole left side of the screen snaps left and the whole right side snaps right, so you never have to reach the edge. Corners and the top edge still work." = "Pendant un glissement avec ⌥ Option enfoncée, toute la moitié gauche de l’écran aimante à gauche et toute la moitié droite aimante à droite : vous n’avez jamais à atteindre le bord. Les coins et le bord haut fonctionnent toujours.";
+"The snap bar stays hidden while ⌥ Option is held." = "La barre d’aimantation reste masquée tant que ⌥ Option est enfoncée.";
+"Hold ⌥ Option to snap to halves from anywhere" = "Maintenir ⌥ Option pour aimanter en moitiés depuis n’importe où";
+
+/* SettingsSnappingPage.swift — Détachement */
+"Unsnapping" = "Détachement";
+"On, a window you pull out of its snapped place goes back to the size it had before. Off, it keeps its snapped size." = "Activé, une fenêtre que vous sortez de sa place aimantée reprend la taille qu’elle avait avant. Désactivé, elle garde sa taille aimantée.";
+"Only applies while the window is still exactly where the snap left it." = "Ne s’applique que tant que la fenêtre est encore exactement là où l’aimantation l’a laissée.";
+"Restore a window's size when you drag it away" = "Rendre sa taille à une fenêtre quand vous l’écartez";
+
+/* SettingsSnappingPage.swift — Écart */
+"Gap" = "Écart";
+"Snapped windows keep %@ from the screen edges and from each other. Off, they touch. With the second switch on, a window that macOS zooms or tiles flush against the screen edge is nudged back inside the gap a moment later." = "Les fenêtres aimantées gardent %@ par rapport aux bords de l’écran et entre elles. Désactivé, elles se touchent. Avec le second réglage activé, une fenêtre que macOS agrandit ou colle contre le bord de l’écran est ramenée dans l’écart un instant plus tard.";
+"Also turn on “Tiled windows have margins” in Desktop & Dock. macOS then leaves the same gap when it places a window itself, like a double click on a title bar." = "Activez aussi “Marges des fenêtres en mosaïque” dans Bureau et Dock. macOS laisse alors le même écart quand il place une fenêtre lui-même, par exemple après un double clic sur une barre de titre.";
+"Leave a gap around snapped windows" = "Laisser un écart autour des fenêtres aimantées";
+"Keep every window inside the gap" = "Garder toutes les fenêtres dans l’écart";
+"macOS margins for tiled windows" = "Espacement de macOS autour des fenêtres";
+
+/* SettingsSnapBarPage.swift */
+"Snap bar" = "Barre d’aimantation";
+"Drag a window to the top of the screen and a bar of layouts appears. Drop the window on a layout to place it there." = "Faites glisser une fenêtre vers le haut de l’écran et une barre de dispositions apparaît. Déposez la fenêtre sur une disposition pour l’y placer.";
+"Haptic feedback needs a Force Touch trackpad." = "Le retour haptique demande un trackpad Force Touch.";
+"Show the snap bar when dragging to the top" = "Afficher la barre d’aimantation en glissant vers le haut";
+"Haptic feedback when it appears" = "Retour haptique à son apparition";
+"Style" = "Style";
+"Snap Assist" = "Assistant d’aimantation";
+"After you drop a window on a layout, your other windows line up as cards so you can pick one for each remaining space. Animation is how fluid the cards move: Smooth follows your display and uses the most energy, Battery uses the least." = "Après avoir déposé une fenêtre sur une disposition, vos autres fenêtres s’alignent en cartes pour que vous en choisissiez une par espace restant. Animation règle la fluidité des cartes : Fluide suit votre écran et consomme le plus d’énergie, Batterie le moins.";
+"Snap Assist only starts from a snap bar layout, so it needs the snap bar." = "L’assistant d’aimantation ne démarre que depuis une disposition de la barre, il a donc besoin de la barre d’aimantation.";
+"Suggest windows for the remaining spaces" = "Proposer des fenêtres pour les espaces restants";
+"Animation" = "Animation";
+
+/* SettingsHandlesPage.swift — Poignées */
+"A small pill appears between two windows that sit side by side. Drag it to resize both at once. Where three or four windows meet, a round knob moves them all." = "Une petite pastille apparaît entre deux fenêtres côte à côte. Faites-la glisser pour redimensionner les deux à la fois. Là où trois ou quatre fenêtres se rejoignent, un bouton rond les déplace toutes.";
+"Hold ⌘ Command to hide the handles and resize a window by its own edge." = "Maintenez ⌘ Commande pour masquer les poignées et redimensionner une fenêtre par son propre bord.";
+"Show handles between windows" = "Afficher les poignées entre les fenêtres";
+
+/* SettingsHandlesPage.swift — Tailles de fenêtre minimales */
+"Smallest window sizes" = "Tailles de fenêtre minimales";
+"Every app has a smallest size its windows accept, and macOS does not say what it is. On, an unknown app's window blinks once while SnappySnap measures it, and handles then stop exactly where the window stops. Off, nothing blinks, but a handle can be dragged further than a window can shrink, and the windows settle after you let go." = "Chaque app a une taille minimale que ses fenêtres acceptent, et macOS ne dit pas laquelle. Activé, la fenêtre d’une app inconnue clignote une fois pendant que SnappySnap la mesure, et les poignées s’arrêtent alors exactement là où la fenêtre s’arrête. Désactivé, rien ne clignote, mais une poignée peut aller plus loin qu’une fenêtre ne peut rétrécir, et les fenêtres se replacent quand vous relâchez.";
+"Apps already in the list below are never measured." = "Les apps déjà dans la liste ci-dessous ne sont jamais mesurées.";
+"Measure an app the first time you use a handle next to it" = "Mesurer une app la première fois que vous utilisez une poignée à côté d’elle";
+
+/* SettingsHandlesPage.swift — la liste des apps, ses colonnes et ses boutons */
+"Apps" = "Apps";
+"The smallest size of each app's windows, in points. SnappySnap fills this in as it measures apps, and lowers a size whenever it sees a smaller window. Edit a size if a handle stops too early or too late." = "La taille minimale des fenêtres de chaque app, en points. SnappySnap remplit cette liste à mesure qu’il mesure les apps, et abaisse une taille dès qu’il voit une fenêtre plus petite. Modifiez une taille si une poignée s’arrête trop tôt ou trop tard.";
+"Remove an app to have it measured again." = "Retirez une app pour qu’elle soit mesurée à nouveau.";
+"Width" = "Largeur";
+"Height" = "Hauteur";
+"pt" = "pt";
+"Built in" = "Intégrée";
+"Measured" = "Mesurée";
+"Edited" = "Modifiée";
+"Add…" = "Ajouter…";
+"Remove" = "Retirer";
+"Reset" = "Réinitialiser";
+
+/* SettingsHandlesPage.swift — la sous-fenêtre derrière Ajouter… */
+"Add an app" = "Ajouter une app";
+"App" = "App";
+"Other…" = "Autre…";
+"Bundle identifier" = "Identifiant de l’app";
+"Name" = "Nom";
+"Cancel" = "Annuler";
+"Add" = "Ajouter";
+
+/* SettingsCustomAreasPage.swift */
+"Custom areas" = "Zones personnalisées";
+"Define your own snap areas below, then hold ⌘ Command during a drag to see them and drop a window into one." = "Définissez vos propres zones ci-dessous, puis maintenez ⌘ Commande pendant un glissement pour les voir et y déposer une fenêtre.";
+"While ⌘ Command is held, only your areas are offered. Edges, corners and the snap bar are off." = "Tant que ⌘ Commande est enfoncée, seules vos zones sont proposées. Les bords, les coins et la barre d’aimantation sont inactifs.";
+"Hold ⌘ Command while dragging to use your own areas" = "Maintenir ⌘ Commande pendant un glissement pour utiliser vos propres zones";
+"Areas" = "Zones";
+"Areas are written as JSON. Verify checks your text and says what to fix." = "Les zones s’écrivent en JSON. Vérifier contrôle votre texte et dit quoi corriger.";
+"Text with a mistake is kept, but no areas are offered until it is valid." = "Un texte comportant une erreur est conservé, mais aucune zone n’est proposée tant qu’il n’est pas valide.";
+"1 area" = "1 zone";
+"%lld areas" = "%lld zones";
+"Valid" = "Valide";
+"Invalid" = "Invalide";
+"Verify" = "Vérifier";
+"Your displays" = "Vos écrans";
+"Copy a name or a size from here to aim an area at one display." = "Copiez ici un nom ou une taille pour viser un seul écran avec une zone.";
+"%@, built in" = "%@, intégré";
+"Example" = "Exemple";
+
+/* SettingsSystemPage.swift — Accessibilité */
+"Accessibility" = "Accessibilité";
+"The only permission SnappySnap needs. It lets SnappySnap see the window you drag and move windows for you." = "La seule autorisation dont SnappySnap a besoin. Elle lui permet de voir la fenêtre que vous faites glisser et de déplacer des fenêtres pour vous.";
+"Nothing about your windows ever leaves your Mac." = "Rien de ce qui concerne vos fenêtres ne quitte jamais votre Mac.";
+"Accessibility permission" = "Autorisation d’accessibilité";
+"Granted" = "Accordée";
+"Denied" = "Refusée";
+"Open Accessibility Settings" = "Ouvrir les réglages Accessibilité";
+
+/* SettingsSystemPage.swift, SettingsSnappingPage.swift — la mosaïque de macOS */
+"macOS tiling" = "Mosaïque de macOS";
+"macOS has its own window tiling. With it on, macOS and SnappySnap both grab the same drag. Margins should match your gap setting, so windows tiled by macOS line up with the ones SnappySnap places." = "macOS a sa propre mosaïque de fenêtres. Quand elle est active, macOS et SnappySnap saisissent le même glissement. Les marges devraient correspondre à votre réglage d’écart, pour que les fenêtres placées par macOS s’alignent sur celles que SnappySnap place.";
+"macOS edge tiling" = "Assemblage de macOS aux bords de l’écran";
+"Margins around tiled windows" = "Espacement autour des fenêtres en mosaïque";
+"Enabled" = "Activé";
+"Disabled" = "Désactivé";
+"Open Desktop & Dock Settings" = "Ouvrir les réglages Bureau et Dock";
+"In Desktop & Dock, turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”." = "Dans Bureau et Dock, désactivez “Faire glisser les fenêtres vers les bords de l’écran pour les organiser en mosaïque” et “Faire glisser les fenêtres vers la barre des menus pour remplir l’écran”.";
+"In Desktop & Dock, %@ “Tiled windows have margins”." = "Dans Bureau et Dock, %@ “Marges des fenêtres en mosaïque”.";
+"turn on" = "activez";
+"turn off" = "désactivez";
+
+/* SettingsSystemPage.swift — Compatibilité */
+"Compatibility" = "Compatibilité";
+"On, SnappySnap is smoother and more precise. Off, everything still works, a little less precisely." = "Activé, SnappySnap est plus fluide et plus précis. Désactivé, tout fonctionne encore, un peu moins précisément.";
+"These are parts of macOS that Apple does not document, so a macOS update can break them." = "Ce sont des parties de macOS qu’Apple ne documente pas, une mise à jour de macOS peut donc les casser.";
+"Use hidden macOS features" = "Utiliser les fonctions cachées de macOS";
+"Available" = "Disponible";
+"Missing" = "Absent";
+
+/* OnboardingWindow.swift — la fenêtre montrée tant que l'accessibilité n'est pas accordée */
+"Welcome to SnappySnap" = "Bienvenue dans SnappySnap";
+"SnappySnap needs Accessibility access" = "SnappySnap a besoin de l’autorisation d’accessibilité";
+"It uses Accessibility to see which window you drag and to move and resize windows. Nothing about your windows leaves your Mac." = "Il utilise l’accessibilité pour voir quelle fenêtre vous faites glisser, et pour déplacer et redimensionner les fenêtres. Rien de ce qui concerne vos fenêtres ne quitte votre Mac.";
+"1. Click “Open Accessibility Settings”.\n2. Enable SnappySnap in the list.\n3. Come back here and the app starts by itself." = "1. Cliquez sur “Ouvrir les réglages Accessibilité”.\n2. Activez SnappySnap dans la liste.\n3. Revenez ici et l’app démarre d’elle-même.";
+"macOS edge tiling is on and will fight SnappySnap. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”." = "L’assemblage de macOS aux bords est actif et va gêner SnappySnap. Désactivez “Faire glisser les fenêtres vers les bords de l’écran pour les organiser en mosaïque” et “Faire glisser les fenêtres vers la barre des menus pour remplir l’écran”.";
+
+/* AppDelegate.swift — le menu de la barre des menus et le menu principal */
+"Settings…" = "Réglages…";
+"Window" = "Fenêtre";
+"Close" = "Fermer";
+
+/* AppDelegate.swift — l'alerte montrée une seule fois, quand macOS organise encore en mosaïque */
+"macOS window tiling is still on" = "La mosaïque de fenêtres de macOS est toujours active";
+"SnappySnap and the system's edge tiling will fight over the same drags. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen” in System Settings › Desktop & Dock." = "SnappySnap et l’assemblage aux bords du système vont se disputer les mêmes glissements. Désactivez “Faire glisser les fenêtres vers les bords de l’écran pour les organiser en mosaïque” et “Faire glisser les fenêtres vers la barre des menus pour remplir l’écran” dans Réglages Système › Bureau et Dock.";
+"Open Desktop & Dock" = "Ouvrir Bureau et Dock";
+"Later" = "Plus tard";
+
+/* SnapAssistView.swift — ce que VoiceOver dit d'une carte */
+"Places this window in this area" = "Place cette fenêtre dans cette zone";
+
+/* SettingsGeneralPage.swift — le groupe Désinstaller */
+"Uninstall" = "Désinstaller";
+"Uninstall SnappySnap" = "Désinstaller SnappySnap";
+"Uninstall SnappySnap?" = "Désinstaller SnappySnap ?";
+"Gives back the Accessibility permission, removes the entry in Login Items, and removes SnappySnap's settings and its update folder. SnappySnap then puts every parked window back, moves itself to the Trash and quits." = "Rend l’autorisation d’accessibilité, retire l’entrée dans les ouvertures de session, et supprime les réglages de SnappySnap ainsi que son dossier de mises à jour. SnappySnap remet ensuite chaque fenêtre mise de côté à sa place, se met à la corbeille et quitte.";
+"Do not drag SnappySnap to the Trash. The Login Items entry and the Accessibility permission stay behind, pointing at an app that is gone." = "Ne mettez pas SnappySnap à la corbeille vous-même. L’entrée dans les ouvertures de session et l’autorisation d’accessibilité resteraient en place, pour une app qui n’existe plus.";
+"SnappySnap gives back the Accessibility permission, removes the entry in Login Items, and removes its settings and its update folder. It then puts every parked window back, moves itself to the Trash and quits." = "SnappySnap rend l’autorisation d’accessibilité, retire l’entrée dans les ouvertures de session, et supprime ses réglages ainsi que son dossier de mises à jour. Il remet ensuite chaque fenêtre mise de côté à sa place, se met à la corbeille et quitte.";
+"SnappySnap has been removed" = "SnappySnap a été désinstallé";
+"SnappySnap has been removed, except for this" = "SnappySnap a été désinstallé, sauf ceci";
+"SnappySnap is in the Trash, and nothing it set up is left on the Mac." = "SnappySnap est dans la corbeille, et rien de ce qu’il avait installé ne reste sur le Mac.";
+"The Accessibility permission could not be given back. Remove SnappySnap yourself in System Settings, Privacy & Security, Accessibility." = "L’autorisation d’accessibilité n’a pas pu être rendue. Retirez SnappySnap vous-même dans Réglages Système, Confidentialité et sécurité, Accessibilité.";
+"The Login Items entry could not be removed: %@. Remove SnappySnap yourself in System Settings, General, Login Items." = "L’entrée dans les ouvertures de session n’a pas pu être retirée : %@. Retirez SnappySnap vous-même dans Réglages Système, Général, Ouverture et extensions.";
+"SnappySnap could not move itself to the Trash: %@. Drag it there from the Applications folder; that is all that is left of it." = "SnappySnap n’a pas pu se mettre à la corbeille : %@. Faites-le depuis le dossier Applications ; c’est tout ce qu’il en reste.";
+"The last step could not be started: %@. SnappySnap's settings and its folder in Application Support are still there; remove them by hand." = "La dernière étape n’a pas pu démarrer : %@. Les réglages de SnappySnap et son dossier dans Application Support sont toujours là ; retirez-les à la main.";

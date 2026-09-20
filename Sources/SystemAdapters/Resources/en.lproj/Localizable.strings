@@ -1,0 +1,7 @@
+/* SystemAdapters, English. The key is the English sentence as it is written at the call site. */
+
+/* PrivateAPI.swift — one line per hidden part of macOS, on the System page */
+"Exact window matching" = "Exact window matching";
+"Pointer over the handles" = "Pointer over the handles";
+"Snap bar above other notch apps" = "Snap bar above other notch apps";
+"Blur behind the snap bar" = "Blur behind the snap bar";

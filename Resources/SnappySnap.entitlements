@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <!-- Not sandboxed: the app reads other applications' windows through the Accessibility API and the private
+       window-server symbols in SystemAdapters/PrivateAPI.swift, neither of which a sandbox allows.
+       Nothing else is claimed. The private frameworks it opens (SkyLight, HIServices) are Apple-signed, which
+       the Hardened Runtime's library validation already permits, so no exception is needed for them. -->
+  <key>com.apple.security.app-sandbox</key><false/>
+</dict></plist>
