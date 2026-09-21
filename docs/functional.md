@@ -1246,7 +1246,11 @@ window. On a first run the welcome window is shown instead, never both at once, 
 again while it is up brings it forward rather than Settings.
 **A reinstall is not one of them either**: `Scripts/install.sh` opens the bundle for its own reasons, so
 it writes a marker under `~/Library/Application Support/SnappySnap/` first, and the launch that follows
-reads it, removes it and opens nothing (`QuietLaunch`). An update does the same before it quits (Updates, below):
+reads it, removes it and opens no Settings window (`QuietLaunch`). **The welcome window is not silenced
+by it**, deliberately: the launch a first install makes is the user's first sight of the app, and since
+nothing asks for a permission at launch any more, that window is the only route to the one grant the app
+needs — a marker that swallowed it would leave a fresh install inert with nothing on screen. A reinstall
+has `onboardingCompleted` set already, so nothing opens there either. An update does the same before it quits (Updates, below):
 the launch the helper makes is nobody's request either, and the only window it opens is the one saying
 how the install ended. An unread install outcome says it a second way, which holds whatever version
 wrote it: a launch that finds one is that install's, marker or no marker. It counts once and lapses after two minutes, so a marker left behind by an install
@@ -1400,8 +1404,10 @@ Accessibility grant, the three tiling preferences and the login-item state every
 to SnappySnap", 540 pt wide, titled and closable and nothing more: the ordinary window level, the default
 collection behaviour, not resizable and not minimizable. It opens on a launch where
 `onboardingCompleted` is false, whatever the grants are, and it wins over the Settings window — a launch
-never shows two. The app is activated once, as it opens, and never again from it. Afterwards, Settings ›
-System › Start over is the way back.
+never shows two. **A quiet launch does not silence it** (§14 above), because a first install's launch is
+where the user meets the app; the one launch it does stand aside for is the one that reports how an
+update's install ended. The app is activated once, as it opens, and never again from it. Afterwards,
+Settings › System › Start over is the way back.
 
 Four pages, one button at the bottom right, ⏎ Return on it:
 
