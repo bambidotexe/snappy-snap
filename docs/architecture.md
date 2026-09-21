@@ -359,7 +359,11 @@ It is the one background feature that writes, which is why every guard above is 
 | `OrphanDetector.swift` | The only evidence a mouse-up was lost |
 | `HandleSuppression.swift` | Whether Command is holding the pill and the knobs off the screen; never a drag already in flight |
 | `Animation.swift` | `AnimationCurve`, `UnitBezier` |
-| `SnapRegistry.swift` | `windowID → (preSnapFrame, snappedFrame, zone)`, valid within ±2 pt |
+| `SnapRegistry.swift` | `windowID → (preSnapFrame, snappedFrame, zone)`, valid within ±2 pt; `stillSnapped(among:)`, how many windows on screen still sit where a snap left them |
+| `Health.swift` | The Health page's shape: `HealthLevel` (blue, green, orange, red), `HealthRow` (label, word, tooltip, fix), `HealthGroup` (and the warnings its orange and red rows put under it), `HealthSummary` (the overview: red wins) |
+| `HealthRules.swift` | Every state's colour, one rule each, used by the Health page **and** by every other page that shows the same state: `grant(held:required:)` (red only when the welcome window marks it required), the three tiling switches, the drag detection, its pauses, the Space watcher, stranded windows, custom areas, the window-size list, the hidden features, the login item, crashes, where the bundle is; `isCrashReport`, `location(bundlePath:…)`; `EngineState`/`EngineFacts`, `NotificationGrant`, `LoginItemState`, `AppLocation` |
+| `HealthReport.swift` | `HealthFacts` (everything the page reports, as plain values, the moment included) → `groups(for:)`, in page order; `summaryWord`; `text`, the report Copy Report puts on the clipboard |
+| `HealthWords.swift` | Every word the Health page shows, and the System and Gap groups' words for the states they share with it, through this target's catalogue |
 | `SpaceInterruption.swift` | `SpaceInterruption`, `SystemWindow`, `MissionControlDetector`, `MissionControlGate`, `SpaceSlideDetector`, `DragResumption` |
 | `UpdateCheck.swift` | The update check's whole decision, with no network in it: `ReleaseVersion` (dotted, numeric per component), `LatestRelease` + its parse of GitHub's JSON (the disk image, and the length and SHA-256 GitHub states for it), `decide` (strictly newer only) and `interpret` (a reply read by its status first) |
 | `UpdateSchedule.swift`, `UpdatePanel.swift`, `UpdateSession.swift`, `StagedUpdateCheck.swift`, `UpdateInstallScript.swift` | The rest of the update's rules, all pure: when an unasked check is due; the Updates group (`press`, `checked`, `autoChecked`, `installFailed`); the update window's phases; what the copy taken out of a disk image must say about itself (same app, strictly newer, this macOS is enough); and the install helper — `UpdateInstallPlan` (its arguments), the `/bin/sh` text itself and `UpdateResult` (the one line it leaves for the next launch) |
@@ -374,22 +378,23 @@ It is the one background feature that writes, which is why every guard above is 
 | `AccessibilityWindows.swift` | Window at a point — by the application's hit test, and by the window list where that answers an error other than a timeout — frame and size reads, direct position/size writes for the probe and the restore pass, title, raise, `isResizable`, `isMinimized`, windows of a pid, CGWindowID for an AX window. **Every element carries the 0.25 s messaging timeout** |
 | `WindowList.swift` | Three `CGWindowList` reads, **no names**: `snapshot` (layer 0, regular apps, ≥ 50 × 50, own pid excluded) and `snapshotWithCoverers`, the same read with the `CoveringSurface`s beside it, `onScreenSurfaces` (unfiltered, for Mission Control), `onScreenIDsAndFrames` (for the sentinels) |
 | `WindowWriter.swift` | **Every window write in the app.** One serial queue per pid, one single-slot mailbox per window; `begin`/`post`/`flush`/`cancel`, generations, outcomes back on the main actor |
-| `MouseEvents.swift` | Listen-only session `CGEventTap` over the four left-button/move events **and `flagsChanged`**, beside a device-level one for presses and releases only, reconciled by `PressReconciler` so a gesture the window server keeps from the session still has its press and its release (`hearsDevicePresses`); which reports Command (⌘) and Option (⌥) — the app's two modifiers, named here and nowhere else; `onTapDisabled(reason, count)` |
+| `MouseEvents.swift` | Listen-only session `CGEventTap` over the four left-button/move events **and `flagsChanged`**, beside a device-level one for presses and releases only, reconciled by `PressReconciler` so a gesture the window server keeps from the session still has its press and its release (`hearsDevicePresses`); which reports Command (⌘) and Option (⌥) — the app's two modifiers, named here and nowhere else; `onTapDisabled(reason, count)`, the pauses counted by reason, and `isListening`, whether macOS has the tap switched on |
 | `Screens.swift` | Displays in CG space — the camera housing included, from the two auxiliary top areas — display under a point, shared edges, change notifications |
 | `CoordinateSpace.swift` | Cocoa ↔ CG, used only at the panel boundary |
-| `SpaceWatcher.swift` | The backstop notification, the 60/10 Hz Mission Control poll behind `isLive`, the Space-bound sentinels, and the 1.5 s coalescing that makes the two routes one |
-| `PrivateAPI.swift` | `dlsym` resolution of the nine symbols, the switch, and `PrivateFeature`: the four things they buy, which is what Settings reports |
+| `SpaceWatcher.swift` | The backstop notification, the 60/10 Hz Mission Control poll behind `isLive`, the Space-bound sentinels, and the 1.5 s coalescing that makes the two routes one; `isWatching` for the Health page |
+| `PrivateAPI.swift` | `dlsym` resolution of the nine symbols, the switch, and `PrivateFeature`: the four things they buy, which is what Settings reports; `report(for:)`, a feature's symbols and whether each was found, the tooltip on System and Health |
 | `ElevatedSpace.swift` | A window-server Space of the app's own at absolute level 401, and adding a window to it — what draws the notch shape above other notch utilities |
 | `BackdropLayers.swift` | `CABackdropLayer` told to look behind its window, the `variableBlur` filter, and `BackdropLumaTracker`, which reads the backdrop's luminance from the window server |
 | `BackgroundCursor.swift` | `SetsCursorInBackground` on our connection; the system move glyph read from HIServices; `pointerLocation` |
-| `MinimumSizeStore.swift` | The list under `minimumSizes.v3`, published; the held-window table (own floor, probed this session); `observe` from an Accessibility path and from the sweep, `recordProbe`, `refused`, and the user's `edit`/`add`/`remove`/`reset` |
-| `SystemTilingPrefs.swift` | Reads `com.apple.WindowManager`'s three tiling keys |
+| `MinimumSizeStore.swift` | The list under `minimumSizes.v3`, published; the held-window table (own floor, probed this session); `observe` from an Accessibility path and from the sweep, `recordProbe`, `refused`, and the user's `edit`/`add`/`remove`/`reset`; `storedListWasUnreadable` for the Health page |
+| `SystemTilingPrefs.swift` | Reads `com.apple.WindowManager`'s four tiling keys: the two drag switches, the margins, and the ⌥ accelerator |
+| `CrashReports.swift`, `ProcessStats.swift`, `InstallLocation.swift` | The Health page's App group: this app's crash reports of the last week from `~/Library/Logs/DiagnosticReports` (by name, `HealthRules.isCrashReport`), the process's start and memory footprint (`sysctl`, `task_info`), and where the bundle runs from |
 | `Haptics.swift` | The trackpad actuator: one `.alignment` tap behind the user's switch, a no-op on a Mac with no Force Touch trackpad. The performer is injectable, which is the only way the switch's effect is testable |
 | `Permissions.swift` | `AXIsProcessTrusted`, the prompt, deep links to the two System Settings panes |
 | `SettingsStore.swift` | `Settings` as one JSON blob under `settings.v1`, published to SwiftUI. Tolerant decoding, no migrations |
-| `ParkedWindowsStore.swift` | The crash-recovery record for parked windows, under `parkedWindows.v1` |
+| `ParkedWindowsStore.swift` | The crash-recovery record for parked windows, under `parkedWindows.v1`; `lastLoadWasUnreadable`, a record that was there and could not be read, for the Health page |
 | `OnboardingState.swift` | Whether the welcome window has been finished, under `onboardingCompleted`. One fact about this Mac, not a setting: written only by the last page's button |
-| `LoginItem.swift` | `SMAppService.mainApp` — the only source of truth for "launch at login" |
+| `LoginItem.swift` | `SMAppService.mainApp` — the only source of truth for "launch at login"; `state` tells switched off in System Settings apart from never switched on |
 | `UpdateChecker.swift` | **The only network code in the app.** `UpdateChecker.check`, the latest-release request (`SNAPPYSNAP_UPDATE_FEED` replaces its URL with a stand-in), and `UpdateDownload`, one fetch of a disk image with its progress, held against the asset's stated length and SHA-256 before it is reported; completions come back off the main actor |
 | `UpdateStager.swift`, `CodeSignature.swift`, `UpdateInstaller.swift`, `DetachedProcess.swift` | Making an update ready and handing it over. The stager mounts the image (`hdiutil`, then `diskutil image`), copies out the app carrying our bundle identifier, applies `StagedUpdateCheck` and `CodeSignature.verify` (valid, and from the running app's team when it has one), and detaches. `UpdateInstaller.obstacle` says why the app cannot replace itself where it is; `start` writes the helper and runs it through `DetachedProcess`, a `posix_spawn` in a process group of its own so that it outlives the app |
 
@@ -398,8 +403,8 @@ It is the one background feature that writes, which is why every guard above is 
 | File | Responsibility |
 |---|---|
 | `SnappySnapApp.swift` | `@main`: holds the delegate, sets the accessory policy, runs `NSApplication`. The run loop is AppKit's, not SwiftUI's — the status item is added and removed as the user's choice changes, and a `MenuBarExtra` cannot be (`pitfalls.md` 50) |
-| `AppDelegate.swift` | Permission gate, the welcome window, the whole wiring graph, `route(_:)`, `leftTheArrangement` |
-| `SnapState.swift` | The shared `SnapRegistry` |
+| `AppDelegate.swift` | Permission gate, the welcome window, the whole wiring graph, `route(_:)`, `leftTheArrangement`, and `engineState`: whether the drag detection waits for the permission, runs, or failed to start, for the Health page |
+| `SnapState.swift` | The shared `SnapRegistry`, and when a snap last landed |
 | `Drag/DragSessionController.swift` | The drag state machine, the frame cache, the fill evidence, the drop |
 | `Engines/EngineRouter.swift` | Screen resolution, registry bookkeeping, learning a refusal, cancellation |
 | `Engines/SteppingSnapEngine.swift` | The display-link animation; the one engine. Posts through `WindowWriter`, flushes the last frame, and does what the job's `RefusalPolicy` says with a refused size: anchors inward, or leaves the window in place |
@@ -423,11 +428,13 @@ It is the one background feature that writes, which is why every guard above is 
 | `UI/GrantRow.swift` | What a grant is (`GrantID`, `GrantItem`), `FocusReturnWatch` (the front back when the app a button opened quits), `GrantRow` (built once, updated in place, with its loading state), and `Metrics`, every number of the window |
 | `UI/GrantCatalog.swift` | The rows themselves: the two macOS grants and the two settings, each with how it is **read** and how it is **asked for**, which are never the same call |
 | `UI/ControlActionHandler.swift` | A closure target for any `NSControl`, which an AppKit page built in a loop needs |
-| `UI/SettingsWindow.swift` | The Settings window: the toolbar that picks a page, one hosting controller, the height that follows the shown page, and the `SystemStatus` poll's start and stop |
-| `UI/SettingsView.swift` | The window's SwiftUI root, the seven pages' identifiers, and `SystemStatus` |
-| `UI/SettingsRows.swift` | The kit every page is built from: `SettingsGroup` (title, card, then hint, warnings, notes), `ToggleRow`, `StatusRow` + `StatusMark`, `ButtonRow`, and `SettingsMetrics`, every spacing number |
-| `UI/Settings…Page.swift` | One file per page: General (its Updates group reads `UpdateController.shared`), Snapping, Snap Bar (and the Style tiles), Handles (and the list of window sizes), Custom Areas, System |
-| `UpdateController.swift`, `UpdateNotifier.swift`, `UI/UpdateWindow.swift` | The update feature's one owner, main actor: the schedule's timer (10 s after launch, every 30 min, at wake), the checks, the panel and the session the two windows observe, the fetch, the unpacking off the main actor, Install and Relaunch, and the outcome read at the next launch. `UpdateNotifier` is the app's only use of `UNUserNotificationCenter`: the `update` category with its one action, permission asked the first time there is a release to announce. `UpdateWindowController` sizes the window to what it says, around its top-left corner |
+| `UI/SettingsWindow.swift` | The Settings window: the toolbar that picks a page, one hosting controller, the height that follows the shown page, the `SystemStatus` poll's start and stop, and the Health page's readings taken when that page is shown |
+| `UI/SettingsView.swift` | The window's SwiftUI root, the eight pages' identifiers, and `SystemStatus`: the 2 s poll of every state the window shows and does not own (the two grants, the tiling switches, the login item, the drag detection through `AppDelegate.engineState`) |
+| `UI/HealthCheck.swift` | The Health page's own readings, taken on show, on picking Health and on Check Again, never on a timer; `AppHealthState`, what `AppDelegate` hands it (the last snap, the registry, the stranded windows, the displays); `facts(_:)`, which joins them with the poll and the settings into `HealthFacts` |
+| `UI/SettingsHealthPage.swift` | The Health page: the overview and Check Again, `HealthReport`'s groups drawn with the kit, Copy Report |
+| `UI/SettingsRows.swift` | The kit every page is built from: `SettingsGroup` (title, card, then hint, warnings, notes), `ToggleRow`, `StatusRow` + `StatusMark` (and `StatusMark(level, word)`, the mark for a `HealthLevel`), `ButtonRow`, and `SettingsMetrics`, every spacing number |
+| `UI/Settings…Page.swift` | One file per page: General (its Updates group reads `UpdateController.shared`), Snapping, Snap Bar (and the Style tiles), Handles (and the list of window sizes), Custom Areas, System, Health, Tip |
+| `UpdateController.swift`, `UpdateNotifier.swift`, `UI/UpdateWindow.swift` | The update feature's one owner, main actor: the schedule's timer (10 s after launch, every 30 min, at wake), the checks, the panel and the session the two windows observe, the fetch, the unpacking off the main actor, Install and Relaunch, and the outcome read at the next launch. `UpdateNotifier` posts the app's one notification: the `update` category with its one action, posted only when the grant is already there (it never asks; the welcome window's Allow button does). `UpdateWindowController` sizes the window to what it says, around its top-left corner |
 | `Logging.swift` | Six `os.Logger` categories: `app`, `drag`, `assist`, `deck`, `handle`, `junction`. `Logger.privateAPI` is `app` under another name |
 | `Resources/Layouts.json` | The four snap-bar layouts, hand-editable |
 
@@ -472,6 +479,8 @@ the zone preview animates, and a per-frame mask rebuild starves it (`pitfalls.md
 | The welcome window has been finished | `onboardingCompleted` | persisted; written only by the last page's button |
 | Launch at login | `SMAppService.mainApp` | the system's |
 | Snapped windows and their pre-snap frames | `SnapRegistry` in `SnapState` | memory, never pruned; an entry is valid only within 2 pt of the frame the snap gave it |
+| When a snap last landed | `SnapState.lastSnap` | memory; the Health page's reading |
+| How often macOS paused the event tap, by reason | `MouseEvents` | memory, this launch |
 | Gesture state | each controller's `phase`/`drag`/`parked` | the gesture |
 
 ## 13. Threading and run-loop constraints
@@ -554,14 +563,16 @@ so the script needs nothing beyond CoreGraphics.
 
 ## 16. Testing
 
-`swift test` builds and runs two targets, `SnapCoreTests` (569 tests) and `SystemAdaptersTests`
-(88), on Swift Testing. Count **two** summary lines: a crashed target prints none. They need no
+`swift test` builds and runs two targets, `SnapCoreTests` (642 tests) and `SystemAdaptersTests`
+(123), on Swift Testing. Count **two** summary lines: a crashed target prints none. They need no
 permission; a handful read the live desktop or the real `defaults` and tolerate what they find.
 `WindowWriterTests` drive the writer through a fake `Backend`.
 
 `SnapCoreTests`' `LocalizationTests` is the exception to the layering: it reads all six
 `Localizable.strings` **from the source tree**, through `#filePath`, and so covers the app target's
-135 sentences as well as its own. That is deliberate. The app target has no test target, the
+184 sentences as well as its own. It also reads every `L("…")` in each target's sources and holds the
+call sites and the catalogue to each other: a sentence shown and not catalogued, or catalogued and no
+longer shown, fails. That is deliberate. The app target has no test target, the
 catalogues are the authority rather than any compiled artefact, and the failure being guarded
 against — a sentence translated in one language and not the other — is invisible at runtime, because
 `String(localized:)` falls back to the English key and says nothing. Each target additionally owns a
@@ -575,5 +586,7 @@ are localized now, so they read French on a Mac set to French. Those assertions 
 `Sources/SnappySnap` has **no test target**: it is AppKit, panels and display links. Anything in it
 that could be pure was pushed down into `SnapCore`, which is why the planner, the card layout, the
 deck's fan, the minimum-size policy, the orphan rule and the junction arithmetic live there and are
-tested. `SpaceWatcher` has no tests. What no automated test reaches is in
+tested. The Health page is the same: its rows, their colours and their words are built in
+`SnapCore.HealthReport` from plain facts and tested in `HealthTests`; the app only reads the facts and
+draws the rows. `SpaceWatcher` has no tests. What no automated test reaches is in
 `docs/manual-test-checklist.md`.

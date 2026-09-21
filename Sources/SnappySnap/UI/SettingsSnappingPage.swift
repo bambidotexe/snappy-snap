@@ -38,8 +38,9 @@ struct SnappingPage: View {
                 // window flush against the screen edge while ours leaves the gap. The row stays, green,
                 // once they are on, so the link between the two settings can always be seen.
                 if store.settings.gapEnabled {
-                    StatusRow(L("macOS margins for tiled windows"),
-                              mark: status.tiling.margins ? .good(L("Enabled")) : .warning(L("Disabled")))
+                    StatusRow(HealthWords.marginsLabel,
+                              mark: StatusMark(HealthRules.margins(on: status.tiling.margins, gapOn: true),
+                                               status.tiling.margins ? HealthWords.enabled : HealthWords.disabled))
                     if !marginsAgree {
                         ButtonRow {
                             Button(L("Open Desktop & Dock Settings")) { Permissions.openDesktopAndDockSettings() }

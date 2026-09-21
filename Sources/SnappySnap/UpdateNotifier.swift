@@ -11,8 +11,9 @@ private enum UpdateNotification {
 }
 
 /// The one notification the app ever posts: a newer release found by a check nobody asked for. Permission
-/// is asked for the first time there is something to say, not at launch: Accessibility stays the only
-/// thing the app needs to work, and a user who says no still finds the release in Settings.
+/// is never asked for here: the welcome window's Allow button is the one place that asks, and this reads
+/// the grant and posts only if it is already there. Accessibility stays the only thing the app needs to
+/// work, and a user who says no still finds the release in Settings.
 ///
 /// `UNUserNotificationCenter.current()` traps in a process with no bundle (a binary run out of
 /// `.build`), so nothing here touches it unless the app runs from one.

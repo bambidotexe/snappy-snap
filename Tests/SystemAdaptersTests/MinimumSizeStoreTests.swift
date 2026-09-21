@@ -30,6 +30,17 @@ import Testing
         WindowHandle(element: AXUIElementCreateApplication(finder), pid: finder, windowID: id)
     }
 
+    /// A saved list that cannot be read is replaced by the built-in one, and the store says so: the Health
+    /// page reports it. No saved list at all is not unreadable, it is the built-in list untouched.
+    @Test func aSavedListThatCannotBeReadIsSaidToBe() {
+        let defaults = freshDefaults()
+        #expect(!MinimumSizeStore(defaults: defaults).storedListWasUnreadable)
+        defaults.set(Data("not a list".utf8), forKey: MinimumSizeStore.defaultsKey)
+        let store = MinimumSizeStore(defaults: defaults)
+        #expect(store.storedListWasUnreadable)
+        #expect(store.list.isBuiltIn)
+    }
+
     @Test func aFreshStoreIsTheBuiltInListAndStoresNothing() {
         let defaults = freshDefaults()
         let store = MinimumSizeStore(defaults: defaults)

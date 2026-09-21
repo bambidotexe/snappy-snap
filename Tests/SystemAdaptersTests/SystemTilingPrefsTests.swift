@@ -20,18 +20,29 @@ import Foundation
         #expect(!without.marginsAgree(withGap: true))
     }
 
+    /// macOS's ⌥ tiling answers a key, not an edge: it is not what `conflicts` reports, whose two switches
+    /// fight every drag. Whether it fights the app depends on a setting of the app's own
+    /// (`HealthRules.optionTiling`).
+    @Test func optionTilingIsNotAnEdgeConflict() {
+        #expect(!SystemTilingState(edgeTiling: false, topTiling: false, margins: true, optionTiling: true).conflicts)
+    }
+
     @Test func readMatchesTheDefaultsCommand() throws {
-        // Cross-check against `defaults read` so the CFPreferences domain and key names are right.
+        #expect(SystemTilingPrefs.read().margins == (try Self.defaultsFlag("EnableTiledWindowMargins")))
+        #expect(SystemTilingPrefs.read().optionTiling == (try Self.defaultsFlag("EnableTilingOptionAccelerator")))
+    }
+
+    /// What `defaults read` says of one of the domain's switches: a missing key or "1" both mean on.
+    private static func defaultsFlag(_ key: String) throws -> Bool {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/defaults")
-        process.arguments = ["read", "com.apple.WindowManager", "EnableTiledWindowMargins"]
+        process.arguments = ["read", "com.apple.WindowManager", key]
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe
         try process.run()
         process.waitUntilExit()
         let output = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
-        let expected = output == "0" ? false : true   // missing key or "1" both mean on
-        #expect(SystemTilingPrefs.read().margins == expected)
+        return output != "0"
     }
 }

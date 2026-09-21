@@ -49,8 +49,10 @@ ever asks for is notifications, and only to announce an update (last bullet).
 (`com.apple.WindowManager`'s "Drag windows to left or right edge of screen to tile" and "Drag windows
 to menu bar to fill screen" — the names macOS gives those two switches, quoted wherever the app names
 them). The app does not require it, and **it raises no alert about it at launch**: the welcome window's
-*Out of the way* page offers it as a row on the first run, and Settings › System › macOS tiling reports
-the live state for ever after, with a button to the Desktop & Dock pane.
+*Out of the way* page offers it as a row on the first run, and Settings › System › macOS tiling and
+Settings › Health report the live state for ever after, System with a button to the Desktop & Dock pane.
+A third switch, "Hold ⌥ key while dragging windows to tile", fights only the halves held under ⌥ Option
+(§3), and is reported in orange only while both are on.
 
 ## 2. What a zone is
 
@@ -1261,9 +1263,9 @@ code constant** — one `static let` in `Settings.Fixed` with a comment saying w
 reachable by `defaults write`. Settings are one JSON blob under `settings.v1`; any key the file does
 not hold keeps its default, so adding or removing a control never resets the file.
 
-**The window has seven pages, picked from a toolbar** that draws each page's symbol above its title —
-*General*, *Snapping*, *Snap Bar*, *Handles*, *Custom Areas*, *Tip*, *System* — and the window's title is the
-shown page's. The window is **640 pt** wide and **as tall as the shown page**: it resizes around its
+**The window has eight pages, picked from a toolbar** that draws each page's symbol above its title —
+*General*, *Snapping*, *Snap Bar*, *Handles*, *Custom Areas*, *System*, *Health*, *Tip* — and the window's
+title is the shown page's. The window is **640 pt** wide and **as tall as the shown page**: it resizes around its
 top-left corner, animated, on a page switch and whenever a page gains or loses a line, and never grows
 past the display's visible height less **140 pt**, beyond which the page scrolls. It opens on General,
 already at that page's height and centred.
@@ -1304,9 +1306,21 @@ of the three.
 **A state is always one row**: what is reported on the left, in ordinary text, and at the trailing edge
 a symbol and one word — or a short sentence, which wraps — both in the state's colour. There are five
 marks and each keeps its symbol and its colour on every page: a **green checkmark** for what is as it
-should be, a **blue info mark** for what is worth knowing, an **orange triangle** for what is to be
-fixed or did not work, a **red cross** for what was refused or is wrong, and a **spinner** for what is
-still happening.
+should be; a **blue info mark** for a reading with nothing to judge, and for a switch of the app's own
+that the user turned off; an **orange triangle** for what is not as it should be while windows still
+snap (an optional permission missing, a macOS switch that fights a feature, a feature switched on that
+cannot work, something that did not work this time); a **red stop sign** for what stops windows from
+snapping (the Accessibility permission denied, the drag detection down), and for text in front of the
+user that does not parse; and a **spinner** for what is still happening.
+
+**One colour rule holds on every page** (`SnapCore.HealthRules`, the same rule on System, on a feature
+page and on Health): a grant the welcome window marks required is red while it is missing, an optional
+one orange, and neither is ever blue; a preference the welcome window merely offers, Open at Login, reads
+blue when it is off, because that is the user's choice. **A state that says whether something works is
+always on Health**, and on another page only as the context of what is there: beside the control that
+changes it (a permission above its button, macOS's switches above the button to their pane, the
+margins beside the gap switch, the hidden features' lines beside their switch, the custom areas'
+verdict beside the editor, the login item's failure beside its switch).
 
 **The copy has four rules.** Every text is the default size — body, bold for a group's title,
 monospaced for what is code — and nothing is smaller. A keyboard key is written symbol first:
@@ -1375,11 +1389,15 @@ The displays list gives each attached display's exact name and its frame in poin
 built-in one, and under them the two selectors exactly as the JSON takes them, so a selector can be
 copied rather than guessed.
 
-**The System page reports, and only its last group holds a control.** The Accessibility grant,
-**Granted** in green or **Denied** in red, with a button to its pane. macOS's edge tiling, **Disabled** in
-green or **Enabled** in orange, and its margins, green when they agree with the gap switch — on with the
-gap, off without — and orange otherwise, with a button to Desktop & Dock and one warning per orange
-row naming the switch to flip. And under *Use hidden macOS features*, **one line per thing the private
+**The System page is what the app needs from macOS and the controls that give it.** The Accessibility
+grant, **Granted** in green or **Denied** in red; while it is denied, a button to its pane and a warning
+naming the switch, SnappySnap under *Device Control and Data Access* in Privacy & Security. macOS's
+tiling: its edge tiling, **Disabled** in green or **Enabled** in orange; its margins, green when they
+agree with the gap switch — on with the gap, off without — and orange otherwise; and its ⌥ tiling, *Hold
+⌥ key while dragging windows to tile*, orange only while it is on together with the halves held under
+⌥ Option. While any of the three is orange, a button to Desktop & Dock and one warning per orange row
+naming the switch to flip. **Once a state is green its button and its warning go and the row stays**, so
+the link stays visible. And under *Use hidden macOS features*, **one line per thing the private
 symbols buy** — *Exact window matching*, *Pointer over the handles*, *Snap bar above other notch apps*,
 *Blur behind the snap bar* — **Available** in green when `dlsym` found **every** symbol the feature
 needs on this macOS, **Missing** in orange otherwise. A line reports the machine, not the switch, so
@@ -1396,7 +1414,63 @@ handle maximum gap 16 pt, handle minimum overlap 60 pt, deck ceiling 20 windows,
 unprobed floor 120 × 80 pt.
 
 Every change is written as it is made; there is no Apply. While the window is open it re-reads the
-Accessibility grant, the three tiling preferences and the login-item state every 2 s.
+Accessibility and notification grants, the four tiling preferences, the login-item state and whether
+the drag detection is running every 2 s. Those are readers only: nothing the window reads ever asks
+macOS for anything.
+
+### The Health page
+
+**Whether SnappySnap is doing its job, at a glance.** The second to last page, between System and Tip,
+titled *Health* (*Santé*) with a stethoscope. It reports and changes nothing but itself: a state is put
+right on the page that owns it, and each orange or red row says where in a warning under its group. The
+app's version and its updates are not on it: they are General's.
+
+The first group, **Overview**, is one row named *SnappySnap* whose mark sums up every row under it: green
+**Everything works**; orange **N things to look at**, counting the orange rows; red **Not working: N
+problems**, counting the red rows, red winning over orange. Under it one button, **Check Again**, which
+reads everything at once and shows **Checking** with a spinner for at least **0.5 s**
+(`Settings.Fixed.healthMinimumBusy`), so the press is seen to do something.
+
+Then, in this order, with each row's colour and, for a row that can be orange or red, the sentence under
+its group while it is:
+
+| Group | Row | Reads |
+|---|---|---|
+| Permissions | Accessibility permission | **Granted** green; **Denied** red, "In Privacy & Security, turn on SnappySnap under “Device Control and Data Access”…" |
+| Permissions | Notifications permission | **Granted** green; **Denied** orange: never asked, the fix names Show Onboarding Again; refused, it names System Settings › Notifications › “Allow notifications” |
+| macOS tiling | macOS edge tiling | **Disabled** green; **Enabled** orange, naming both of Desktop & Dock's switches |
+| macOS tiling | macOS margins for tiled windows | green while they agree with the gap switch, orange otherwise, naming the direction to flip “Tiled windows have margins” |
+| macOS tiling | macOS tiling while ⌥ Option is held | orange only while “Hold ⌥ key while dragging windows to tile” and the halves held under ⌥ Option are both on; green otherwise |
+| Snapping | Drag detection | **Enabled** green; **Failed** red when the event tap could not be started once the permission arrived, or macOS keeps it switched off: quit and reopen. No row while the permission is still missing, whose own row is then the one red |
+| Snapping | Drags with fn held | **Enabled** green; **Failed** orange when the device-level listener could not be started (§3 *Arming*) |
+| Snapping | Drag detection pauses | since launch: **Never** green; a count, blue when every pause was macOS's own, orange once one was for the app answering too slowly (a drag may have been missed); the split is the tooltip |
+| Snapping | Space changes and Mission Control | **Enabled** green while §13's watcher runs; **Failed** orange otherwise |
+| Snapping | Last snap | blue, how long ago a window last landed where a snap put it (*12 s ago*, *3 min ago*), or **None yet**; the moment is the tooltip |
+| Snapping | Windows where a snap left them | blue, how many windows on screen still sit (±2 pt) where a snap left them |
+| Snapping | Windows not put back | a count: 0 green; more orange, the windows Snap Assist could not deal home (§8), which the next launch puts back; **Invalid** orange when the record an earlier run left could not be read at launch, so those windows cannot be named: look for them in a corner of the screen |
+| Handles | Handles on offer | blue, how many dividers between two windows would offer a pill right now; **Disabled** blue with the handles switched off |
+| Handles | Smallest window sizes | blue, how many apps the list holds, the built-in, measured and edited counts as the tooltip; **Invalid** orange when the saved list could not be read and the built-in one stands in |
+| Custom areas | Custom areas | **Valid** green, the number of areas as the tooltip; **Invalid** orange with the failure as the tooltip; **Disabled** blue with the feature switched off. Orange here and red beside the editor: on Health it is one feature that cannot work while every other drag snaps |
+| Compatibility | macOS | blue, the version; macOS's own description with its build as the tooltip |
+| Compatibility | Use hidden macOS features | **Enabled** green; **Disabled** blue, the user's choice |
+| Compatibility | one row per thing the hidden parts of macOS buy | **Available** green; **Missing** orange; the symbols as the tooltip, exactly as on System |
+| Compatibility | Snap bar on “display” | one row per attached display, blue: what the bar is drawn as there with the chosen appearance (**Notch**, **Island**, **Floating bar**), **Disabled** with the bar off; the display's size and camera housing as the tooltip |
+| App | Launch at login | **Enabled** green; **Disabled** blue, the user's choice; **Disabled** orange when switched off in System Settings while the app asked for it, naming *Open at Login* in Login Items & Extensions |
+| App | Running for | blue, in the two largest units |
+| App | Memory used | blue, in MB, as Activity Monitor counts it |
+| App | Crashes in the last 7 days | **None** green; a count orange, the last one's date as the tooltip, from `~/Library/Logs/DiagnosticReports` |
+| App | Installed in | **Applications** green; another folder blue; **Disk image** or **Temporary copy** orange: move it to Applications |
+
+The last group, **Report**, is a hint and one button, **Copy Report**, which puts the whole page on the
+clipboard as text: the app's version and macOS's first, the summary, then one line per row with its
+level, its word and its tooltip. Nothing in it is secret: the page reads no window title and no file of
+the user's.
+
+**When it reads.** The permissions, the tiling switches, the login item and whether the drag detection
+runs are the window's 2 s poll, shared with System. The rest is read when the window opens on Health,
+when Health is picked, and on Check Again, **never on a timer**: every one of those readings is a cheap
+local read (a sysctl, a directory listing, one window list, a parse of the custom areas' text), taken on
+the main thread. The settings each row is judged against are read as they are.
 
 ### The welcome window
 
@@ -1543,7 +1617,7 @@ category, at `notice`; the helper keeps its own account in `updates/install.log`
 
 ### Supporting the app
 
-**Tip** is a page of its own, between Custom Areas and System, and it holds two cards. The first has no
+**Tip** is a page of its own, the last one, after Health, and it holds two cards. The first has no
 title: the app's icon beside the sentence saying every feature is free to everyone and always will be,
 and that a coffee is how the project is supported. The second is **One-time tip**: the Ko-fi cup on a
 wash of its own red, *A cup of coffee* with a line saying what it is, and a button naming the smallest
@@ -1642,8 +1716,7 @@ running app with no way to stop it.
 
 **The app icon** is the same snake, in colour, composed from a layered Icon Composer document and
 compiled into the bundle at build time. An accessory app has no Dock icon, so it is seen in Finder,
-in Spotlight, in the Accessibility list in System Settings, and on the alerts the app raises — the
-tiling warning of §1 among them. A build made on a Mac with no Xcode has no app icon and is otherwise
+in Spotlight, in the Accessibility list in System Settings, and on the alerts the app raises. A build made on a Mac with no Xcode has no app icon and is otherwise
 identical: the bundle still names one, and macOS treats a named icon that is absent as no icon rather
 than as an error.
 
@@ -1679,10 +1752,11 @@ of macOS's own window-move gestures, so the key meant to uncover a resize edge m
 instead (`pitfalls.md` 45). fn is never read; the gesture it starts is followed like any other drag
 (§3 *Arming*).
 
-macOS has its own **"Hold ⌥ while dragging windows to tile them"**
+macOS has its own **"Hold ⌥ key while dragging windows to tile"**
 (`com.apple.WindowManager` `EnableTilingOptionAccelerator`), which answers the same gesture. It is off
-on the development Mac, and it is **not** one of the two keys the app reads and warns about in §1 — so
-with it on, both would fire and nothing tells the user why (§20).
+on the development Mac. With it on and the halves held under ⌥ Option switched on, both fire on the same
+drag; Settings › System and Health report it in orange and name the switch (§14), and nothing stops it
+(§20).
 
 Besides Command the keyboard is read in two places: Escape ends a Snap Assist phase, and the menu-bar
 item's items carry ⌘, and ⌘Q.
@@ -1721,12 +1795,15 @@ else. Changing the language is quitting and reopening the app, because a catalog
 site reads `L("Show in menu bar")`, so the sentence is still beside the thing it labels; `en.lproj`
 maps each key to itself and `fr.lproj` to the French. A value inside a sentence is interpolated into
 the key, so the French is free to put it where its own sentence needs it. Three catalogues, one per
-target that shows text: **`SnapCore` 61 sentences, `SystemAdapters` 4, `SnappySnap` 135 — 200 in all.**
+target that shows text: **`SnapCore` 152 sentences, `SystemAdapters` 4, `SnappySnap` 184 — 340 in all.**
+The Health page's words are `SnapCore`'s, because its rows are built there, and so are the System page's
+states it shares with Health.
 
 **A sentence with no French falls back to its English key, silently**, which is the one failure this
 arrangement can have. `LocalizationTests` is what stops it reaching a build: it holds the two
-catalogues of every target to exactly the same keys, and fails on a sentence translated in one
-language and not the other.
+catalogues of every target to exactly the same keys, fails on a sentence translated in one language
+and not the other, reads every `L("…")` in the sources and fails on one its target's catalogue does not
+hold, and fails on a catalogue sentence no call site shows any more.
 
 **What is never translated**, in either direction: the app's own name; every log line; SF Symbol
 names; the keys and raw values written to the settings file (`settings.v1`, `minimumSizes.v3` and the
@@ -1778,11 +1855,10 @@ windows move on release.
   that follows ends it and arms normally, and logs `press while suspended`; until that press the
   session still counts as live, which keeps the oversize watcher standing down and the Space poll at
   60 Hz. Nothing is written and nothing is shown in the meantime (§13).
-- **The system's own ⌥ tiling is not detected.** `SystemTilingPrefs` reads
-  `EnableTilingByEdgeDrag` and `EnableTopTilingByEdgeDrag`, which is what §1's warning and the
-  Settings readout are built on. macOS's third switch, `EnableTilingOptionAccelerator` — "Hold ⌥
-  while dragging windows to tile them" — answers the same gesture as §3 *The halves, held under
-  Option* and is read by nobody here. With both on, the two fight and the app says nothing. It has
+- **The system's own ⌥ tiling is reported, not prevented.** macOS's third switch,
+  `EnableTilingOptionAccelerator` — "Hold ⌥ key while dragging windows to tile" — answers the same
+  gesture as §3 *The halves, held under Option*. With both on, the two fight on the same drag; the app
+  says so in orange on Settings › System and Health (§14), and cannot stop macOS from tiling. It has
   not been seen, because the key is off on the development Mac.
 - **A one-sided axis is not re-fitted when an application refuses its size.** On an axis where every
   member takes the same side, a window that will not shrink to the frame it was given leaves the
@@ -1813,7 +1889,7 @@ windows move on release.
   pill's band while its two windows are still animating passes to the drag session, but the moves and
   the release that follow are swallowed by the pill until its animations report; the drag is dropped.
 - **The event tap is not retried.** If it cannot be created after the grant arrives, the app is inert
-  until relaunched.
+  until relaunched; Settings › Health reads *Drag detection* **Failed** in red and says so.
 - **The pair cell is resolved on the display the drag started on**, so a drag onto another display
   carries no pair cell there.
 - **With eight or more cards in a Snap Assist area**, a card that changes line answers no clicks for

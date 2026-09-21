@@ -21,9 +21,12 @@ import Foundation
     /// None of these may appear in a sentence a person reads. The keyboard's own hyphen is not here.
     static let longDashes: Set<Character> = ["—", "–", "‒", "―", "‐", "‑", "−"]
 
-    /// Keys whose sentence is a name macOS chose, quoted so the user can find it in System Settings.
-    /// Exempt from the keyboard-key rule, and from nothing else.
-    static let systemNames: Set<String> = ["Device Control and Data Access"]
+    /// Names macOS gives something, quoted so the user can find it, in either language, that happen to
+    /// hold a key's name: the Accessibility grant's row in Privacy & Security, and Mission Control. The
+    /// word is the system's, not the key's, so a mention inside one of these is exempt from the
+    /// keyboard-key rule, and from nothing else.
+    static let quotedSystemNames = ["Device Control and Data Access", "Contrôle de l’appareil et accès aux données",
+                                    "Mission Control"]
 
     static let repoRoot = URL(filePath: #filePath)
         .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
@@ -96,12 +99,13 @@ import Foundation
 
     /// A key is written symbol first at every mention, titles included, in both languages.
     ///
-    /// A sentence that quotes a name macOS gives something is exempt, and only by being named here: the
-    /// Accessibility grant is called *Device Control and Data Access* in System Settings, and the row
-    /// that sends the user to find it has to read exactly that. The word is the system's, not the key's.
+    /// A name macOS gives something is exempt wherever it is quoted, and only by being named in
+    /// `quotedSystemNames`: the Accessibility grant is called *Device Control and Data Access* in System
+    /// Settings, and the rows and the warnings that send the user to find it have to read exactly that.
     @Test(arguments: targets) func everyKeyboardKeyIsWrittenSymbolFirst(_ target: String) throws {
         for language in Self.languages {
-            for (key, value) in try Self.catalogue(target, language) where !Self.systemNames.contains(key) {
+            for (key, sentence) in try Self.catalogue(target, language) {
+                let value = Self.quotedSystemNames.reduce(sentence) { $0.replacingOccurrences(of: $1, with: "…") }
                 for (word, symbol) in Self.keyboardKeys {
                     for range in value.ranges(of: word) {
                         // A word inside a longer one is not a mention: "Optional" is not ⌥ Option.
@@ -119,6 +123,134 @@ import Foundation
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // MARK: - The call sites
+
+    /// What a `%@` or a `%lld` in a key looks like, for matching a call site that interpolates a value.
+    static let placeholderPattern = #"%(?:\d+\$)?(?:lld|ld|@|d|f)"#
+
+    /// Every `L("…")` literal in a target's sources, as its text with each interpolation `\(…)` replaced
+    /// by a NUL. A literal on one line is the only kind the code writes; `L(someVariable)` is not a literal
+    /// and is not read.
+    static func callSites(_ target: String) throws -> [(file: String, text: String)] {
+        let folder = repoRoot.appending(path: "Sources/\(target)")
+        let files = FileManager.default.enumerator(at: folder, includingPropertiesForKeys: nil)?
+            .compactMap { $0 as? URL }.filter { $0.pathExtension == "swift" } ?? []
+        return try files.flatMap { file in
+            literals(in: try String(contentsOf: file, encoding: .utf8)).map { (file.lastPathComponent, $0) }
+        }
+    }
+
+    static func literals(in source: String) -> [String] {
+        let chars = Array(source)
+        var found: [String] = []
+        var i = 0
+        while i + 2 < chars.count {
+            let startsCall = chars[i] == "L" && chars[i + 1] == "(" && chars[i + 2] == "\""
+            let standsAlone = i == 0 || !(chars[i - 1].isLetter || chars[i - 1].isNumber || chars[i - 1] == "_")
+            guard startsCall, standsAlone else { i += 1; continue }
+            var k = i + 3
+            var text = ""
+            var closed = false
+            scan: while k < chars.count {
+                switch chars[k] {
+                case "\\":
+                    guard k + 1 < chars.count else { break scan }
+                    if chars[k + 1] == "(" {
+                        // An interpolation: skip to its closing parenthesis, strings inside it included.
+                        var depth = 1
+                        k += 2
+                        while k < chars.count, depth > 0 {
+                            if chars[k] == "(" { depth += 1 }
+                            if chars[k] == ")" { depth -= 1 }
+                            if chars[k] == "\"" {
+                                k += 1
+                                while k < chars.count, chars[k] != "\"" { k += chars[k] == "\\" ? 2 : 1 }
+                            }
+                            k += 1
+                        }
+                        text.append("\u{0}")
+                    } else {
+                        text.append(chars[k + 1] == "n" ? "\n" : chars[k + 1])
+                        k += 2
+                    }
+                case "\"":
+                    closed = true
+                    break scan
+                case "\n":
+                    break scan
+                default:
+                    text.append(chars[k])
+                    k += 1
+                }
+            }
+            if closed { found.append(text) }
+            i = k + 1
+        }
+        return found
+    }
+
+    /// The catalogue keys a call site can mean: itself, or, when it interpolates, every key that reads the
+    /// same with a placeholder where each value goes.
+    static func keys(for text: String, among keys: Set<String>) throws -> [String] {
+        guard text.contains("\u{0}") else { return keys.contains(text) ? [text] : [] }
+        let pattern = "^" + text.split(separator: "\u{0}", omittingEmptySubsequences: false)
+            .map { NSRegularExpression.escapedPattern(for: String($0)) }
+            .joined(separator: placeholderPattern) + "$"
+        let regex = try NSRegularExpression(pattern: pattern, options: [.dotMatchesLineSeparators])
+        return keys.filter { regex.firstMatch(in: $0, range: NSRange($0.startIndex..., in: $0)) != nil }
+    }
+
+    /// Every sentence the code shows is in its target's catalogue. `String(localized:)` falls back to the
+    /// key when it is not, so a sentence added at a call site and never to the catalogue reads English on a
+    /// French Mac with nothing to say so, which the catalogue-only rules above cannot see.
+    @Test(arguments: targets) func everySentenceTheCodeShowsIsInItsCatalogue(_ target: String) throws {
+        let keys = Set(try Self.catalogue(target, "en").keys)
+        for site in try Self.callSites(target) where try Self.keys(for: site.text, among: keys).isEmpty {
+            Issue.record("\(target)/\(site.file) shows \"\(site.text.replacingOccurrences(of: "\u{0}", with: "\\(…)"))\", which its catalogue does not hold")
+        }
+    }
+
+    /// And every sentence in a catalogue is still shown somewhere: a sentence the code no longer uses is a
+    /// line a translator keeps translating for nothing, and the next reader takes it for a live one.
+    @Test(arguments: targets) func everyCatalogueSentenceIsStillShown(_ target: String) throws {
+        let keys = Set(try Self.catalogue(target, "en").keys)
+        var shown = Set<String>()
+        for site in try Self.callSites(target) { shown.formUnion(try Self.keys(for: site.text, among: keys)) }
+        for key in keys.subtracting(shown).sorted() {
+            Issue.record("\(target)'s catalogue holds \"\(key)\", which no call site shows")
+        }
+    }
+
+    /// The Health page's words, built in this target so its rules can be tested: every one is in both
+    /// catalogues, and the French is written, not copied, except where both languages say the same.
+    @Test func theHealthPageIsTranslated() throws {
+        let en = try Self.catalogue("SnapCore", "en")
+        let fr = try Self.catalogue("SnapCore", "fr")
+        let words = [
+            "Overview", "Everything works", "1 thing to look at", "%lld things to look at",
+            "Not working: 1 problem", "Not working: %lld problems", "Checking", "Check Again",
+            "Granted", "Denied", "Enabled", "Disabled", "Available", "Missing", "Valid", "Invalid", "Failed",
+            "Permissions", "Accessibility permission", "Notifications permission",
+            "macOS tiling", "macOS edge tiling", "macOS margins for tiled windows",
+            "macOS tiling while ⌥ Option is held",
+            "Snapping", "Drag detection", "Drags with fn held", "Drag detection pauses", "Never",
+            "Space changes and Mission Control", "Last snap", "None yet", "Windows where a snap left them",
+            "Windows not put back", "Handles", "Handles on offer", "Smallest window sizes", "Custom areas",
+            "Compatibility", "Use hidden macOS features", "Notch", "Island", "Floating bar", "App",
+            "Launch at login", "Running for", "Memory used", "Crashes in the last %lld days", "None",
+            "Installed in", "Disk image", "Temporary copy", "Report", "Copy Report",
+            "%lld s ago", "%lld min ago", "%lld h ago", "%lld d ago", "Less than a minute", "%lld MB",
+        ]
+        let sameInBothLanguages: Set<String> = ["App"]
+        for word in words {
+            #expect(en[word] == word, "the Health page has lost the English \"\(word)\"")
+            #expect(fr[word]?.isEmpty == false, "\"\(word)\" has no French")
+            if !sameInBothLanguages.contains(word) {
+                #expect(fr[word] != word, "\"\(word)\" is untranslated French")
             }
         }
     }

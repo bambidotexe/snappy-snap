@@ -425,6 +425,14 @@ final class SnapAssistController {
     /// way back across the screen is a handle between two windows nobody is looking at.
     var isActive: Bool { inPhase || deck.isRunning || !parked.isEmpty }
 
+    /// Windows that refused to go home and sit in the deck corner until the next launch tries again. The
+    /// Health page reports them.
+    var strandedCount: Int { stranded.count }
+
+    /// Whether the record an earlier run left could not be read at launch, so the windows it parked could
+    /// not be named, let alone put back. The Health page reports it.
+    var parkedRecordWasUnreadable: Bool { parkedStore.lastLoadWasUnreadable }
+
     /// `WindowWriter.onOutcome`'s share for this feature, routed here by `AppDelegate` because one
     /// property on a shared writer needs one fan-out and this is its first consumer. The deck reads
     /// its own deal's outcomes off it and nothing else does; no decision is taken here.

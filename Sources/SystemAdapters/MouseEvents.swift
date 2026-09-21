@@ -46,6 +46,10 @@ public final class MouseEvents {
     public var onTapDisabled: (@MainActor (TapDisableReason, Int) -> Void)?
     /// How many times the tap has been disabled this launch, both reasons together.
     private var tapDisableCount = 0
+    /// How many of those were a **timeout**: the app held the callback too long, and events were lost.
+    public private(set) var disabledForSlowness = 0
+    /// How many were **user input**: macOS interrupting a listening tap for its own reasons.
+    public private(set) var disabledByMacOS = 0
     private var tap: CFMachPort?
     private var source: CFRunLoopSource?
     private var deviceTap: CFMachPort?
@@ -54,6 +58,14 @@ public final class MouseEvents {
     /// False when the device-level tap could not be created: the app works, and a gesture whose
     /// press the window server keeps from the session arms nothing. The caller logs it.
     public private(set) var hearsDevicePresses = false
+
+    /// Whether the session tap exists and macOS has it switched on right now: the Health page's answer to
+    /// "are drags being followed". A disabled tap is re-enabled the moment its notice arrives, so this reads
+    /// false only for a tap that was never made or one macOS keeps switched off.
+    public var isListening: Bool {
+        guard let tap else { return false }
+        return CGEvent.tapIsEnabled(tap: tap)
+    }
 
     public init() {}
 
@@ -136,12 +148,19 @@ public final class MouseEvents {
         stop()
     }
 
+    /// Counts a disable by its reason and tells the app, with how many there have been this launch.
+    private func noteDisabled(_ type: CGEventType) {
+        tapDisableCount += 1
+        let reason: TapDisableReason = type == .tapDisabledByTimeout ? .timeout : .userInput
+        if reason == .timeout { disabledForSlowness += 1 } else { disabledByMacOS += 1 }
+        onTapDisabled?(reason, tapDisableCount)
+    }
+
     private func handle(type: CGEventType, event: CGEvent) {
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
             if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
-            tapDisableCount += 1
-            onTapDisabled?(type == .tapDisabledByTimeout ? .timeout : .userInput, tapDisableCount)
+            noteDisabled(type)
         case .leftMouseDown:
             if presses.sessionDown(timestamp: event.timestamp) { handler?(.down(event.location)) }
         case .leftMouseDragged:
@@ -160,8 +179,7 @@ public final class MouseEvents {
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
             if let deviceTap { CGEvent.tapEnable(tap: deviceTap, enable: true) }
-            tapDisableCount += 1
-            onTapDisabled?(type == .tapDisabledByTimeout ? .timeout : .userInput, tapDisableCount)
+            noteDisabled(type)
         case .leftMouseDown: presses.deviceDown(at: event.location, timestamp: event.timestamp)
         case .leftMouseUp:
             if presses.deviceUp(timestamp: event.timestamp) { handler?(.up(event.location)) }

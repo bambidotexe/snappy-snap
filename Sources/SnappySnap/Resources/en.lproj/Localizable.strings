@@ -1,13 +1,14 @@
 /* SnappySnap, English. The key is the English sentence as it is written at the call site, so every
    line here maps a sentence to itself. Its purpose is to be the list a translator works from. */
 
-/* SettingsView.swift — the seven pages, in toolbar order. Also the window's title. */
+/* SettingsView.swift — the pages, in toolbar order. Also the window's title. Tip is with its page. */
 "General" = "General";
 "Snapping" = "Snapping";
 "Snap Bar" = "Snap Bar";
 "Handles" = "Handles";
 "Custom Areas" = "Custom Areas";
 "System" = "System";
+"Health" = "Health";
 
 /* SettingsRows.swift — how the kit writes a number the window reports */
 "%lld pt" = "%lld pt";
@@ -95,7 +96,6 @@
 "Also turn on “Tiled windows have margins” in Desktop & Dock. macOS then leaves the same gap when it places a window itself, like a double click on a title bar." = "Also turn on “Tiled windows have margins” in Desktop & Dock. macOS then leaves the same gap when it places a window itself, like a double click on a title bar.";
 "Leave a gap around snapped windows" = "Leave a gap around snapped windows";
 "Keep every window inside the gap" = "Keep every window inside the gap";
-"macOS margins for tiled windows" = "macOS margins for tiled windows";
 
 /* SettingsSnapBarPage.swift */
 "Snap bar" = "Snap bar";
@@ -162,35 +162,19 @@
 "%@, built in" = "%@, built in";
 "Example" = "Example";
 
-/* SettingsSystemPage.swift — Accessibility */
+/* SettingsSystemPage.swift — Accessibility. Its row and warning are SnapCore's (HealthWords.swift). */
 "Accessibility" = "Accessibility";
 "The only permission SnappySnap needs. It lets SnappySnap see the window you drag and move windows for you." = "The only permission SnappySnap needs. It lets SnappySnap see the window you drag and move windows for you.";
 "Nothing about your windows ever leaves your Mac." = "Nothing about your windows ever leaves your Mac.";
-"Accessibility permission" = "Accessibility permission";
-"Granted" = "Granted";
-"Denied" = "Denied";
 "Open Accessibility Settings" = "Open Accessibility Settings";
 
-/* SettingsSystemPage.swift, SettingsSnappingPage.swift — macOS tiling */
-"macOS tiling" = "macOS tiling";
+/* SettingsSystemPage.swift — macOS tiling. Its rows and warnings are SnapCore's (HealthWords.swift), shared with the Health page. */
 "macOS has its own window tiling. With it on, macOS and SnappySnap both grab the same drag. Margins should match your gap setting, so windows tiled by macOS line up with the ones SnappySnap places." = "macOS has its own window tiling. With it on, macOS and SnappySnap both grab the same drag. Margins should match your gap setting, so windows tiled by macOS line up with the ones SnappySnap places.";
-"macOS edge tiling" = "macOS edge tiling";
-"Margins around tiled windows" = "Margins around tiled windows";
-"Enabled" = "Enabled";
-"Disabled" = "Disabled";
 "Open Desktop & Dock Settings" = "Open Desktop & Dock Settings";
-"In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”." = "In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”.";
-"In Desktop & Dock, %@ “Tiled windows have margins”." = "In Desktop & Dock, %@ “Tiled windows have margins”.";
-"turn on" = "turn on";
-"turn off" = "turn off";
 
-/* SettingsSystemPage.swift — Compatibility */
-"Compatibility" = "Compatibility";
+/* SettingsSystemPage.swift — Compatibility. Its switch and rows are SnapCore's (HealthWords.swift). */
 "On, SnappySnap is smoother and more precise. Off, everything still works, a little less precisely." = "On, SnappySnap is smoother and more precise. Off, everything still works, a little less precisely.";
 "These are parts of macOS that Apple does not document, so a macOS update can break them." = "These are parts of macOS that Apple does not document, so a macOS update can break them.";
-"Use hidden macOS features" = "Use hidden macOS features";
-"Available" = "Available";
-"Missing" = "Missing";
 
 "Welcome to SnappySnap" = "Welcome to SnappySnap";
 
@@ -198,8 +182,6 @@
 "Settings…" = "Settings…";
 "Window" = "Window";
 "Close" = "Close";
-
-/* AppDelegate.swift — the alert shown once, when macOS is still tiling */
 
 /* SnapAssistView.swift — what VoiceOver says a card does */
 "Places this window in this area" = "Places this window in this area";
@@ -234,8 +216,9 @@
 "Skip" = "Skip";
 "Finish" = "Finish";
 
-/* GrantRow.swift — the mark on a row the app cannot work without */
+/* GrantRow.swift — the mark on a row the app cannot work without, and what a granted row reads */
 "Required" = "Required";
+"Granted" = "Granted";
 
 /* GrantCatalog.swift — the two grants and the two settings the welcome pages list */
 "Device Control and Data Access" = "Device Control and Data Access";

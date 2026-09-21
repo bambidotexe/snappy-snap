@@ -57,6 +57,7 @@ final class EngineRouter {
                 if let id = handle.windowID {
                     self.state.registry.record(windowID: id, currentFrame: from, snappedFrame: landed, zone: zone)
                 }
+                self.state.lastSnap = Date()
                 self.observe(landed: landed, asked: zone.frame, before: from, handle: handle)
             }
             completion(landed)

@@ -26,6 +26,20 @@ import CoreGraphics
         #expect(r.entry(for: 42, currentFrame: leftZone.frame.insetBy(dx: 0, dy: 2)) == nil) // height off by 4
     }
 
+    /// The Health page's count: a window on screen still (±2 pt) where a snap left it. One that moved and
+    /// one that is gone are not counted.
+    @Test func countsOnlyWindowsStillWhereASnapLeftThem() {
+        var r = SnapRegistry()
+        r.record(windowID: 1, currentFrame: original, snappedFrame: leftZone.frame, zone: leftZone)
+        r.record(windowID: 2, currentFrame: original, snappedFrame: rightZone.frame, zone: rightZone)
+        r.record(windowID: 3, currentFrame: original, snappedFrame: rightZone.frame, zone: rightZone)
+        let frames: [UInt32: CGRect] = [1: leftZone.frame.offsetBy(dx: 1, dy: 1),
+                                        2: rightZone.frame.offsetBy(dx: 40, dy: 0),
+                                        9: leftZone.frame]
+        #expect(r.stillSnapped(among: frames) == 1)
+        #expect(SnapRegistry().stillSnapped(among: frames) == 0)
+    }
+
     @Test func reSnappingKeepsTheOriginalPreSnapFrame() {
         var r = SnapRegistry()
         r.record(windowID: 42, currentFrame: original, snappedFrame: leftZone.frame, zone: leftZone)

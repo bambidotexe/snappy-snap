@@ -122,6 +122,10 @@ public final class SpaceWatcher {
     /// offered inside that window is drawn at a gap that is about to stop existing.
     public func isInReofferGrace(now: TimeInterval) -> Bool { gate.isInGrace(now: now) }
 
+    /// Whether this is watching at all: started and not stopped. The Health page's answer to "does the
+    /// app stand down when the screen changes under a gesture".
+    public var isWatching: Bool { timer != nil }
+
     private var gate = MissionControlGate()
     private var spaceObserver: (any NSObjectProtocol)?
     private var occlusionObservers: [any NSObjectProtocol] = []

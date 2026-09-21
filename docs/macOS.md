@@ -42,7 +42,16 @@ companion: the facts that look otherwise until measured. Every API named here ha
   and `x-apple.systempreferences:com.apple.Desktop-Settings.extension`.
 - The system's own tiling is read, never written, from `com.apple.WindowManager` through
   `CFPreferencesCopyAppValue`: `EnableTilingByEdgeDrag`, `EnableTopTilingByEdgeDrag`,
-  `EnableTiledWindowMargins`, all defaulting to true like macOS.
+  `EnableTiledWindowMargins` and `EnableTilingOptionAccelerator` ("Hold ⌥ key while dragging windows to
+  tile"), all defaulting to true like macOS.
+- The notification grant is read with `UNUserNotificationCenter.notificationSettings()`, which never
+  prompts: `.authorized` is granted, `.notDetermined` never asked, anything else refused. Only the
+  welcome window's Allow button calls `requestAuthorization`.
+- The Health page's other readers need no permission either: the event tap's own state
+  (`CGEvent.tapIsEnabled`), the process's start and memory (`sysctl` `KERN_PROC_PID`, `task_info`
+  `TASK_VM_INFO` `phys_footprint`, Activity Monitor's Memory column), the crash reports macOS writes to
+  `~/Library/Logs/DiagnosticReports` (and its `Retired` folder) as `SnappySnap-yyyy-MM-dd-HHmmss.ips`, and
+  whether the bundle's volume is read-only or its path runs through `AppTranslocation`.
 
 ## Updates: disk images, signatures, the helper
 

@@ -3,8 +3,14 @@ import SnapCore
 import SwiftUI
 import SystemAdapters
 
-/// What SnappySnap needs from macOS, what macOS does that gets in its way, and which of the hidden
-/// parts of macOS this Mac has.
+/// What SnappySnap needs from macOS and the controls that give it: the permission and the button to its
+/// pane, macOS's own tiling and the button to Desktop & Dock, the switch over the hidden parts of macOS
+/// with what each of them buys on this Mac, and the way back to the welcome window.
+///
+/// A state here is always the context of a control beside it. A button to a pane and the warning naming
+/// the switch show only while the state is wrong; once it is right they go and the row stays, so the link
+/// stays visible. Every state takes its colour from `SnapCore.HealthRules` and its fix from
+/// `SnapCore.HealthWords`, like the Health page, so the two pages read the same.
 ///
 /// The permission and the tiling switches follow the system while the window is open, so granting
 /// Accessibility or flipping a switch in System Settings shows up here without closing it. The reading
@@ -14,44 +20,57 @@ struct SystemPage: View {
     @ObservedObject var status: SystemStatus
 
     var body: some View {
+        let words = HealthWords.self
         SettingsPage {
             SettingsGroup(title: L("Accessibility"),
                           hint: L("The only permission SnappySnap needs. It lets SnappySnap see the window you drag and move windows for you."),
+                          warnings: status.accessibilityGranted ? [] : [words.accessibilityFix],
                           notes: [L("Nothing about your windows ever leaves your Mac.")]) {
-                StatusRow(L("Accessibility permission"),
-                          mark: status.accessibilityGranted ? .good(L("Granted")) : .failure(L("Denied")))
-                ButtonRow {
-                    Button(L("Open Accessibility Settings")) { Permissions.openAccessibilitySettings() }
+                StatusRow(words.accessibilityLabel,
+                          mark: StatusMark(HealthRules.grant(held: status.accessibilityGranted, required: true),
+                                           status.accessibilityGranted ? words.granted : words.denied))
+                if !status.accessibilityGranted {
+                    ButtonRow {
+                        Button(L("Open Accessibility Settings")) { Permissions.openAccessibilitySettings() }
+                    }
                 }
             }
-            SettingsGroup(title: L("macOS tiling"),
+            SettingsGroup(title: words.tilingTitle,
                           hint: L("macOS has its own window tiling. With it on, macOS and SnappySnap both grab the same drag. Margins should match your gap setting, so windows tiled by macOS line up with the ones SnappySnap places."),
                           warnings: tilingWarnings) {
-                StatusRow(L("macOS edge tiling"),
-                          mark: status.tiling.conflicts ? .warning(L("Enabled")) : .good(L("Disabled")))
+                StatusRow(words.edgeTilingLabel,
+                          mark: StatusMark(edgeTiling, status.tiling.conflicts ? words.enabled : words.disabled))
                 // Green when the system agrees with the gap the user asked for, whichever way round
                 // that is: no margins and no gap is as consistent as margins and a gap.
-                StatusRow(L("Margins around tiled windows"), mark: marginsMark)
-                ButtonRow {
-                    Button(L("Open Desktop & Dock Settings")) { Permissions.openDesktopAndDockSettings() }
+                StatusRow(words.marginsLabel,
+                          mark: StatusMark(margins, status.tiling.margins ? words.enabled : words.disabled))
+                // Only a fight while the halves held under ⌥ Option are on.
+                StatusRow(words.optionTilingLabel,
+                          mark: StatusMark(optionTiling, status.tiling.optionTiling ? words.enabled : words.disabled))
+                if [edgeTiling, margins, optionTiling].contains(where: { $0 >= .warning }) {
+                    ButtonRow {
+                        Button(L("Open Desktop & Dock Settings")) { Permissions.openDesktopAndDockSettings() }
+                    }
                 }
             }
             // One switch over every private macOS symbol the app uses, and a line per thing they buy
-            // saying whether this Mac has it. A line reports the machine, not the switch and not
-            // whether the feature is on screen. Asking resolves every symbol, switch or no switch,
-            // which for some means mapping SkyLight: a line that read Missing because the switch was
-            // off would be reporting the switch back to the user. `PrivateAPI` keeps each answer, which
-            // cannot change until the next boot, so asking again costs a lookup.
-            SettingsGroup(title: L("Compatibility"),
+            // saying whether this Mac has it: what the switch gives on this Mac, beside it. A line reports
+            // the machine, not the switch and not whether the feature is on screen. Asking resolves every
+            // symbol, switch or no switch, which for some means mapping SkyLight: a line that read Missing
+            // because the switch was off would be reporting the switch back to the user. `PrivateAPI` keeps
+            // each answer, which cannot change until the next boot, so asking again costs a lookup.
+            SettingsGroup(title: words.compatibilityTitle,
                           hint: L("On, SnappySnap is smoother and more precise. Off, everything still works, a little less precisely."),
                           notes: [L("These are parts of macOS that Apple does not document, so a macOS update can break them.")]) {
-                ToggleRow(L("Use hidden macOS features"), isOn: $store.settings.usePrivateAPIs)
+                ToggleRow(words.hiddenFeaturesLabel, isOn: $store.settings.usePrivateAPIs)
                 ForEach(PrivateFeature.allCases, id: \.self) { feature in
+                    let available = PrivateAPI.shared.isAvailable(feature)
                     StatusRow(feature.title,
-                              mark: PrivateAPI.shared.isAvailable(feature) ? .good(L("Available")) : .warning(L("Missing")))
+                              mark: StatusMark(HealthRules.hiddenFeature(available: available),
+                                               available ? words.available : words.missing))
                         // The symbols and their frameworks are what a bug report needs and what nobody
                         // else does, so they are the row's tooltip rather than on the row.
-                        .help(Self.tooltip(for: feature))
+                        .help(PrivateAPI.shared.report(for: feature))
                 }
             }
             SettingsGroup(title: L("Start over"),
@@ -63,34 +82,23 @@ struct SystemPage: View {
         }
     }
 
-    private var marginsAgree: Bool { status.tiling.marginsAgree(withGap: store.settings.gapEnabled) }
+    private var edgeTiling: HealthLevel { HealthRules.edgeTiling(conflicts: status.tiling.conflicts) }
 
-    private var marginsMark: StatusMark {
-        let word = status.tiling.margins ? L("Enabled") : L("Disabled")
-        return marginsAgree ? .good(word) : .warning(word)
+    private var margins: HealthLevel {
+        HealthRules.margins(on: status.tiling.margins, gapOn: store.settings.gapEnabled)
+    }
+
+    private var optionTiling: HealthLevel {
+        HealthRules.optionTiling(on: status.tiling.optionTiling, optionHalvesOn: store.settings.optionHalves)
     }
 
     /// One instruction for each row that is orange, and none for a row that is green.
-    ///
-    /// The margins line carries its verb as a value rather than as two whole sentences: English turns
-    /// a switch "on" or "off" around one verb, and a language that needs one verb per direction gets
-    /// them from the two short keys instead of from a sentence written twice.
     private var tilingWarnings: [String] {
+        let words = HealthWords.self
         var warnings: [String] = []
-        if status.tiling.conflicts {
-            warnings.append(L("In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”."))
-        }
-        if !marginsAgree {
-            let verb = store.settings.gapEnabled ? L("turn on") : L("turn off")
-            warnings.append(L("In Desktop & Dock, \(verb) “Tiled windows have margins”."))
-        }
+        if edgeTiling >= .warning { warnings.append(words.edgeTilingFix) }
+        if margins >= .warning { warnings.append(words.marginsFix(gapOn: store.settings.gapEnabled)) }
+        if optionTiling >= .warning { warnings.append(words.optionTilingFix) }
         return warnings
-    }
-
-    /// The feature's symbols, one per line, each with its framework and whether this macOS has it.
-    private static func tooltip(for feature: PrivateFeature) -> String {
-        feature.symbols
-            .map { "\($0.rawValue) (\($0.framework)): \(PrivateAPI.shared.isAvailable($0) ? "found" : "not found")" }
-            .joined(separator: "\n")
     }
 }

@@ -168,6 +168,14 @@ public struct Settings: Codable, Hashable, Sendable {
         /// How long the outcome of an install is news. A line found later than that was left behind
         /// by an install nobody is waiting on any more, and opens no window.
         public static let updateResultShelfLife: TimeInterval = 600
+        /// How far back the Health page counts crash reports. A week covers the gap between two weekly
+        /// update checks, and a crash older than that has either been fixed by a release or been seen
+        /// again since.
+        public static let healthCrashWindow: TimeInterval = 7 * 24 * 60 * 60
+        /// The shortest time the Health page's overview reads *Checking* after Check Again. Most checks
+        /// answer in a few milliseconds, and a mark that changes back before it can be seen reads as a
+        /// button that did nothing; half a second is seen and does not keep anyone waiting.
+        public static let healthMinimumBusy: TimeInterval = 0.5
     }
 
     // MARK: - Stored: the user's choices

@@ -670,8 +670,9 @@ layer below. No amount of reading this app's own frames or log lines would have 
 `MouseEvents.Event.flagsChanged`. ⌘-dragging a *background* window is also a system gesture — it moves
 the window without activating it — but a press that begins on the resize edge is resolved as a resize
 before that gesture applies, which is what makes ⌘ usable here where fn is not. ⌥ is claimed by macOS
-too, by `EnableTilingOptionAccelerator` — "Hold ⌥ while dragging windows to tile them" — which is off
-on this Mac and which the app does not read (`functional.md` §20).
+too, by `EnableTilingOptionAccelerator` — "Hold ⌥ key while dragging windows to tile" — which is off
+on this Mac; the app reads it and reports it on Settings › System and Health, orange while its own
+halves held under ⌥ Option are on, and cannot stop it (`functional.md` §20).
 
 **The same gesture hides its press from a session tap** — entry 47.
 

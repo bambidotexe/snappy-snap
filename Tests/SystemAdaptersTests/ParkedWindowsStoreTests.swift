@@ -20,6 +20,21 @@ import Foundation
         #expect(ParkedWindowsStore(defaults: freshDefaults()).load().isEmpty)
     }
 
+    /// A record that is there and cannot be read names windows nothing can put back any more: the store
+    /// says so, for the Health page. No record at all, and a readable one, are not unreadable.
+    @Test func aRecordThatCannotBeReadIsSaidToBe() {
+        let defaults = freshDefaults()
+        let store = ParkedWindowsStore(defaults: defaults)
+        #expect(store.load().isEmpty)
+        #expect(!store.lastLoadWasUnreadable)
+        defaults.set(Data("not a list".utf8), forKey: ParkedWindowsStore.defaultsKey)
+        #expect(store.load().isEmpty)
+        #expect(store.lastLoadWasUnreadable)
+        store.save(entries)
+        #expect(store.load() == entries)
+        #expect(!store.lastLoadWasUnreadable)
+    }
+
     @Test func framesSurviveTheProcess() {
         // The whole point: the next launch reads what this one wrote.
         let defaults = freshDefaults()

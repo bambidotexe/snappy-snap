@@ -1,17 +1,21 @@
 import Foundation
 
+/// macOS's own tiling switches, as Desktop & Dock names them.
 public struct SystemTilingState: Hashable, Sendable {
-    /// "Drag windows to screen edges to tile"
+    /// "Drag windows to left or right edge of screen to tile"
     public var edgeTiling: Bool
     /// "Drag windows to menu bar to fill screen"
     public var topTiling: Bool
     /// "Tiled windows have margins"
     public var margins: Bool
+    /// "Hold ⌥ key while dragging windows to tile"
+    public var optionTiling: Bool
 
-    public init(edgeTiling: Bool, topTiling: Bool, margins: Bool) {
+    public init(edgeTiling: Bool, topTiling: Bool, margins: Bool, optionTiling: Bool = false) {
         self.edgeTiling = edgeTiling
         self.topTiling = topTiling
         self.margins = margins
+        self.optionTiling = optionTiling
     }
 
     /// True when the system's own drag tiling would fight SnappySnap.
@@ -34,7 +38,8 @@ public enum SystemTilingPrefs {
         return SystemTilingState(
             edgeTiling: flag("EnableTilingByEdgeDrag"),
             topTiling: flag("EnableTopTilingByEdgeDrag"),
-            margins: flag("EnableTiledWindowMargins")
+            margins: flag("EnableTiledWindowMargins"),
+            optionTiling: flag("EnableTilingOptionAccelerator")
         )
     }
 }

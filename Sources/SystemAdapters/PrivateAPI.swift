@@ -161,6 +161,15 @@ public final class PrivateAPI {
         feature.symbols.allSatisfy { isAvailable($0) }
     }
 
+    /// The feature's symbols, one per line, each with its framework and whether this macOS has it: what a
+    /// bug report is read from, and so the tooltip of the feature's line on the System and Health pages.
+    /// Symbol names are never translated, and neither is this.
+    public func report(for feature: PrivateFeature) -> String {
+        feature.symbols
+            .map { "\($0.rawValue) (\($0.framework)): \(isAvailable($0) ? "found" : "not found")" }
+            .joined(separator: "\n")
+    }
+
     private func resolve(_ symbol: PrivateSymbol) -> UnsafeMutableRawPointer? {
         if let cached = resolved[symbol] { return cached }
         guard let handle = image(for: symbol) else {

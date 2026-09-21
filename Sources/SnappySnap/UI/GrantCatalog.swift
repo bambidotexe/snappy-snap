@@ -16,6 +16,9 @@ import UserNotifications
 @MainActor
 enum GrantCatalog {
     private(set) static var notificationsGranted = false
+    /// The same reading with the one distinction the Health page words differently: never asked, which the
+    /// welcome window's Allow button can still fix, or refused, which only System Settings can.
+    private(set) static var notificationGrant: NotificationGrant = .notAsked
 
     /// Every macOS grant SnappySnap can ask for. Accessibility is required: without it the app moves no
     /// window at all.
@@ -84,7 +87,13 @@ enum GrantCatalog {
     static func refreshNotifications(_ done: @escaping () -> Void) {
         guard let centre else { done(); return }
         Task { @MainActor in
-            notificationsGranted = await centre.notificationSettings().authorizationStatus == .authorized
+            let status = await centre.notificationSettings().authorizationStatus
+            notificationsGranted = status == .authorized
+            notificationGrant = switch status {
+            case .authorized: .granted
+            case .notDetermined: .notAsked
+            default: .denied
+            }
             done()
         }
     }

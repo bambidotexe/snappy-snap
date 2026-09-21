@@ -1,5 +1,6 @@
 import AppKit
 import os
+import SnapCore
 import SwiftUI
 import SystemAdapters
 
@@ -26,7 +27,10 @@ import SystemAdapters
 @MainActor
 final class SettingsWindow: NSObject, NSWindowDelegate, NSToolbarDelegate {
     private let window: NSWindow
-    private let status = SystemStatus()
+    private let status: SystemStatus
+    /// The Health page's own readings, taken when that page is shown and on its Check Again, never on a
+    /// timer.
+    private let health: HealthCheck
     private let selection = SettingsSelection()
     private let hosting: NSHostingController<SettingsView>
     /// Whether closing may hand focus back. Injected rather than inferred from `NSApp.windows`: the
@@ -51,14 +55,21 @@ final class SettingsWindow: NSObject, NSWindowDelegate, NSToolbarDelegate {
     /// scrolls instead. The menu bar and the Dock are already out of `visibleFrame`.
     private static let screenAllowance: CGFloat = 140
 
-    init(store: SettingsStore, minimums: MinimumSizeStore, othersNeedUsActive: @escaping @MainActor () -> Bool) {
+    /// `engine` and `app` are what only the running app knows about itself: whether the drag detection is
+    /// up, and what the snapping has done. `AppDelegate` answers both.
+    init(store: SettingsStore, minimums: MinimumSizeStore,
+         engine: @escaping @MainActor () -> EngineState, app: @escaping @MainActor () -> AppHealthState,
+         othersNeedUsActive: @escaping @MainActor () -> Bool) {
         self.othersNeedUsActive = othersNeedUsActive
+        status = SystemStatus(engine: engine)
+        health = HealthCheck(store: store, minimums: minimums, app: app)
         window = NSWindow(contentRect: .zero, styleMask: [.titled, .closable, .miniaturizable],
                           backing: .buffered, defer: false)
         window.title = selection.page.title
         window.isReleasedWhenClosed = false
         hosting = NSHostingController(rootView: SettingsView(selection: selection, store: store,
-                                                            status: status, minimums: minimums))
+                                                            status: status, minimums: minimums,
+                                                            health: health))
         // The height is this class's to animate. A hosting controller that also constrains the window
         // to its content fights every resize.
         hosting.sizingOptions = []
@@ -102,6 +113,7 @@ final class SettingsWindow: NSObject, NSWindowDelegate, NSToolbarDelegate {
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
         status.startPolling()
+        if selection.page == .health { health.read() }
     }
 
     // MARK: - Height
@@ -213,6 +225,8 @@ final class SettingsWindow: NSObject, NSWindowDelegate, NSToolbarDelegate {
         guard let page = SettingsPageID(rawValue: sender.itemIdentifier.rawValue) else { return }
         selection.page = page
         window.title = page.title
+        // The Health page's own readings are taken when it is shown, never on a timer.
+        if page == .health { health.read() }
     }
 
     // MARK: - Going away

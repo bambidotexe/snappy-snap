@@ -32,7 +32,8 @@ relaunch. The switch is mirrored into `PrivateAPI.shared.isEnabled` by
 ## What the Settings pane says, and what it does not
 
 Settings › System › Compatibility shows **one line per thing the symbols buy**, not one per symbol —
-the symbols' names say nothing to the person being asked. The four are `PrivateFeature`, beside
+the symbols' names say nothing to the person being asked. Settings › Health › Compatibility shows the
+same lines, in the same colours, with the same tooltips (`PrivateAPI.report(for:)`). The four are `PrivateFeature`, beside
 `PrivateSymbol` in `PrivateAPI.swift`:
 
 | Line in Settings | Symbols it needs |

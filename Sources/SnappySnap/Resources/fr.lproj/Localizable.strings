@@ -7,13 +7,14 @@
    Les interrupteurs et les volets de macOS sont cités entre guillemets courbes, sous le nom exact
    que macOS leur donne en français. */
 
-/* SettingsView.swift — les six pages, dans l'ordre de la barre d'outils. Aussi le titre de la fenêtre. */
+/* SettingsView.swift — les pages, dans l'ordre de la barre d'outils. Aussi le titre de la fenêtre. Don est avec sa page. */
 "General" = "Général";
 "Snapping" = "Aimantation";
 "Snap Bar" = "Barre d’aimantation";
 "Handles" = "Poignées";
 "Custom Areas" = "Zones personnalisées";
 "System" = "Système";
+"Health" = "Santé";
 
 /* SettingsRows.swift — la façon d'écrire un nombre que la fenêtre rapporte */
 "%lld pt" = "%lld pt";
@@ -98,10 +99,9 @@
 /* SettingsSnappingPage.swift — Écart */
 "Gap" = "Écart";
 "Snapped windows keep %@ from the screen edges and from each other. Off, they touch. With the second switch on, a window that macOS zooms or tiles flush against the screen edge is nudged back inside the gap a moment later." = "Les fenêtres aimantées gardent %@ par rapport aux bords de l’écran et entre elles. Désactivé, elles se touchent. Avec le second réglage activé, une fenêtre que macOS agrandit ou colle contre le bord de l’écran est ramenée dans l’écart un instant plus tard.";
-"Also turn on “Tiled windows have margins” in Desktop & Dock. macOS then leaves the same gap when it places a window itself, like a double click on a title bar." = "Activez aussi “Marges des fenêtres en mosaïque” dans Bureau et Dock. macOS laisse alors le même écart quand il place une fenêtre lui-même, par exemple après un double clic sur une barre de titre.";
+"Also turn on “Tiled windows have margins” in Desktop & Dock. macOS then leaves the same gap when it places a window itself, like a double click on a title bar." = "Activez aussi “Laisser une marge autour des fenêtres disposées en mosaïque” dans Bureau et Dock. macOS laisse alors le même écart quand il place une fenêtre lui-même, par exemple après un double clic sur une barre de titre.";
 "Leave a gap around snapped windows" = "Laisser un écart autour des fenêtres aimantées";
 "Keep every window inside the gap" = "Garder toutes les fenêtres dans l’écart";
-"macOS margins for tiled windows" = "Espacement de macOS autour des fenêtres";
 
 /* SettingsSnapBarPage.swift */
 "Snap bar" = "Barre d’aimantation";
@@ -168,35 +168,19 @@
 "%@, built in" = "%@, intégré";
 "Example" = "Exemple";
 
-/* SettingsSystemPage.swift — Accessibilité */
+/* SettingsSystemPage.swift — Accessibilité. Sa ligne et son avertissement sont ceux de SnapCore (HealthWords.swift). */
 "Accessibility" = "Accessibilité";
 "The only permission SnappySnap needs. It lets SnappySnap see the window you drag and move windows for you." = "La seule autorisation dont SnappySnap a besoin. Elle lui permet de voir la fenêtre que vous faites glisser et de déplacer des fenêtres pour vous.";
 "Nothing about your windows ever leaves your Mac." = "Rien de ce qui concerne vos fenêtres ne quitte jamais votre Mac.";
-"Accessibility permission" = "Autorisation d’accessibilité";
-"Granted" = "Accordée";
-"Denied" = "Refusée";
 "Open Accessibility Settings" = "Ouvrir les réglages Accessibilité";
 
-/* SettingsSystemPage.swift, SettingsSnappingPage.swift — la mosaïque de macOS */
-"macOS tiling" = "Mosaïque de macOS";
+/* SettingsSystemPage.swift — la mosaïque de macOS. Ses lignes et ses avertissements sont ceux de SnapCore (HealthWords.swift), partagés avec la page Santé. */
 "macOS has its own window tiling. With it on, macOS and SnappySnap both grab the same drag. Margins should match your gap setting, so windows tiled by macOS line up with the ones SnappySnap places." = "macOS a sa propre mosaïque de fenêtres. Quand elle est active, macOS et SnappySnap saisissent le même glissement. Les marges devraient correspondre à votre réglage d’écart, pour que les fenêtres placées par macOS s’alignent sur celles que SnappySnap place.";
-"macOS edge tiling" = "Assemblage de macOS aux bords de l’écran";
-"Margins around tiled windows" = "Espacement autour des fenêtres en mosaïque";
-"Enabled" = "Activé";
-"Disabled" = "Désactivé";
 "Open Desktop & Dock Settings" = "Ouvrir les réglages Bureau et Dock";
-"In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”." = "Dans Bureau et Dock, désactivez “Faire glisser les fenêtres vers le bord gauche ou droit de l’écran pour créer une mosaïque” et “Faire glisser les fenêtres vers la barre des menus pour remplir l’écran”.";
-"In Desktop & Dock, %@ “Tiled windows have margins”." = "Dans Bureau et Dock, %@ “Marges des fenêtres en mosaïque”.";
-"turn on" = "activez";
-"turn off" = "désactivez";
 
-/* SettingsSystemPage.swift — Compatibilité */
-"Compatibility" = "Compatibilité";
+/* SettingsSystemPage.swift — Compatibilité. Son interrupteur et ses lignes sont ceux de SnapCore (HealthWords.swift). */
 "On, SnappySnap is smoother and more precise. Off, everything still works, a little less precisely." = "Activé, SnappySnap est plus fluide et plus précis. Désactivé, tout fonctionne encore, un peu moins précisément.";
 "These are parts of macOS that Apple does not document, so a macOS update can break them." = "Ce sont des parties de macOS qu’Apple ne documente pas, une mise à jour de macOS peut donc les casser.";
-"Use hidden macOS features" = "Utiliser les fonctions cachées de macOS";
-"Available" = "Disponible";
-"Missing" = "Absent";
 
 "Welcome to SnappySnap" = "Bienvenue dans SnappySnap";
 
@@ -204,8 +188,6 @@
 "Settings…" = "Réglages…";
 "Window" = "Fenêtre";
 "Close" = "Fermer";
-
-/* AppDelegate.swift — l'alerte montrée une seule fois, quand macOS organise encore en mosaïque */
 
 /* SnapAssistView.swift — ce que VoiceOver dit d'une carte */
 "Places this window in this area" = "Place cette fenêtre dans cette zone";
@@ -240,8 +222,9 @@
 "Skip" = "Ignorer";
 "Finish" = "Terminer";
 
-/* GrantRow.swift — la marque d’une ligne sans laquelle l’app ne fonctionne pas */
+/* GrantRow.swift — la marque d’une ligne sans laquelle l’app ne fonctionne pas, et ce qu’une ligne accordée affiche */
 "Required" = "Indispensable";
+"Granted" = "Accordée";
 
 /* GrantCatalog.swift — les deux autorisations et les deux réglages listés par les pages de bienvenue */
 "Device Control and Data Access" = "Contrôle de l’appareil et accès aux données";

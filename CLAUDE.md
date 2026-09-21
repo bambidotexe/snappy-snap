@@ -103,6 +103,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 | a constant | `SnapCore/Settings.swift` `Fixed` | the section that states the number |
 | a user setting | **Invoke the `macos-building-settings-pages` skill first.** `Settings` stored property + a row on its page, `UI/Settings…Page.swift` + `SettingsTests` roster | §14, `README.md` |
 | the Settings window's pages, look or copy | **Invoke the `macos-building-settings-pages` skill first**: it holds every rule of the window's structure, numbers and wording. `UI/SettingsRows.swift` (the kit: `SettingsGroup`, `ToggleRow`, `StatusRow` + `StatusMark`, `SettingsMetrics` with every spacing number), `UI/SettingsView.swift` (`SettingsPageID`: the pages, their titles and symbols), `UI/SettingsWindow.swift` (the toolbar, the height that follows the page), `UI/Settings…Page.swift`; an option's own words sit beside its title in `SnapCore/Settings.swift`, a private feature's in `SystemAdapters/PrivateAPI.swift` (`PrivateFeature`) | §14 *How every page is built*: the group's three parts, the status row, the four copy rules |
+| the Health page: a row, its colour, its words, when it is read | **Invoke the `macos-building-settings-pages` skill first** (*The Health page*). A row and its colour: `SnapCore/HealthReport.swift` (`HealthFacts` → `groups(for:)`) and `HealthRules.swift` (every colour, shared with the System page and the Gap group), tested in `HealthTests`; its words: `SnapCore/HealthWords.swift` + SnapCore's catalogues. A polled state (a permission, a tiling switch, the login item, the drag detection): `UI/SettingsView.swift` `SystemStatus`; a reading taken on show and Check Again: `UI/HealthCheck.swift`, fed by `AppDelegate` (`engineState`, `AppHealthState`); the readers: `SystemAdapters/CrashReports.swift`, `ProcessStats.swift`, `InstallLocation.swift`, `LoginItem.state`, `MouseEvents.isListening`; the page: `UI/SettingsHealthPage.swift` | `functional.md` §14 *The Health page* |
 | Space / Mission Control handling | `SystemAdapters/SpaceWatcher.swift`, `SnapCore/SpaceInterruption.swift`, `AppDelegate.leftTheArrangement`, `DragSessionController.cancelSession` (the one gesture a Space change suspends rather than ends) | §13 |
 | a private symbol | `SystemAdapters/PrivateAPI.swift` + a call site that asks `pointer(for:)` every time + a public route | `private-api-index.md` |
 | whether a launch opens Settings | `SystemAdapters/QuietLaunch.swift` (the marker and its freshness), `AppDelegate.applicationDidFinishLaunching` (`openedByHand`), `Scripts/install.sh` and `UpdateController.installAndRelaunch` (write the marker) | `functional.md` §14 |
@@ -113,7 +114,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 
 - `swift build` — builds all four code targets. **This is the truth**; SourceKit diagnostics in tool
   results are frequently stale.
-- `swift test` — two targets, `SnapCoreTests` (608 tests) and `SystemAdaptersTests` (118). Plain
+- `swift test` — two targets, `SnapCoreTests` (642 tests) and `SystemAdaptersTests` (123). Plain
   `swift test` prints **one summary line per target — count two**; a crashed target prints none, so a
   crash reads as a pass if you grep for one green line.
 - `swift test --filter <SuiteName>` — one suite by name. A filter matching nothing in a target means
@@ -182,7 +183,8 @@ Three targets, dependencies downward only. Full version in `docs/architecture.md
   `SnapAssist` · `Deck` · `Adjacency` + `HandleBarGeometry` + `HandleDragMath` + `MinimumSizeList` + `MinimumSizePolicy` ·
   `Junction` + `JunctionDetector` + `JunctionGeometry` + `JunctionDragMath` · `PostRate` (the deck's
   post rate; its only consumer is `DeckAnimator`) · `OrphanDetector` · `AnimationCurve` + `UnitBezier`
-  · `SnapRegistry` · the update's rules (`UpdateCheck`, `UpdateSchedule`, `UpdatePanel`, `UpdateSession`,
+  · `SnapRegistry` · `Health` + `HealthRules` + `HealthReport` + `HealthWords` (the Health page's rows, colours
+  and words, built from plain facts) · the update's rules (`UpdateCheck`, `UpdateSchedule`, `UpdatePanel`, `UpdateSession`,
   `StagedUpdateCheck`, `UpdateInstallScript`) · `SpaceInterruption` + `MissionControlDetector` + `MissionControlGate` +
   `SpaceSlideDetector` + `DragResumption`.
 - **`Sources/SystemAdapters`** — the only code that talks to AppKit and Accessibility.
@@ -194,7 +196,8 @@ Three targets, dependencies downward only. Full version in `docs/architecture.md
   panel boundary only) · `SpaceWatcher` (the 60/10 Hz poll and the Space sentinels) · `PrivateAPI`
   (`dlsym`, never linked) + `BackgroundCursor` + `ElevatedSpace` + `BackdropLayers` (the notch
   shape's and the island's Space, backdrop blur and luminance reading) · `MinimumSizeStore` · `SystemTilingPrefs` ·
-  `Permissions` · `LoginItem` · `SettingsStore` · `ParkedWindowsStore` · the update's I/O
+  `Permissions` · `LoginItem` · `SettingsStore` · `ParkedWindowsStore` · `CrashReports` + `ProcessStats` +
+  `InstallLocation` (the Health page's App group) · the update's I/O
   (`UpdateChecker` + `UpdateDownload`, the only network code; `UpdateStager`, `CodeSignature`,
   `UpdateInstaller`, `DetachedProcess`).
 - **`Sources/SnappySnap`** — `AppDelegate` wires everything and owns `route(_:)`, the fan-out that
@@ -205,7 +208,8 @@ Three targets, dependencies downward only. Full version in `docs/architecture.md
   `Overlays/` (zone preview, snap bar on all three surfaces — `NotchBarView`, `IslandBarView`,
   `NotchBackdropView` —
   Snap Assist surfaces + `DeckAnimator`, handle pill, junction
-  knob, `DimPanel`, `WindowPreviewGroup`, `MinimumProbe`) · `UI/` (onboarding, Settings, the update window) ·
+  knob, `DimPanel`, `WindowPreviewGroup`, `MinimumProbe`) · `UI/` (onboarding, Settings with its eight pages
+  and the Health page's `HealthCheck`, the update window) ·
   `UpdateController` + `UpdateNotifier` (the update's one owner, and its notification) · `SnapState`
   · `Logging`.
 - **`Tools/axprobe`** — dev probe. Ships with nothing.
@@ -291,7 +295,7 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
   notarized — use the Wooflab Developer ID identity for anything but a throwaway build.
 - The system's own edge tiling must be **off** on the dev Mac
   (`com.apple.WindowManager EnableTilingByEdgeDrag` / `EnableTopTilingByEdgeDrag` = 0; check with
-  `swift run axprobe prefs`). The app warns once at launch and in Settings.
+  `swift run axprobe prefs`). Settings › System and Settings › Health report it; nothing warns at launch.
 - Subagents run on Sonnet by default and Opus only for judgement-heavy slices; never on the default
   model without an explicit `model`, and never in a fan-out larger than the session limit allows.
 - Commit per task, conventional commits, attribution trailers from the session's system reminder.
@@ -315,7 +319,7 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
 
 ## Status
 
-`swift build` is clean and `swift test` is green (117 + 608 tests) at this commit. The app target has
+`swift build` is clean and `swift test` is green (123 + 642 tests) at this commit. The app target has
 no automated tests; `docs/manual-test-checklist.md` is its verification. The full account of the
 September 2026 audit is `docs/_audit.md`, and `docs/_coverage.md` is that audit's own file manifest;
 both describe the tree as the audit found it.

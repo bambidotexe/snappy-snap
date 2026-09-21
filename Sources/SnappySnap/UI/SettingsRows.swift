@@ -1,3 +1,4 @@
+import SnapCore
 import SwiftUI
 
 /// The measurements every page of the Settings window shares. Written once so that a group's title,
@@ -263,7 +264,7 @@ struct StatusMark {
         case info
         /// Something to fix, or something that did not work: an orange triangle.
         case warning
-        /// Refused or wrong: a red cross.
+        /// Refused or wrong, and in the way of what the app is for: a red stop sign.
         case failure
         /// Still happening: a spinner where the symbol goes.
         case busy
@@ -283,7 +284,7 @@ struct StatusMark {
         case .good: "checkmark.circle.fill"
         case .info: "info.circle.fill"
         case .warning: "exclamationmark.triangle.fill"
-        case .failure: "xmark.circle.fill"
+        case .failure: "xmark.octagon.fill"
         case .busy: nil
         }
     }
@@ -295,6 +296,20 @@ struct StatusMark {
         case .warning: .orange
         case .failure: .red
         case .busy: .secondary
+        }
+    }
+}
+
+extension StatusMark {
+    /// The mark for one of the Health rules' four levels (`SnapCore.HealthLevel`): blue, green, orange,
+    /// red. Every page that colours a state by those rules draws it through this, so a state reads the
+    /// same colour on the page that owns it and on the Health page.
+    init(_ level: HealthLevel, _ text: String) {
+        switch level {
+        case .info: self = .info(text)
+        case .good: self = .good(text)
+        case .warning: self = .warning(text)
+        case .failure: self = .failure(text)
         }
     }
 }

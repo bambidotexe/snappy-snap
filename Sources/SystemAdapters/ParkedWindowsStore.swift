@@ -33,9 +33,20 @@ public final class ParkedWindowsStore {
         self.defaults = defaults
     }
 
+    /// Whether the last `load()` found a record it could not read: windows an earlier run parked that
+    /// nothing can name any more, so nothing can put them back. The Health page reports it.
+    public private(set) var lastLoadWasUnreadable = false
+
     public func load() -> [Entry] {
-        guard let data = defaults.data(forKey: Self.defaultsKey),
-              let entries = try? JSONDecoder().decode([Entry].self, from: data) else { return [] }
+        guard let data = defaults.data(forKey: Self.defaultsKey) else {
+            lastLoadWasUnreadable = false
+            return []
+        }
+        guard let entries = try? JSONDecoder().decode([Entry].self, from: data) else {
+            lastLoadWasUnreadable = true
+            return []
+        }
+        lastLoadWasUnreadable = false
         return entries
     }
 

@@ -24,6 +24,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let minimums = MinimumSizeStore()
 
     private var engineStarted = false
+    /// The permission arrived and the event tap still could not be created. Nothing retries it, so the app
+    /// stays inert until it is opened again, and the Health page says so.
+    private var engineFailed = false
     private var preview: ZonePreviewController?
     private var customZones: CustomZonesController?
     private var dragSession: DragSessionController?
@@ -54,6 +57,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func showSettings() {
         if settingsWindow == nil {
             settingsWindow = SettingsWindow(store: settingsStore, minimums: minimums,
+                                            engine: { [weak self] in self?.engineState ?? .waiting },
+                                            app: { [weak self] in
+                                                AppHealthState(lastSnap: self?.state.lastSnap,
+                                                               registry: self?.state.registry ?? SnapRegistry(),
+                                                               strandedWindows: self?.assist?.strandedCount ?? 0,
+                                                               parkedRecordReadable: self?.assist?.parkedRecordWasUnreadable != true,
+                                                               displays: self?.screens.displays ?? [])
+                                            },
                                             othersNeedUsActive: { [weak self] in
                                                 self?.assist?.isActive == true || self?.onboarding?.isUp == true
                                                     || UpdateController.shared.windowIsUp
@@ -84,6 +95,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             showSettings()
         }
         startUpdates()
+        // Read, never asked (`notificationSettings()` prompts nobody), so the Settings window opens on the
+        // grant as it is rather than on a guess corrected a moment later.
+        GrantCatalog.refreshNotifications {}
     }
 
     /// Last, so the launch that follows an Install and Relaunch finds the rest of the app in place
@@ -268,6 +282,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard mouse.start() else {
             Logger.app.error("event tap could not be created; is Accessibility granted?")
             engineStarted = false
+            engineFailed = true
             return
         }
         if !mouse.hearsDevicePresses {
@@ -568,6 +583,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         onboarding = wizard
         wizard.showWindow(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    /// Where the drag detection is, for the Health page: waiting for the permission, running with what
+    /// each of its parts reports, or failed to start. Cheap: a few flags and one question to the window
+    /// server about the tap, so the Settings window's 2 s poll reads it with the permission.
+    var engineState: EngineState {
+        if engineFailed { return .failed }
+        guard engineStarted else { return .waiting }
+        return .running(EngineFacts(listening: mouse.isListening, hearsFnDrags: mouse.hearsDevicePresses,
+                                    pausedForSlowness: mouse.disabledForSlowness,
+                                    pausedByMacOS: mouse.disabledByMacOS,
+                                    watchingSpaces: spaceWatcher?.isWatching == true))
     }
 
     /// Nothing tells an app that Accessibility was granted, so the engine waits on a poll. It does not

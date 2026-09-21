@@ -41,4 +41,12 @@ public struct SnapRegistry: Hashable, Sendable {
     public mutating func remove(_ windowID: UInt32) {
         entries[windowID] = nil
     }
+
+    /// How many of the windows on screen still sit (±2 pt) where a snap left them, from the window list's
+    /// frames by window id. A window that is gone, or has moved since, is not counted.
+    public func stillSnapped(among frames: [UInt32: CGRect]) -> Int {
+        entries.filter { id, entry in
+            frames[id].map { entry.snappedFrame.isApproximatelyEqual(to: $0, tolerance: Self.tolerance) } ?? false
+        }.count
+    }
 }
