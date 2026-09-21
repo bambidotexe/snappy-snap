@@ -217,9 +217,9 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
   read something a release build will not show. `CONFIG=debug Scripts/build-app.sh` refuses without
   `DEBUG_OK=1`; that guard is there to make the decision deliberate, not to be worked around. If a debug
   build would help, say why and ask. Delete the bundle when done with it.
-- **The version is not chosen.** `Scripts/version.sh` holds the rule: the tree is always one patch ahead
-  of the newest GitHub release, so the installed copy is never offered an update that would replace it
-  with something older. Publishing is the only thing that moves it.
+- **The version is not chosen.** `Scripts/version.sh` holds the rule: a local install always builds and
+  installs exactly the tree's own version. Publishing is the only thing that moves it, and raises the tree
+  to the next patch once it has, so that version is never built again.
 - **`docs/functional.md` is kept in sync with every behaviour change, in the same commit, and never
   carries an outdated rule.** A rule the user has overruled is replaced, not annotated. "It was like
   that before" is not a sentence that belongs in any document or comment in this repo.
