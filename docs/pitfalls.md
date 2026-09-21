@@ -958,6 +958,12 @@ purpose — a dedicated view between the list and the footer, with vertical hugg
 resistance at priority 1 — so it can never be taken by a control. `Metrics` decides sizes; a stack
 view left free to decide one will.
 
+**How it travelled.** This window was fixed and the `building-onboarding` skill's
+`reference/OnboardingWindow.swift` was not, so koffeelid copied the spacer from it, my-sidepulse copied it,
+and ShiftPick copied koffeelid: three more windows with the same dead button. All four references now carry
+the fix. **A trap fixed in a window and not in the reference is a trap that ships again**, and the skill is
+the reference.
+
 **The instrument.** `swift run axprobe elements <app>` prints the front window's Accessibility subtree
 with every element's frame, and `axprobe hit x y` says what a real hit test finds at a point. A frame
 that names a rectangle and a hit test that finds nothing there is this class of bug. The
