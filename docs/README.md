@@ -29,7 +29,8 @@ Scripts/install.sh                              # production build, notarized, i
 /usr/bin/log stream --predicate 'subsystem == "dev.rubens.SnappySnap"' --level debug
 ```
 
-The first launch asks for Accessibility and waits for it. Signing identity comes from
+The first launch opens the welcome window and waits there; the Accessibility dialog comes from its
+**Allow…** button and from nothing else. Signing identity comes from
 `Scripts/signing.env` (tracked, no secret in it): it looks the Wooflab team's Developer ID
 Application certificate up in the keychain by team id; an ad-hoc signature resets the Accessibility
 grant on every build.

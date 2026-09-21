@@ -21,6 +21,10 @@ import Foundation
     /// None of these may appear in a sentence a person reads. The keyboard's own hyphen is not here.
     static let longDashes: Set<Character> = ["—", "–", "‒", "―", "‐", "‑", "−"]
 
+    /// Keys whose sentence is a name macOS chose, quoted so the user can find it in System Settings.
+    /// Exempt from the keyboard-key rule, and from nothing else.
+    static let systemNames: Set<String> = ["Device Control and Data Access"]
+
     static let repoRoot = URL(filePath: #filePath)
         .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
 
@@ -91,12 +95,20 @@ import Foundation
     }
 
     /// A key is written symbol first at every mention, titles included, in both languages.
+    ///
+    /// A sentence that quotes a name macOS gives something is exempt, and only by being named here: the
+    /// Accessibility grant is called *Device Control and Data Access* in System Settings, and the row
+    /// that sends the user to find it has to read exactly that. The word is the system's, not the key's.
     @Test(arguments: targets) func everyKeyboardKeyIsWrittenSymbolFirst(_ target: String) throws {
         for language in Self.languages {
-            for (key, value) in try Self.catalogue(target, language) {
+            for (key, value) in try Self.catalogue(target, language) where !Self.systemNames.contains(key) {
                 for (word, symbol) in Self.keyboardKeys {
                     for range in value.ranges(of: word) {
+                        // A word inside a longer one is not a mention: "Optional" is not ⌥ Option.
+                        let after = value[range.upperBound...]
+                        guard after.first.map({ !$0.isLetter }) ?? true else { continue }
                         let before = value[value.startIndex..<range.lowerBound]
+                        guard before.last.map({ !$0.isLetter }) ?? true else { continue }
                         // "⌘ Command", and nothing else: the symbol, one space, the name.
                         guard before.hasSuffix("\(symbol) ") else {
                             Issue.record("""

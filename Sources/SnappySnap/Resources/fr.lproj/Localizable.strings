@@ -185,7 +185,7 @@
 "Enabled" = "Activé";
 "Disabled" = "Désactivé";
 "Open Desktop & Dock Settings" = "Ouvrir les réglages Bureau et Dock";
-"In Desktop & Dock, turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”." = "Dans Bureau et Dock, désactivez “Faire glisser les fenêtres vers les bords de l’écran pour les organiser en mosaïque” et “Faire glisser les fenêtres vers la barre des menus pour remplir l’écran”.";
+"In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”." = "Dans Bureau et Dock, désactivez “Faire glisser les fenêtres vers le bord gauche ou droit de l’écran pour créer une mosaïque” et “Faire glisser les fenêtres vers la barre des menus pour remplir l’écran”.";
 "In Desktop & Dock, %@ “Tiled windows have margins”." = "Dans Bureau et Dock, %@ “Marges des fenêtres en mosaïque”.";
 "turn on" = "activez";
 "turn off" = "désactivez";
@@ -198,12 +198,7 @@
 "Available" = "Disponible";
 "Missing" = "Absent";
 
-/* OnboardingWindow.swift — la fenêtre montrée tant que l'accessibilité n'est pas accordée */
 "Welcome to SnappySnap" = "Bienvenue dans SnappySnap";
-"SnappySnap needs Accessibility access" = "SnappySnap a besoin de l’autorisation d’accessibilité";
-"It uses Accessibility to see which window you drag and to move and resize windows. Nothing about your windows leaves your Mac." = "Il utilise l’accessibilité pour voir quelle fenêtre vous faites glisser, et pour déplacer et redimensionner les fenêtres. Rien de ce qui concerne vos fenêtres ne quitte votre Mac.";
-"1. Click “Open Accessibility Settings”.\n2. Enable SnappySnap in the list.\n3. Come back here and the app starts by itself." = "1. Cliquez sur “Ouvrir les réglages Accessibilité”.\n2. Activez SnappySnap dans la liste.\n3. Revenez ici et l’app démarre d’elle-même.";
-"macOS edge tiling is on and will fight SnappySnap. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”." = "L’assemblage de macOS aux bords est actif et va gêner SnappySnap. Désactivez “Faire glisser les fenêtres vers les bords de l’écran pour les organiser en mosaïque” et “Faire glisser les fenêtres vers la barre des menus pour remplir l’écran”.";
 
 /* AppDelegate.swift — le menu de la barre des menus et le menu principal */
 "Settings…" = "Réglages…";
@@ -211,10 +206,6 @@
 "Close" = "Fermer";
 
 /* AppDelegate.swift — l'alerte montrée une seule fois, quand macOS organise encore en mosaïque */
-"macOS window tiling is still on" = "La mosaïque de fenêtres de macOS est toujours active";
-"SnappySnap and the system's edge tiling will fight over the same drags. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen” in System Settings › Desktop & Dock." = "SnappySnap et l’assemblage aux bords du système vont se disputer les mêmes glissements. Désactivez “Faire glisser les fenêtres vers les bords de l’écran pour les organiser en mosaïque” et “Faire glisser les fenêtres vers la barre des menus pour remplir l’écran” dans Réglages Système › Bureau et Dock.";
-"Open Desktop & Dock" = "Ouvrir Bureau et Dock";
-"Later" = "Plus tard";
 
 /* SnapAssistView.swift — ce que VoiceOver dit d'une carte */
 "Places this window in this area" = "Place cette fenêtre dans cette zone";
@@ -233,3 +224,41 @@
 "The Login Items entry could not be removed: %@. Remove SnappySnap yourself in System Settings, General, Login Items." = "L’entrée dans les ouvertures de session n’a pas pu être retirée : %@. Retirez SnappySnap vous-même dans Réglages Système, Général, Ouverture et extensions.";
 "SnappySnap could not move itself to the Trash: %@. Drag it there from the Applications folder; that is all that is left of it." = "SnappySnap n’a pas pu se mettre à la corbeille : %@. Faites-le depuis le dossier Applications ; c’est tout ce qu’il en reste.";
 "The last step could not be started: %@. SnappySnap's settings and its folder in Application Support are still there; remove them by hand." = "La dernière étape n’a pas pu démarrer : %@. Les réglages de SnappySnap et son dossier dans Application Support sont toujours là ; retirez-les à la main.";
+
+/* OnboardingWindow.swift — les quatre pages de bienvenue */
+"Drag a window to the edge. It snaps." = "Faites glisser une fenêtre vers le bord. Elle se place.";
+"snaps" = "se place";
+"Drag any window to an edge, a corner or the top of the screen and it takes half, a quarter or the whole display. A bar at the top offers ready made layouts, and a handle between two windows moves the edge they share." = "Faites glisser n’importe quelle fenêtre vers un bord, un coin ou le haut de l’écran : elle prend la moitié, un quart ou tout l’écran. Une barre en haut propose des dispositions toutes prêtes, et une poignée entre deux fenêtres déplace le bord qu’elles partagent.";
+"Halves and quarters" = "Moitiés et quarts";
+"Permissions" = "Autorisations";
+"SnappySnap asks macOS for two things. The one marked with a warning is required: without it SnappySnap cannot move a single window." = "SnappySnap demande deux choses à macOS. Celle qui porte un avertissement est indispensable : sans elle, SnappySnap ne déplace aucune fenêtre.";
+"Out of the way" = "Laisser la place";
+"Optional. Turn off the tiling macOS does itself, so it stops grabbing the same drags, and have SnappySnap start with your Mac. Both can be changed later in Settings." = "Facultatif. Désactivez la mosaïque que macOS fait lui même, pour qu’il cesse de capter les mêmes glissements, et faites démarrer SnappySnap avec votre Mac. Les deux se changent ensuite dans les réglages.";
+"All set" = "Tout est prêt";
+"Look for the SnappySnap mark in your menu bar, at the top right. Drag any window to an edge, a corner or the top of the screen and it snaps." = "Cherchez la marque SnappySnap dans votre barre des menus, en haut à droite. Faites glisser n’importe quelle fenêtre vers un bord, un coin ou le haut de l’écran et elle se place.";
+"Continue" = "Continuer";
+"Skip" = "Ignorer";
+"Finish" = "Terminer";
+
+/* GrantRow.swift — la marque d’une ligne sans laquelle l’app ne fonctionne pas */
+"Required" = "Indispensable";
+
+/* GrantCatalog.swift — les deux autorisations et les deux réglages listés par les pages de bienvenue */
+"Device Control and Data Access" = "Contrôle de l’appareil et accès aux données";
+"Lets SnappySnap see the window you are dragging and move and resize windows for you. Nothing about your windows ever leaves your Mac." = "Permet à SnappySnap de voir la fenêtre que vous faites glisser, et de déplacer et redimensionner les fenêtres pour vous. Rien de ce qui concerne vos fenêtres ne quitte votre Mac.";
+"Allow…" = "Autoriser…";
+"Allow Notifications" = "Autoriser les notifications";
+"Lets SnappySnap say when a new version is out. That is the only notification it ever posts." = "Permet à SnappySnap de signaler la sortie d’une nouvelle version. C’est la seule notification qu’il envoie.";
+"macOS window tiling" = "Mosaïque de fenêtres de macOS";
+"In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”. Left on, macOS and SnappySnap grab the same drags." = "Dans Bureau et Dock, désactivez “Faire glisser les fenêtres vers le bord gauche ou droit de l’écran pour créer une mosaïque” et “Faire glisser les fenêtres sur la barre des menus pour occuper tout l’écran”. Actifs, macOS et SnappySnap captent les mêmes glissements.";
+"Off" = "Désactivée";
+"Open at Login" = "Ouvrir avec la session";
+"Starts SnappySnap when you log in, so snapping is there without opening anything." = "Lance SnappySnap à l’ouverture de votre session, pour que le placement soit là sans rien ouvrir.";
+"Turn On" = "Activer";
+"On" = "Activé";
+"Turn Off" = "Désactiver";
+
+/* SettingsSystemPage.swift — le groupe Recommencer */
+"Start over" = "Recommencer";
+"Walks through the welcome pages again: what SnappySnap does, the permission it needs, and the two macOS settings it works best with." = "Reprend les pages de bienvenue : ce que fait SnappySnap, l’autorisation dont il a besoin, et les deux réglages de macOS avec lesquels il fonctionne le mieux.";
+"Show Onboarding Again" = "Revoir la présentation";

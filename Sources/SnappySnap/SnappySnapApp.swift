@@ -4,7 +4,7 @@ import AppKit
 /// the user's choice changes (§14 *Show in menu bar*), and a `MenuBarExtra` cannot be: a scene
 /// re-reads its `isInserted` binding only when SwiftUI re-evaluates the scene, which a change
 /// published from the delegate does not cause (`pitfalls.md` 50). Nothing is lost by owning the loop
-/// — the Settings window, the onboarding window and every overlay are `NSHostingController`s
+/// — the Settings window and every overlay are `NSHostingController`s; the welcome window is AppKit
 /// already, and the Settings window was never a SwiftUI `Settings` scene.
 @main
 enum SnappySnapMain {

@@ -42,8 +42,12 @@ final class UpdateNotifier: NSObject, UNUserNotificationCenterDelegate {
         guard let center else { return }
         let title = L("Version \(version) is available")
         let body = L("Click Update to download and install it.")
-        center.requestAuthorization(options: [.alert]) { granted, _ in
-            guard granted else {
+        // Reads, never asks. A check the user did not start must not put a permission dialog on their
+        // screen out of nowhere: every prompt in this app follows a click, and the click for this one
+        // is the Allow button on the welcome pages. Never granted, nothing is lost — the release shows
+        // in Settings all the same.
+        Task { @MainActor in
+            guard await center.notificationSettings().authorizationStatus == .authorized else {
                 Logger.update.notice("notification not posted: not allowed; the release shows in Settings")
                 return
             }
@@ -51,7 +55,7 @@ final class UpdateNotifier: NSObject, UNUserNotificationCenterDelegate {
             content.title = title
             content.body = body
             content.categoryIdentifier = UpdateNotification.category
-            UNUserNotificationCenter.current().add(
+            try? await center.add(
                 UNNotificationRequest(identifier: UpdateNotification.identifier, content: content, trigger: nil))
         }
     }

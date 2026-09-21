@@ -85,6 +85,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 | what can hide a pill or a knob | `SnapCore/CoveringSurface.swift`, `WindowList.snapshotWithCoverers` | §17, `pitfalls.md` 49 |
 | updates: the check, its schedule, the notification | `SnapCore/UpdateCheck.swift`, `UpdateSchedule.swift`, `UpdatePanel.swift`, the numbers in `Settings.Fixed` (`update…`); `SnappySnap/UpdateController.swift` (the one owner), `UpdateNotifier.swift`; `SystemAdapters/UpdateChecker.swift`; the Updates group of `UI/SettingsGeneralPage.swift` | §14 *Updates*, §1, `architecture.md`, `macOS.md` *Updates* |
 | updates: the window, the fetch, making it ready, Install and Relaunch | `SnapCore/UpdateSession.swift`, `StagedUpdateCheck.swift`, `UpdateInstallScript.swift` (the helper's text, its plan, its result); `SystemAdapters/UpdateChecker.swift` (`UpdateDownload`), `UpdateStager.swift`, `CodeSignature.swift`, `UpdateInstaller.swift`, `DetachedProcess.swift`; `SnappySnap/UI/UpdateWindow.swift`, `UpdateController.installAndRelaunch` | the same, plus `pitfalls.md` 51–56 and the checklist's §9b. **Read `pitfalls.md` 51–56 before touching the order of an install** |
+| the welcome window: a page, a row, what a grant button does, who is in front | **Invoke the `building-onboarding` skill first.** `SnappySnap/UI/OnboardingWindow.swift` (the controller, the four pages), `GrantRow.swift` (`GrantItem`, `FocusReturnWatch`, `GrantRow`, `Metrics` — every number), `GrantCatalog.swift` (the rows: how each is **read**, how each is **asked for**), `ControlActionHandler.swift`; `SystemAdapters/OnboardingState.swift`; `AppDelegate.showOnboarding`; the Start over group of `UI/SettingsSystemPage.swift` | `functional.md` §14 *The welcome window*, §1 |
 | the menu-bar icon, or what opens Settings | `SnappySnap/SnappySnapApp.swift` (the AppKit `@main`), `AppDelegate` (`installMainMenu`, `launchedAsLoginItem`, `followShowInMenuBarSetting`, the status item) | §14–15, `macOS.md`, `pitfalls.md` 50 |
 | either brand mark | `Assets/` holds both sources. The menu bar: `Scripts/make-menu-bar-mark.swift` (the two fitted numbers) → the committed `SnappySnap/Resources/MenuBarMark.pdf`, shown by `AppDelegate.menuBarMark()`. The app icon: `Assets/snappy-snap.icon` → the `actool` step in `Scripts/build-app.sh` → the keys in `Resources/Info.plist` | §15, `architecture.md` §15 |
 | a sentence the user reads, in either language | the call site, which says `L("The English sentence")`, then **both** `Sources/<target>/Resources/{en,fr}.lproj/Localizable.strings` — each of the three targets carries its own pair, and `Localized.swift` is that target's one route | `functional.md` §18, plus §14 or §15 if the words are the window's or the menu's |
@@ -234,8 +235,11 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
   `WindowHandle` and `WindowWriter` are `@unchecked Sendable`.
 - **Accessibility is the only permission the app needs to work.** Never read window names from
   CGWindowList (that needs Screen Recording); titles come through Accessibility. No sandbox, no App
-  Store. Notifications are asked for the first time an automatic check has a release to announce, and
-  for nothing else.
+  Store.
+- **The app never asks macOS for a permission on its own.** Every prompt follows a click, on a button
+  in the welcome window, and there is no second route: not at launch, not from a timer, not from the
+  update check. Reading a grant and asking for it are two different calls — a `request` API returns the
+  current state too, which is what makes it tempting behind a poll that would then prompt every tick.
 - **An update never installs by itself, and a failed one never leaves the Mac without the app.** The
   automatic check only announces; the fetch and the install each need a click. Everything that can
   refuse an update runs while the app is up; the install leaves through `NSApp.terminate`, so

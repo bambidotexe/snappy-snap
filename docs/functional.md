@@ -19,11 +19,14 @@ edge they share.
 window is under the pointer and move and resize other applications' windows. The one other thing it
 ever asks for is notifications, and only to announce an update (last bullet).
 
-- Without it, an onboarding window titled "Welcome to SnappySnap" explains the grant, with a button
-  that opens the Accessibility pane and, when the system's own tiling is on, a second button that
-  opens Desktop & Dock. The system's own permission prompt is shown once. The app polls
-  `AXIsProcessTrusted` once a second and starts the moment the grant arrives — no relaunch. Until
-  then the menu-bar item and the Settings window work and nothing else does.
+- **The app never asks macOS for anything on its own.** Every permission dialog the user sees follows
+  a click of theirs, on a button in the welcome window (§14 *The welcome window*), and there is no
+  other route: not at launch, not when a window opens, not from the weekly update check. A dialog the
+  user did not ask for arrives with no explanation beside it, and a refusal macOS remembers for good.
+  Reading a grant and asking for it are two different calls, and the poll only ever reads.
+- Without the grant the app polls `AXIsProcessTrusted` once a second and starts the moment it arrives
+  — no relaunch, and nothing to close. Until then the menu-bar item, the Settings window and the
+  welcome window work and nothing else does.
 - If the event tap cannot be created once the grant has arrived, the app logs one line and stays
   inert until it is relaunched; nothing retries.
 - **Screen Recording is never asked for.** Window frames, owners and z-order come from
@@ -37,15 +40,17 @@ ever asks for is notifications, and only to announce an update (last bullet).
   sent, and no other feature reaches the network at all.
 - The Accessibility grant is tied to the code signature. An ad-hoc signature changes on every build
   and resets the grant, so builds are signed with the Wooflab team's Developer ID identity.
-- **Notifications are asked for the first time there is something to say**, which is an automatic
-  check finding a newer release, and never at launch. The app posts that one notification and no
-  other. Refused, nothing is lost: the release shows in Settings all the same.
+- **Notifications are asked for on the welcome window's Allow button and nowhere else.** An automatic
+  check that finds a release reads the grant and posts only if it already has it; it never asks, because
+  nobody clicked for a dialog on the Tuesday it happens to run. The app posts that one notification and
+  no other. Not granted, nothing is lost: the release shows in Settings all the same.
 
 **The system's own edge tiling conflicts with this app** and should be off
-(`com.apple.WindowManager`'s "Drag windows to screen edges to tile" and "Drag windows to menu bar to
-fill screen"). The app does not require it: it warns once at launch (an alert with "Open Desktop &
-Dock" and "Later", shown once per Mac and remembered under `didWarnSystemTiling`) and reports the live
-state in Settings › System › macOS tiling, with a button to the Desktop & Dock pane.
+(`com.apple.WindowManager`'s "Drag windows to left or right edge of screen to tile" and "Drag windows
+to menu bar to fill screen" — the names macOS gives those two switches, quoted wherever the app names
+them). The app does not require it, and **it raises no alert about it at launch**: the welcome window's
+*Out of the way* page offers it as a row on the first run, and Settings › System › macOS tiling reports
+the live state for ever after, with a button to the Desktop & Dock pane.
 
 ## 2. What a zone is
 
@@ -1237,7 +1242,8 @@ Opened from the menu-bar item (⌘,), and by opening the app itself — from the
 from Spotlight or with `open` — whether it is already running or not. That second route is what makes
 the icon optional: it is the only way back in once **Show in menu bar** is off. **A launch macOS
 makes on the user's behalf is not one of them**: started as a login item, the app comes up with no
-window. While Accessibility is ungranted the onboarding window is shown instead, never both at once.
+window. On a first run the welcome window is shown instead, never both at once, and opening the app
+again while it is up brings it forward rather than Settings.
 **A reinstall is not one of them either**: `Scripts/install.sh` opens the bundle for its own reasons, so
 it writes a marker under `~/Library/Application Support/SnappySnap/` first, and the launch that follows
 reads it, removes it and opens nothing (`QuietLaunch`). An update does the same before it quits (Updates, below):
@@ -1377,6 +1383,9 @@ turning the switch off changes none of them. The symbols behind a line, their fr
 each was found are the line's tooltip, which is what a bug report is read from
 (`docs/private-api-index.md`).
 
+Its last group is **Start over**, whose one button, **Show Onboarding Again**, opens the welcome window
+at page one. It is the only route back to it once the first run is over.
+
 The code constants, for reference: edge band 24 pt, shared-edge band 48 pt, corner band 120 pt,
 animation duration 0.25 s,
 handle maximum gap 16 pt, handle minimum overlap 60 pt, deck ceiling 20 windows, gap 8 pt, fill on,
@@ -1384,6 +1393,50 @@ unprobed floor 120 × 80 pt.
 
 Every change is written as it is made; there is no Apply. While the window is open it re-reads the
 Accessibility grant, the three tiling preferences and the login-item state every 2 s.
+
+### The welcome window
+
+**The first run's window, and the only place in the app that asks macOS for anything.** Titled "Welcome
+to SnappySnap", 540 pt wide, titled and closable and nothing more: the ordinary window level, the default
+collection behaviour, not resizable and not minimizable. It opens on a launch where
+`onboardingCompleted` is false, whatever the grants are, and it wins over the Settings window — a launch
+never shows two. The app is activated once, as it opens, and never again from it. Afterwards, Settings ›
+System › Start over is the way back.
+
+Four pages, one button at the bottom right, ⏎ Return on it:
+
+1. **Drag a window to the edge. It snaps.** — the app icon, the headline with one word in the icon's red,
+   what the app does in three lines, and three capsules: *Halves and quarters*, *Snap bar*, *Handles*.
+2. **Permissions** — two rows. *Device Control and Data Access*, the name macOS gives the Accessibility
+   grant, marked required with an orange triangle; and *Allow Notifications*, optional. Each row is a
+   title, one grey line saying what the app can do with it, and a trailing control: an **Allow…** button,
+   or **Granted** once it is there.
+3. **Out of the way** — two optional rows. *macOS window tiling*, whose row is done once both of the
+   system's switches are off and whose button opens Desktop & Dock; and *Open at Login*, which registers
+   and unregisters `SMAppService.mainApp` from the app itself and shows **Turn Off** once on.
+4. **All set** — where to find the menu-bar mark, and what to drag.
+
+**The button reads Continue once the page's rule is met and Skip until then**: every required grant on
+the permissions page, any one row on *Out of the way*. Nothing is compulsory; **Skip** walks on. The last
+page's button says **Finish**, records `onboardingCompleted` and closes. **Closing the window any other
+way records nothing**, so the wizard returns at the next launch.
+
+**A button asks macOS and does nothing else.** It never opens a pane beside the dialog, and never instead
+of it once a grant has been refused — a refused grant means the button does nothing visible, which is the
+cost of never ambushing the user. macOS tiling is the one row with no dialog behind it, so there the pane
+*is* the flow and the button says so.
+
+**Nothing tells an app that a grant was made in System Settings**, so while the window is up it re-reads
+every row every **2 s**. A grant that moves redraws that one row and nothing else; a row whose flow is
+still running keeps its button, disabled, with a spinner beside it, and the poll leaves it alone.
+
+**Who is in front.** The window stays where it is when a button hands over to System Settings or to a
+system dialog — activating there is what drops it on top of what it just opened. It comes back when the
+app it sent the user to quits, which macOS does for an ordinary app and not for this one. It orders front
+when the app is activated, but only while no other window of the app is up, so it never lands on the
+Settings window the user asked for. Opening the bundle again brings it forward rather than Settings.
+Closing it gives the front back: with no window left, an accessory app that stayed active would swallow
+the user's keystrokes.
 
 ### Updates
 
@@ -1546,7 +1599,7 @@ the saved window state, all of which are named after the bundle identifier and b
 | `customZones.v1` | the custom areas' JSON, **as the text the user wrote** — comments, spacing and all. Its own string key, not part of the blob above, because it is a document rather than a setting. Nothing stored yet reads as the default configuration; an empty string the user left is stored as empty and offers no areas |
 | `minimumSizes.v3` | the list of window sizes (§6): this Mac's own rows and the removed built-in identifiers — **absent while the list equals the built-in one**. `minimumSizes.v2`, `minimumSizes.v1` and `knownMinimums.v1` are deleted on launch, never read |
 | `parkedWindows.v1` | the windows Snap Assist has parked, for crash recovery (§8) |
-| `didWarnSystemTiling` | the one-shot tiling alert has been shown (§1) |
+| `onboardingCompleted` | the welcome window has been walked to its last page and finished. Not a setting: no control in the Settings window turns it on or off, and **only the last page's Finish writes it** — a window closed before that leaves it false, so the wizard comes back at the next launch |
 
 Launch at login is in `SMAppService`, not here. A window's own floor is memory only.
 

@@ -347,7 +347,16 @@ or per frame.
 | [ ] | Settings › **Handles** | Under the handle switch and the probe switch, the **Apps** card: one row per application sorted by name — Finder, Safari… — each with a width, a height and **Built in**, and the bundle identifier as the row's tooltip. **Add…** opens a sheet offering the running applications without a row and *Other…*, and only *Other…* shows the identifier and name fields; Add stays disabled until both sizes are filled. Edit a width, press Return, quit and relaunch: it survived and reads **Edited**. **Remove** takes the selected row. **Reset** is enabled only once something differs, and puts the list back |
 | [ ] | With probing on, press a pill beside a window of a **listed** application (Finder) | **No blink** — an application with a row is never probed outside the deck — and the divider stops at the row. Remove Finder's row and press again: one blink, and the row is back, marked **Measured** |
 | [ ] | Open Settings while a pill is showing | The pill stands down while the window is up; the controls take your clicks |
-| [ ] | Revoke Accessibility in System Settings and relaunch | Onboarding appears. Re-grant it: the app starts within a second, no relaunch |
+| [ ] | Revoke Accessibility in System Settings and relaunch | **No dialog at launch.** The app is inert. Re-grant it in System Settings: the app starts within a second, no relaunch and no window |
+| [ ] | Settings › System › **Start over**, press **Show Onboarding Again** | Page one: the icon, the headline with *snaps* in the icon's red, and the three capsules. **Continue** walks to **Permissions** |
+| [ ] | On **Permissions**, with Accessibility revoked | *Device Control and Data Access* carries an orange triangle and an **Allow…** button; *Allow Notifications* has its own. The stepping button reads **Skip** |
+| [ ] | Press **Allow…** on the Accessibility row | **Only** the system dialog, never System Settings beside it. The row shows its button disabled with a spinner while the flow runs. Press it a second time after refusing once: still nothing but the dialog |
+| [ ] | Grant it in System Settings and leave the pane open | Within about 2 s the row reads **Granted** on its own and the button becomes **Continue** — **and nothing else on the page moves**: no blink, no reload, the header and the other row stay put. The wizard is still behind the pane |
+| [ ] | Close the System Settings window | The wizard comes back in front of what it was in front of. Re-open the pane, leave it open, and click another app instead: the wizard does not move |
+| [ ] | **Out of the way**, with macOS tiling on | *macOS window tiling* offers **Open Desktop & Dock Settings** and names both switches word for word. Turn both off there: the row reads **Off** within 2 s. *Open at Login* toggles between **Turn On** and **On** / **Turn Off** from the row itself, with no trip to System Settings |
+| [ ] | Walk to **All set** and press **Finish** | The window closes and the front goes back to whoever had it — type in that app and the keystrokes land there. Quit and relaunch twice: **no window and no dialog appear by themselves**, at launch or after |
+| [ ] | `defaults delete dev.rubens.SnappySnap onboardingCompleted`, relaunch | The wizard is back at page one, and Settings does **not** open beside it. Close it with the red button, relaunch: it is back again — only **Finish** records it |
+| [ ] | With the wizard up, `open -b dev.rubens.SnappySnap` | The wizard comes forward, not Settings. Open Settings too, click another app, then activate SnappySnap: **Settings** comes forward, not the wizard |
 | [ ] | Settings › System › Compatibility | Four status rows under the switch — *Exact window matching*, *Pointer over the handles*, *Snap bar above other notch apps*, *Blur behind the snap bar* — each **Available** in green. Hover one: the tooltip lists its symbols, each with its framework and *found*. Turn the switch off: every row still reads Available, because a row reports the Mac and not the switch. A **Missing** row is not a failure — that feature falls back to its public route — but report it, with the tooltip |
 | [ ] | Settings › General › **Updates**, press **Check for Updates** | `SnappySnap 1.0.0` on the left of the first row; then a spinner and **Checking**, then an orange triangle and **No release published yet** on the right of that same row — the repository has published none. The button stays **Check for Updates**; a blue **Update** button takes its place only when a newer release is found. No hint under the group. Log (`update`): one `check (asked): no release published` line |
 | [ ] | Turn Wi-Fi off and press **Check for Updates** again | An orange **Could not check: …** with a reason, on the right of the version row, wrapped over two lines and aligned right without squeezing `SnappySnap 1.0.0`, and within 15 s — not a hang. The button is enabled again and the app is otherwise untouched: drag a window to an edge and it still snaps |
@@ -496,10 +505,12 @@ reopened:
 
 **The two windows Settings does not show** (both need the state set up on purpose):
 
-- [ ] With Accessibility revoked, the onboarding window is French: its title, its three numbered
-      steps, both buttons and the tiling warning.
-- [ ] With macOS edge tiling turned back on and `didWarnSystemTiling` cleared, the launch alert is
-      French, both of its buttons included.
+- [ ] With `onboardingCompleted` cleared, all four welcome pages are French: the title bar, the
+      headline with its accented word, every row title and grey line, **Continuer** / **Ignorer** /
+      **Terminer**, and the tooltip on the required triangle. *Contrôle de l'appareil et accès aux
+      données* is the name macOS itself uses — check it against the pane the button opens.
+- [ ] The two switches quoted on the *macOS window tiling* row read exactly as Desktop & Dock writes
+      them, in French as in English.
 
 ## Known residuals — expected, not defects to report
 

@@ -179,7 +179,7 @@
 "Enabled" = "Enabled";
 "Disabled" = "Disabled";
 "Open Desktop & Dock Settings" = "Open Desktop & Dock Settings";
-"In Desktop & Dock, turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”." = "In Desktop & Dock, turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”.";
+"In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”." = "In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”.";
 "In Desktop & Dock, %@ “Tiled windows have margins”." = "In Desktop & Dock, %@ “Tiled windows have margins”.";
 "turn on" = "turn on";
 "turn off" = "turn off";
@@ -192,12 +192,7 @@
 "Available" = "Available";
 "Missing" = "Missing";
 
-/* OnboardingWindow.swift — the window shown until Accessibility is granted */
 "Welcome to SnappySnap" = "Welcome to SnappySnap";
-"SnappySnap needs Accessibility access" = "SnappySnap needs Accessibility access";
-"It uses Accessibility to see which window you drag and to move and resize windows. Nothing about your windows leaves your Mac." = "It uses Accessibility to see which window you drag and to move and resize windows. Nothing about your windows leaves your Mac.";
-"1. Click “Open Accessibility Settings”.\n2. Enable SnappySnap in the list.\n3. Come back here and the app starts by itself." = "1. Click “Open Accessibility Settings”.\n2. Enable SnappySnap in the list.\n3. Come back here and the app starts by itself.";
-"macOS edge tiling is on and will fight SnappySnap. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”." = "macOS edge tiling is on and will fight SnappySnap. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”.";
 
 /* AppDelegate.swift — the menu bar's menu and the main menu */
 "Settings…" = "Settings…";
@@ -205,10 +200,6 @@
 "Close" = "Close";
 
 /* AppDelegate.swift — the alert shown once, when macOS is still tiling */
-"macOS window tiling is still on" = "macOS window tiling is still on";
-"SnappySnap and the system's edge tiling will fight over the same drags. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen” in System Settings › Desktop & Dock." = "SnappySnap and the system's edge tiling will fight over the same drags. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen” in System Settings › Desktop & Dock.";
-"Open Desktop & Dock" = "Open Desktop & Dock";
-"Later" = "Later";
 
 /* SnapAssistView.swift — what VoiceOver says a card does */
 "Places this window in this area" = "Places this window in this area";
@@ -227,3 +218,41 @@
 "The Login Items entry could not be removed: %@. Remove SnappySnap yourself in System Settings, General, Login Items." = "The Login Items entry could not be removed: %@. Remove SnappySnap yourself in System Settings, General, Login Items.";
 "SnappySnap could not move itself to the Trash: %@. Drag it there from the Applications folder; that is all that is left of it." = "SnappySnap could not move itself to the Trash: %@. Drag it there from the Applications folder; that is all that is left of it.";
 "The last step could not be started: %@. SnappySnap's settings and its folder in Application Support are still there; remove them by hand." = "The last step could not be started: %@. SnappySnap's settings and its folder in Application Support are still there; remove them by hand.";
+
+/* OnboardingWindow.swift — the four welcome pages */
+"Drag a window to the edge. It snaps." = "Drag a window to the edge. It snaps.";
+"snaps" = "snaps";
+"Drag any window to an edge, a corner or the top of the screen and it takes half, a quarter or the whole display. A bar at the top offers ready made layouts, and a handle between two windows moves the edge they share." = "Drag any window to an edge, a corner or the top of the screen and it takes half, a quarter or the whole display. A bar at the top offers ready made layouts, and a handle between two windows moves the edge they share.";
+"Halves and quarters" = "Halves and quarters";
+"Permissions" = "Permissions";
+"SnappySnap asks macOS for two things. The one marked with a warning is required: without it SnappySnap cannot move a single window." = "SnappySnap asks macOS for two things. The one marked with a warning is required: without it SnappySnap cannot move a single window.";
+"Out of the way" = "Out of the way";
+"Optional. Turn off the tiling macOS does itself, so it stops grabbing the same drags, and have SnappySnap start with your Mac. Both can be changed later in Settings." = "Optional. Turn off the tiling macOS does itself, so it stops grabbing the same drags, and have SnappySnap start with your Mac. Both can be changed later in Settings.";
+"All set" = "All set";
+"Look for the SnappySnap mark in your menu bar, at the top right. Drag any window to an edge, a corner or the top of the screen and it snaps." = "Look for the SnappySnap mark in your menu bar, at the top right. Drag any window to an edge, a corner or the top of the screen and it snaps.";
+"Continue" = "Continue";
+"Skip" = "Skip";
+"Finish" = "Finish";
+
+/* GrantRow.swift — the mark on a row the app cannot work without */
+"Required" = "Required";
+
+/* GrantCatalog.swift — the two grants and the two settings the welcome pages list */
+"Device Control and Data Access" = "Device Control and Data Access";
+"Lets SnappySnap see the window you are dragging and move and resize windows for you. Nothing about your windows ever leaves your Mac." = "Lets SnappySnap see the window you are dragging and move and resize windows for you. Nothing about your windows ever leaves your Mac.";
+"Allow…" = "Allow…";
+"Allow Notifications" = "Allow Notifications";
+"Lets SnappySnap say when a new version is out. That is the only notification it ever posts." = "Lets SnappySnap say when a new version is out. That is the only notification it ever posts.";
+"macOS window tiling" = "macOS window tiling";
+"In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”. Left on, macOS and SnappySnap grab the same drags." = "In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”. Left on, macOS and SnappySnap grab the same drags.";
+"Off" = "Off";
+"Open at Login" = "Open at Login";
+"Starts SnappySnap when you log in, so snapping is there without opening anything." = "Starts SnappySnap when you log in, so snapping is there without opening anything.";
+"Turn On" = "Turn On";
+"On" = "On";
+"Turn Off" = "Turn Off";
+
+/* SettingsSystemPage.swift — the Start over group */
+"Start over" = "Start over";
+"Walks through the welcome pages again: what SnappySnap does, the permission it needs, and the two macOS settings it works best with." = "Walks through the welcome pages again: what SnappySnap does, the permission it needs, and the two macOS settings it works best with.";
+"Show Onboarding Again" = "Show Onboarding Again";

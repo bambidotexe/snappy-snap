@@ -13,9 +13,9 @@ companion: the facts that look otherwise until measured. Every API named here ha
   status item is an `NSStatusItem` that `AppDelegate` adds to and removes from `NSStatusBar.system`,
   because it is optional and a SwiftUI scene cannot be (`pitfalls.md` 50). A main menu is installed
   and never shown — an accessory application's menus do not reach the menu bar — purely so ⌘Q and ⌘W
-  keep working while the Settings or onboarding window is key. The app never activates itself except
+  keep working while the Settings or welcome window is key. The app never activates itself except
   to bring one of those windows forward, with `NSApp.activate(ignoringOtherApps: true)`, and
-  deactivates again when that window goes away unless a Snap Assist phase or onboarding still needs it.
+  deactivates again when that window goes away unless a Snap Assist phase or the welcome window still needs it.
 - **An accessory application is re-opened, not re-launched.** Opening the bundle again while it runs
   delivers `applicationShouldHandleReopen(_:hasVisibleWindows:)` rather than starting a second
   process, which is what lets opening the app be a route into Settings. A cold launch delivers
@@ -287,7 +287,7 @@ All in `UserDefaults.standard`, JSON-encoded:
 | `minimumSizes.v3` | `MinimumSizeList.Stored` — this Mac's own rows and the removed built-in identifiers; absent while the list is the built-in one |
 | `minimumSizes.v2`, `minimumSizes.v1`, `knownMinimums.v1` | deleted on construction, never read |
 | `parkedWindows.v1` | `[{windowID, pid, frame}]` — Snap Assist's crash-recovery record, written synchronously |
-| `didWarnSystemTiling` | the one-shot tiling alert has been shown |
+| `onboardingCompleted` | the welcome window has been walked to its last page and finished |
 
 A window's own floor is memory only. The bar's layouts are `Layouts.json` in the app
 resources, with the compiled catalog as the fallback.

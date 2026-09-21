@@ -388,6 +388,7 @@ It is the one background feature that writes, which is why every guard above is 
 | `Permissions.swift` | `AXIsProcessTrusted`, the prompt, deep links to the two System Settings panes |
 | `SettingsStore.swift` | `Settings` as one JSON blob under `settings.v1`, published to SwiftUI. Tolerant decoding, no migrations |
 | `ParkedWindowsStore.swift` | The crash-recovery record for parked windows, under `parkedWindows.v1` |
+| `OnboardingState.swift` | Whether the welcome window has been finished, under `onboardingCompleted`. One fact about this Mac, not a setting: written only by the last page's button |
 | `LoginItem.swift` | `SMAppService.mainApp` — the only source of truth for "launch at login" |
 | `UpdateChecker.swift` | **The only network code in the app.** `UpdateChecker.check`, the latest-release request (`SNAPPYSNAP_UPDATE_FEED` replaces its URL with a stand-in), and `UpdateDownload`, one fetch of a disk image with its progress, held against the asset's stated length and SHA-256 before it is reported; completions come back off the main actor |
 | `UpdateStager.swift`, `CodeSignature.swift`, `UpdateInstaller.swift`, `DetachedProcess.swift` | Making an update ready and handing it over. The stager mounts the image (`hdiutil`, then `diskutil image`), copies out the app carrying our bundle identifier, applies `StagedUpdateCheck` and `CodeSignature.verify` (valid, and from the running app's team when it has one), and detaches. `UpdateInstaller.obstacle` says why the app cannot replace itself where it is; `start` writes the helper and runs it through `DetachedProcess`, a `posix_spawn` in a process group of its own so that it outlives the app |
@@ -397,7 +398,7 @@ It is the one background feature that writes, which is why every guard above is 
 | File | Responsibility |
 |---|---|
 | `SnappySnapApp.swift` | `@main`: holds the delegate, sets the accessory policy, runs `NSApplication`. The run loop is AppKit's, not SwiftUI's — the status item is added and removed as the user's choice changes, and a `MenuBarExtra` cannot be (`pitfalls.md` 50) |
-| `AppDelegate.swift` | Permission gate, onboarding, tiling warning, the whole wiring graph, `route(_:)`, `leftTheArrangement` |
+| `AppDelegate.swift` | Permission gate, the welcome window, the whole wiring graph, `route(_:)`, `leftTheArrangement` |
 | `SnapState.swift` | The shared `SnapRegistry` |
 | `Drag/DragSessionController.swift` | The drag state machine, the frame cache, the fill evidence, the drop |
 | `Engines/EngineRouter.swift` | Screen resolution, registry bookkeeping, learning a refusal, cancellation |
@@ -418,7 +419,10 @@ It is the one background feature that writes, which is why every guard above is 
 | `Overlays/MinimumProbe.swift` | The 1 × 1 write / read-back / restore, on the press (five steps: observe, switch, row, probed, probe) and on the deck |
 | `Overlays/HandlePanel.swift` / `HandleBarController.swift` | The pill, the 10 Hz poll, the cursor keepalive, preview-and-release |
 | `Overlays/JunctionPanel.swift` / `JunctionHandleController.swift` | The knob, its two axes, and the same preview-and-release |
-| `UI/OnboardingWindow.swift` | The Accessibility explainer shown until the grant arrives |
+| `UI/OnboardingWindow.swift` | The welcome window: `OnboardingWindowController`, the four pages, the 2 s poll, and who is in front after a grant flow. An ordinary window, no level and no collection behaviour |
+| `UI/GrantRow.swift` | What a grant is (`GrantID`, `GrantItem`), `FocusReturnWatch` (the front back when the app a button opened quits), `GrantRow` (built once, updated in place, with its loading state), and `Metrics`, every number of the window |
+| `UI/GrantCatalog.swift` | The rows themselves: the two macOS grants and the two settings, each with how it is **read** and how it is **asked for**, which are never the same call |
+| `UI/ControlActionHandler.swift` | A closure target for any `NSControl`, which an AppKit page built in a loop needs |
 | `UI/SettingsWindow.swift` | The Settings window: the toolbar that picks a page, one hosting controller, the height that follows the shown page, and the `SystemStatus` poll's start and stop |
 | `UI/SettingsView.swift` | The window's SwiftUI root, the seven pages' identifiers, and `SystemStatus` |
 | `UI/SettingsRows.swift` | The kit every page is built from: `SettingsGroup` (title, card, then hint, warnings, notes), `ToggleRow`, `StatusRow` + `StatusMark`, `ButtonRow`, and `SettingsMetrics`, every spacing number |
@@ -465,7 +469,7 @@ the zone preview animates, and a per-frame mask rebuild starves it (`pitfalls.md
 | The list of window sizes | `MinimumSizeStore`, key `minimumSizes.v3` (this Mac's own rows and removals) | persisted; absent while the list is the built-in one; `minimumSizes.v2`, `.v1` and `knownMinimums.v1` are deleted, never read |
 | A window's own floor | `MinimumSizeStore`, per `CGWindowID` + pid, with whether the window was probed this session | memory, capped at 512, least recently touched evicted |
 | Parked windows | `ParkedWindowsStore`, key `parkedWindows.v1`, written per window before its first move, synchronously | persisted until every window is home; restored at the next launch |
-| The one-shot tiling alert | `didWarnSystemTiling` | persisted |
+| The welcome window has been finished | `onboardingCompleted` | persisted; written only by the last page's button |
 | Launch at login | `SMAppService.mainApp` | the system's |
 | Snapped windows and their pre-snap frames | `SnapRegistry` in `SnapState` | memory, never pruned; an entry is valid only within 2 pt of the frame the snap gave it |
 | Gesture state | each controller's `phase`/`drag`/`parked` | the gesture |

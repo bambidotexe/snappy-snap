@@ -32,7 +32,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var junctions: JunctionHandleController?
     private var spaceWatcher: SpaceWatcher?
     private var oversize: OversizeWatcher?
-    private var onboarding: OnboardingWindow?
+    private var onboarding: OnboardingWindowController?
     private var settingsWindow: SettingsWindow?
     private var permissionTimer: Timer?
     private var cancellables: Set<AnyCancellable> = []
@@ -74,15 +74,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         installMainMenu()
         followPrivateAPISetting()
         followShowInMenuBarSetting()
-        if Permissions.accessibilityGranted {
-            startEngine()
-            if openedByHand { showSettings() }
-        } else {
-            Permissions.promptForAccessibility()
+        if Permissions.accessibilityGranted { startEngine() } else { pollPermission() }
+        // The wizard is the first run's window, whatever the grants are, and it wins over Settings: a
+        // launch never shows two windows at once. Nothing here asks macOS for anything — every
+        // permission dialog in this app follows a click of the user's, on a row of that window.
+        if !OnboardingState.completed, !UpdateController.installOutcomeIsWaiting {
             showOnboarding()
-            pollPermission()
+        } else if openedByHand {
+            showSettings()
         }
-        warnAboutSystemTilingIfNeeded()
         startUpdates()
     }
 
@@ -91,10 +91,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Settings window does, and defers to the same windows.
     private func startUpdates() {
         let updates = UpdateController.shared
-        updates.onShowSettings = { [weak self] in
-            guard let self else { return }
-            if Permissions.accessibilityGranted { self.showSettings() } else { self.onboarding?.show() }
-        }
+        updates.onShowSettings = { [weak self] in self?.showSettings() }
         updates.othersNeedUsActive = { [weak self] in
             self?.settingsWindow?.isUp == true || self?.assist?.isActive == true || self?.onboarding?.isUp == true
         }
@@ -103,7 +100,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// An accessory application never shows a menu bar of its own, so nothing here is ever seen. It
     /// exists for its key equivalents alone: ⌘Q and ⌘W reach a window only through the main menu, and
-    /// the Settings window and the onboarding window are both ordinary key windows.
+    /// the Settings window and the welcome window are both ordinary key windows.
     private func installMainMenu() {
         let appItem = NSMenuItem()
         let appMenu = NSMenu()
@@ -138,14 +135,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// The one way back into Settings once the icon is hidden: opening the bundle again from the
     /// Applications folder or Spotlight while the app is already running fires this rather than
-    /// `applicationDidFinishLaunching`. Same branch as the cold launch — onboarding takes precedence
-    /// while Accessibility is ungranted, so a fresh install never shows two windows at once. A login
-    /// item cannot arrive here: it launches a process that is not running yet.
+    /// `applicationDidFinishLaunching`. Same branch as the cold launch — the wizard takes precedence
+    /// while it is up, so a fresh install never shows two windows at once, and with no Dock icon this
+    /// is how the user fetches it back from behind whatever they left in front of it. A login item
+    /// cannot arrive here: it launches a process that is not running yet.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows: Bool) -> Bool {
-        if Permissions.accessibilityGranted {
-            showSettings()
+        if let wizard = onboarding?.window, wizard.isVisible {
+            NSApp.activate(ignoringOtherApps: true)
+            wizard.makeKeyAndOrderFront(nil)
         } else {
-            onboarding?.show()
+            showSettings()
         }
         return true
     }
@@ -556,37 +555,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         handleBar?.cancel(forInterruption: true)
     }
 
-    private func showOnboarding() {
-        onboarding = OnboardingWindow(tiling: SystemTilingPrefs.read())
-        onboarding?.show()
+    /// A fresh controller every time, so the pages re-read every grant and start at page one. The
+    /// wizard is an ordinary window; activating the app here is the one thing that puts it in front, and
+    /// it is in front only because it is the last window to open.
+    func showOnboarding() {
+        onboarding?.close()
+        let wizard = OnboardingWindowController(onFinish: { OnboardingState.completed = true })
+        wizard.othersNeedUsActive = { [weak self] in
+            self?.settingsWindow?.isUp == true || self?.assist?.isActive == true
+                || UpdateController.shared.windowIsUp
+        }
+        onboarding = wizard
+        wizard.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
+    /// Nothing tells an app that Accessibility was granted, so the engine waits on a poll. It does not
+    /// touch the wizard: the grant ticks that row over on the wizard's own 2 s poll, and the window
+    /// stays until the user finishes or closes it.
     private func pollPermission() {
         permissionTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self, Permissions.accessibilityGranted else { return }
                 self.permissionTimer?.invalidate()
                 self.permissionTimer = nil
-                self.onboarding?.close()
-                self.onboarding = nil
                 self.startEngine()
             }
-        }
-    }
-
-    private func warnAboutSystemTilingIfNeeded() {
-        let state = SystemTilingPrefs.read()
-        let key = "didWarnSystemTiling"
-        guard state.conflicts, !UserDefaults.standard.bool(forKey: key) else { return }
-        UserDefaults.standard.set(true, forKey: key)
-        let alert = NSAlert()
-        alert.messageText = L("macOS window tiling is still on")
-        alert.informativeText = L("SnappySnap and the system's edge tiling will fight over the same drags. Turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen” in System Settings › Desktop & Dock.")
-        alert.addButton(withTitle: L("Open Desktop & Dock"))
-        alert.addButton(withTitle: L("Later"))
-        NSApp.activate()
-        if alert.runModal() == .alertFirstButtonReturn {
-            Permissions.openDesktopAndDockSettings()
         }
     }
 }

@@ -1,3 +1,4 @@
+import AppKit
 import SnapCore
 import SwiftUI
 import SystemAdapters
@@ -53,6 +54,12 @@ struct SystemPage: View {
                         .help(Self.tooltip(for: feature))
                 }
             }
+            SettingsGroup(title: L("Start over"),
+                          hint: L("Walks through the welcome pages again: what SnappySnap does, the permission it needs, and the two macOS settings it works best with.")) {
+                ButtonRow {
+                    Button(L("Show Onboarding Again")) { (NSApp.delegate as? AppDelegate)?.showOnboarding() }
+                }
+            }
         }
     }
 
@@ -71,7 +78,7 @@ struct SystemPage: View {
     private var tilingWarnings: [String] {
         var warnings: [String] = []
         if status.tiling.conflicts {
-            warnings.append(L("In Desktop & Dock, turn off “Drag windows to screen edges to tile” and “Drag windows to menu bar to fill screen”."))
+            warnings.append(L("In Desktop & Dock, turn off “Drag windows to left or right edge of screen to tile” and “Drag windows to menu bar to fill screen”."))
         }
         if !marginsAgree {
             let verb = store.settings.gapEnabled ? L("turn on") : L("turn off")

@@ -31,7 +31,7 @@ final class SettingsWindow: NSObject, NSWindowDelegate, NSToolbarDelegate {
     private let hosting: NSHostingController<SettingsView>
     /// Whether closing may hand focus back. Injected rather than inferred from `NSApp.windows`: the
     /// windows that must keep us active are a Snap Assist surface, which holds key so that Escape
-    /// reaches it, and the onboarding window. "Any visible key-capable window we own" happens to
+    /// reaches it, and the welcome window. "Any visible key-capable window we own" happens to
     /// name exactly those two, every other overlay having `canBecomeKey == false`, and would silently
     /// stop meaning that the day a key-capable panel with no claim on our activation is added.
     private let othersNeedUsActive: @MainActor () -> Bool
