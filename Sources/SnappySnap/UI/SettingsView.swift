@@ -51,8 +51,8 @@ struct SettingsView: View {
         case .snapBar: SnapBarPage(store: store)
         case .handles: HandlesPage(store: store, minimums: minimums)
         case .customAreas: CustomAreasPage(store: store)
-        case .tip: TipPage()
         case .system: SystemPage(store: store, status: status)
+        case .tip: TipPage()
         }
     }
 }
@@ -60,7 +60,7 @@ struct SettingsView: View {
 /// The pages, in toolbar order. The raw value is the toolbar item's identifier, so the toolbar and the
 /// selection cannot disagree about which page a click means.
 enum SettingsPageID: String, CaseIterable, Sendable {
-    case general, snapping, snapBar, handles, customAreas, tip, system
+    case general, snapping, snapBar, handles, customAreas, system, tip
 
     /// The toolbar item's label, and the window's title while the page is shown.
     var title: String {
@@ -70,8 +70,8 @@ enum SettingsPageID: String, CaseIterable, Sendable {
         case .snapBar: L("Snap Bar")
         case .handles: L("Handles")
         case .customAreas: L("Custom Areas")
-        case .tip: L("Tip")
         case .system: L("System")
+        case .tip: L("Tip")
         }
     }
 
@@ -83,8 +83,8 @@ enum SettingsPageID: String, CaseIterable, Sendable {
         case .snapBar: "rectangle.topthird.inset.filled"
         case .handles: "arrow.left.and.line.vertical.and.arrow.right"
         case .customAreas: "rectangle.3.group"
-        case .tip: "mug"
         case .system: "checkmark.shield"
+        case .tip: "mug"
         }
     }
 }
