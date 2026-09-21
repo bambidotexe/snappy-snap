@@ -236,8 +236,9 @@ the app and the disk image, and checks Gatekeeper accepts both.
 ## Settings
 
 Open them from the menu-bar item (⌘,), or open SnappySnap again from Applications or Spotlight, which is the
-way in when the icon is hidden. Six pages; every change applies as you make it. General also holds the
-update check and a **Quit SnappySnap** button, which is there whether or not the icon is.
+way in when the icon is hidden. Seven pages; every change applies as you make it. General also holds the
+update check and a **Quit SnappySnap** button, which is there whether or not the icon is, and **Tip** is
+where you can offer a coffee.
 
 <details>
 <summary><strong>Every setting, with its default</strong></summary>

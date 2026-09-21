@@ -1,7 +1,7 @@
 /* SnappySnap, English. The key is the English sentence as it is written at the call site, so every
    line here maps a sentence to itself. Its purpose is to be the list a translator works from. */
 
-/* SettingsView.swift — the six pages, in toolbar order. Also the window's title. */
+/* SettingsView.swift — the seven pages, in toolbar order. Also the window's title. */
 "General" = "General";
 "Snapping" = "Snapping";
 "Snap Bar" = "Snap Bar";
@@ -57,10 +57,14 @@
 "The update is not signed by the same developer." = "The update is not signed by the same developer.";
 "The update’s signature is not valid." = "The update’s signature is not valid.";
 
-/* SettingsGeneralPage.swift — Support */
-"Support" = "Support";
-"SnappySnap is free. If it saves you trouble, you can leave a tip on Ko-fi." = "SnappySnap is free. If it saves you trouble, you can leave a tip on Ko-fi.";
-"Buy Me a Coffee" = "Buy Me a Coffee";
+/* SettingsTipPage.swift — the Tip page */
+"Tip" = "Tip";
+"SnappySnap offers all its features free to everyone, and always will. You can support this project by offering me a coffee." = "SnappySnap offers all its features free to everyone, and always will. You can support this project by offering me a coffee.";
+"One-time tip" = "One-time tip";
+"A cup of coffee" = "A cup of coffee";
+"A good coffee to keep this project going" = "A good coffee to keep this project going";
+"Ko-fi opens in your browser. €%lld is the smallest tip, and you can type any amount there." = "Ko-fi opens in your browser. €%lld is the smallest tip, and you can type any amount there.";
+"Tip €%lld" = "Tip €%lld";
 
 /* SettingsGeneralPage.swift, AppDelegate.swift — Quit */
 "Quit" = "Quit";

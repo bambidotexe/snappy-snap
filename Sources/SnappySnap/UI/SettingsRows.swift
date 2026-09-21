@@ -31,6 +31,13 @@ enum SettingsMetrics {
     /// The widest a status mark grows before its sentence wraps, which keeps the label on the left
     /// from being squeezed by it.
     static let markMaxWidth: CGFloat = 400
+    /// The Tip page: the app icon beside the sentence that heads it, the tile the Ko-fi cup sits in, the
+    /// cup inside that tile, and the air between a picture and the words beside it. Chosen by the agent
+    /// that built the page rather than fitted by the owner, like the update window's numbers.
+    static let tipAppIconSide: CGFloat = 44
+    static let tipTileSide: CGFloat = 88
+    static let tipMarkSide: CGFloat = 52
+    static let tipPictureGap: CGFloat = 14
 }
 
 /// One page: a column of groups inside the page's margins.
@@ -51,7 +58,9 @@ struct SettingsPage<Groups: View>: View {
 
 /// One group, always the same parts in the same order: a title, a card of rows, and below and outside
 /// the card a hint, then warnings, then notes. Nothing explanatory goes inside a card, so a row is only
-/// ever a control and its label, and a setting's explanation is in exactly one place.
+/// ever a control and its label, and a setting's explanation is in exactly one place. The owner asked for
+/// one exception: the two cards of the Tip page, which are pictures and words. A group with no title is a
+/// card on its own, which only the Tip page's first card is.
 ///
 /// A **hint** says what the group does, in grey. A **warning** asks the user to fix something, in orange
 /// behind a triangle, and is there only while the thing is wrong. A **note** is the one thing the user
@@ -60,13 +69,13 @@ struct SettingsPage<Groups: View>: View {
 /// The dividers are drawn here rather than by the caller: the rows are read as subviews and a line is
 /// put between each pair, starting where the text starts.
 struct SettingsGroup<Rows: View>: View {
-    private let title: String
+    private let title: String?
     private let hint: String?
     private let warnings: [String]
     private let notes: [String]
     private let rows: Rows
 
-    init(title: String, hint: String? = nil, warnings: [String] = [], notes: [String] = [],
+    init(title: String? = nil, hint: String? = nil, warnings: [String] = [], notes: [String] = [],
          @ViewBuilder rows: () -> Rows) {
         self.title = title
         self.hint = hint
@@ -77,10 +86,12 @@ struct SettingsGroup<Rows: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .font(.headline)
-                .padding(.leading, SettingsMetrics.inset)
-                .padding(.bottom, SettingsMetrics.cardGap)
+            if let title {
+                Text(title)
+                    .font(.headline)
+                    .padding(.leading, SettingsMetrics.inset)
+                    .padding(.bottom, SettingsMetrics.cardGap)
+            }
             card
             if let hint {
                 Text(hint)

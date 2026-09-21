@@ -420,7 +420,7 @@ It is the one background feature that writes, which is why every guard above is 
 | `Overlays/JunctionPanel.swift` / `JunctionHandleController.swift` | The knob, its two axes, and the same preview-and-release |
 | `UI/OnboardingWindow.swift` | The Accessibility explainer shown until the grant arrives |
 | `UI/SettingsWindow.swift` | The Settings window: the toolbar that picks a page, one hosting controller, the height that follows the shown page, and the `SystemStatus` poll's start and stop |
-| `UI/SettingsView.swift` | The window's SwiftUI root, the six pages' identifiers, and `SystemStatus` |
+| `UI/SettingsView.swift` | The window's SwiftUI root, the seven pages' identifiers, and `SystemStatus` |
 | `UI/SettingsRows.swift` | The kit every page is built from: `SettingsGroup` (title, card, then hint, warnings, notes), `ToggleRow`, `StatusRow` + `StatusMark`, `ButtonRow`, and `SettingsMetrics`, every spacing number |
 | `UI/Settings…Page.swift` | One file per page: General (its Updates group reads `UpdateController.shared`), Snapping, Snap Bar (and the Style tiles), Handles (and the list of window sizes), Custom Areas, System |
 | `UpdateController.swift`, `UpdateNotifier.swift`, `UI/UpdateWindow.swift` | The update feature's one owner, main actor: the schedule's timer (10 s after launch, every 30 min, at wake), the checks, the panel and the session the two windows observe, the fetch, the unpacking off the main actor, Install and Relaunch, and the outcome read at the next launch. `UpdateNotifier` is the app's only use of `UNUserNotificationCenter`: the `update` category with its one action, permission asked the first time there is a release to announce. `UpdateWindowController` sizes the window to what it says, around its top-left corner |

@@ -352,7 +352,8 @@ or per frame.
 | [ ] | Settings › General › **Updates**, press **Check for Updates** | `SnappySnap 1.0.0` on the left of the first row; then a spinner and **Checking**, then an orange triangle and **No release published yet** on the right of that same row — the repository has published none. The button stays **Check for Updates**; a blue **Update** button takes its place only when a newer release is found. No hint under the group. Log (`update`): one `check (asked): no release published` line |
 | [ ] | Turn Wi-Fi off and press **Check for Updates** again | An orange **Could not check: …** with a reason, on the right of the version row, wrapped over two lines and aligned right without squeezing `SnappySnap 1.0.0`, and within 15 s — not a hang. The button is enabled again and the app is otherwise untouched: drag a window to an edge and it still snaps |
 | [ ] | Quit, reopen, and watch the `update` log for 15 s | One `check (automatic): …` line about 10 s after launch, nobody having pressed anything, and no orange mark in Settings when it fails |
-| [ ] | Settings › General › **Support**, press **Buy Me a Coffee** | The Ko-fi page opens in the default browser at `https://ko-fi.com/bambidotexe`. Nothing else moves: the window stays open and in front, the group has a grey hint and no mark, and the `update` log stays silent |
+| [ ] | Settings › **Tip** | The toolbar shows a mug; the first card has no title and carries the app icon beside the sentence; **One-time tip** shows the Ko-fi cup on its red wash, *A cup of coffee*, its grey line, and **Tip €5**, with the hint under the card |
+| [ ] | Press **Tip €5** | The Ko-fi page opens in the default browser at `https://ko-fi.com/bambidotexe`. Nothing else moves: the window stays open and in front, and the `update` log stays silent |
 | [ ] | Turn **Show in menu bar** off, then press **Quit SnappySnap**, the last group of General | The app is gone: no icon, no snapping, and `pgrep -x SnappySnap` finds nothing. This is the route that does not exist without the button — with the icon hidden there is no menu to quit from. Reopen it and it comes back with Settings |
 | [ ] | Settings › General › **Uninstall** | A grey hint, and under it an orange warning that always stands there: it is the hazard of the Trash, not a state to fix |
 | [ ] | Press **Désinstaller SnappySnap**, confirm | Every parked window is back, an alert says SnappySnap is in the Trash, and the app exits |
@@ -475,7 +476,7 @@ step here needs the app reopened, not just the window closed.
 
 **In French** (the dev Mac's own setting):
 
-- [ ] Open Settings. **All six pages are French**, titles, labels, hints, warnings, notes and the
+- [ ] Open Settings. **All seven pages are French**, titles, labels, hints, warnings, notes and the
       toolbar. A single English sentence among them is a missing translation, not a style choice:
       report the exact sentence, because it is the one failure the tests cannot see from a catalogue.
 - [ ] The menu-bar icon's menu reads **Réglages…** and **Quitter SnappySnap**.

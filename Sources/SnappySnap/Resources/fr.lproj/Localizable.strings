@@ -63,10 +63,14 @@
 "The update is not signed by the same developer." = "La mise à jour n’est pas signée par le même développeur.";
 "The update’s signature is not valid." = "La signature de la mise à jour n’est pas valide.";
 
-/* SettingsGeneralPage.swift — Soutien */
-"Support" = "Soutien";
-"SnappySnap is free. If it saves you trouble, you can leave a tip on Ko-fi." = "SnappySnap est gratuit. S’il vous rend service, vous pouvez laisser un pourboire sur Ko-fi.";
-"Buy Me a Coffee" = "Offrir un café";
+/* SettingsTipPage.swift — la page Don */
+"Tip" = "Don";
+"SnappySnap offers all its features free to everyone, and always will. You can support this project by offering me a coffee." = "SnappySnap offre toutes ses fonctionnalités gratuitement à tout le monde, et ce sera toujours le cas. Vous pouvez soutenir ce projet en m’offrant un café.";
+"One-time tip" = "Don ponctuel";
+"A cup of coffee" = "Une tasse de café";
+"A good coffee to keep this project going" = "Un bon café pour faire avancer ce projet";
+"Ko-fi opens in your browser. €%lld is the smallest tip, and you can type any amount there." = "Ko-fi s’ouvre dans votre navigateur. %lld € est le plus petit don, et vous pouvez y saisir le montant que vous voulez.";
+"Tip €%lld" = "Offrir %lld €";
 
 /* SettingsGeneralPage.swift, AppDelegate.swift — Quitter */
 "Quit" = "Quitter";
