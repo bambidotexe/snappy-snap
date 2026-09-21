@@ -359,7 +359,7 @@ or per frame.
 | [ ] | `defaults delete dev.rubens.SnappySnap onboardingCompleted`, relaunch | The wizard is back at page one, and Settings does **not** open beside it. Close it with the red button, relaunch: it is back again — only **Finish** records it |
 | [ ] | With the wizard up, `open -b dev.rubens.SnappySnap` | The wizard comes forward, not Settings. Open Settings too, click another app, then activate SnappySnap: **Settings** comes forward, not the wizard |
 | [ ] | Settings › System › Compatibility | Four status rows under the switch — *Exact window matching*, *Pointer over the handles*, *Snap bar above other notch apps*, *Blur behind the snap bar* — each **Available** in green. Hover one: the tooltip lists its symbols, each with its framework and *found*. Turn the switch off: every row still reads Available, because a row reports the Mac and not the switch. A **Missing** row is not a failure — that feature falls back to its public route — but report it, with the tooltip |
-| [ ] | Settings › General › **Updates**, press **Check for Updates** | `SnappySnap 1.0.0` on the left of the first row; then a spinner and **Checking**, then an orange triangle and **No release published yet** on the right of that same row — the repository has published none. The button stays **Check for Updates**; a blue **Update** button takes its place only when a newer release is found. No hint under the group. Log (`update`): one `check (asked): no release published` line |
+| [ ] | Settings › General › **Updates**, press **Check for Updates**, on a copy a version behind the latest release | The running version on the left of the first row; then a spinner and **Checking**, then a blue **Update** button where **Check for Updates** was, naming the newer version. Log (`update`): one `check (asked)` line naming the tag it found. On a copy that is already the latest, the row says so instead and the button does not change |
 | [ ] | Turn Wi-Fi off and press **Check for Updates** again | An orange **Could not check: …** with a reason, on the right of the version row, wrapped over two lines and aligned right without squeezing `SnappySnap 1.0.0`, and within 15 s — not a hang. The button is enabled again and the app is otherwise untouched: drag a window to an edge and it still snaps |
 | [ ] | Quit, reopen, and watch the `update` log for 15 s | One `check (automatic): …` line about 10 s after launch, nobody having pressed anything, and no orange mark in Settings when it fails |
 | [ ] | Settings › **Tip** | The toolbar shows a mug; the first card has no title and carries the app icon beside the sentence; **One-time tip** shows the Ko-fi cup on its red wash, *A cup of coffee*, its grey line, and **Tip €5**, with the hint under the card |
@@ -525,10 +525,12 @@ reopened:
 - **A drop preview can be wrong for a window whose minimum has never been measured** — it shows the
   arrangement solved with the presumed 200 × 150, and a window that refuses lands larger; the
   correction pass settles the arrangement a beat later.
-- **The update check says "No release published yet."** That is the honest answer until
-  `bambidotexe/snappy-snap` is public and carries a release with a `.dmg`, which
-  `Scripts/make-dmg.sh` builds and nobody has published. **Could not check:** is a defect; this is
-  not. The automatic check gets the same 404 and says nothing.
+- **The update check says "No release published yet."** Not a defect: it is the honest answer whenever the
+  anonymous check can see no release. GitHub answers 404 for a repository that has none and for one it will
+  not show an anonymous caller alike, and does not tell them apart. `bambidotexe/snappy-snap` is public and
+  carries releases, so a check on a copy behind the latest should now find one instead; seeing this on such
+  a copy *is* worth reporting. **Could not check:** is a defect either way. The automatic check gets the
+  same 404 and says nothing.
 - The snap bar's Liquid Glass does not visibly render.
 - **The notch appearance's blur strength and reach, and its spring, are fitted by eye**; the shape and
   the shadow are fitted to measurements. A difference from the reference in the first two is expected
