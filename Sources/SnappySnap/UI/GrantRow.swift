@@ -1,4 +1,5 @@
 import AppKit
+import os
 
 // MARK: - What a grant is
 
@@ -194,6 +195,7 @@ final class GrantRow {
 
     private func show(_ next: Shown) {
         guard next != shown else { return }
+        Logger.onboarding.debug("\(self.item.id.rawValue, privacy: .public): row redraws \(String(describing: next), privacy: .public)")
         shown = next
         trailing.subviews.forEach { $0.removeFromSuperview() }
         let content: NSView
@@ -250,6 +252,7 @@ final class GrantRow {
     /// back, and settles who is in front. The order matters: the row is right before anything is
     /// activated.
     private func start(_ title: String, _ flow: (_ settle: @escaping () -> Void) -> Void) {
+        Logger.onboarding.info("\(self.item.id.rawValue, privacy: .public): flow started from \(title, privacy: .public)")
         busy = true
         show(.busy(title))
         var settled = false
@@ -258,6 +261,7 @@ final class GrantRow {
             settled = true
             guard let self else { return }
             self.busy = false
+            Logger.onboarding.info("\(self.item.id.rawValue, privacy: .public): flow settled, granted=\(self.item.granted(), privacy: .public)")
             self.refresh()
             self.didFinish()
             self.item.reclaimFocusIfNeeded(self.window())

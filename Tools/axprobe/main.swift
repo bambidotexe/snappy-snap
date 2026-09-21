@@ -230,7 +230,7 @@ func postMouse(_ type: CGEventType, _ p: CGPoint) {
 
 // MARK: - Commands
 
-let usage = "usage: axprobe prefs|apps|windows|menus <app> [depth]|frame <app>|minsize|floor <bundle id> [--front]|press <app> <i.j.k> [--no-activate]|setframe <app> x y w h|setframeid <id> x y w h|watch <app> [seconds]|dragtitle <app> dx dy [sx sy]|hover x y [seconds]|click x y|drag sx sy ex ey [steps]|dragvia <steps> x1 y1 x2 y2 [x3 y3 ...]|dragappvia <app> <steps> x1 y1 x2 y2 [x3 y3 ...]"
+let usage = "usage: axprobe prefs|apps|windows|elements <app> [depth]|hit x y|pressel <app> <i.j.k>|menus <app> [depth]|frame <app>|minsize|floor <bundle id> [--front]|press <app> <i.j.k> [--no-activate]|setframe <app> x y w h|setframeid <id> x y w h|watch <app> [seconds]|dragtitle <app> dx dy [sx sy]|hover x y [seconds]|click x y|drag sx sy ex ey [steps]|dragvia <steps> x1 y1 x2 y2 [x3 y3 ...]|dragappvia <app> <steps> x1 y1 x2 y2 [x3 y3 ...]"
 let args = Array(CommandLine.arguments.dropFirst())
 guard let command = args.first else { print(usage); exit(1) }
 
@@ -259,6 +259,67 @@ case "windows":
         let bounds = (w[kCGWindowBounds as String] as? NSDictionary).flatMap { CGRect(dictionaryRepresentation: $0) } ?? .zero
         print("\(i)\tid=\(w[kCGWindowNumber as String] ?? 0)\tpid=\(w[kCGWindowOwnerPID as String] ?? 0)\tlayer=\(w[kCGWindowLayer as String] ?? 0)\t\(w[kCGWindowOwnerName as String] ?? "")\t\(describe(bounds))")
     }
+
+case "elements":
+    // The front window's Accessibility subtree, with each element's role, title, enabled flag and
+    // frame. The instrument for a window built in code: it says where a control actually is, which a
+    // screenshot cannot, and whether anything answers at that point at all.
+    guard args.count >= 2, let target = appElement(args[1]), let w = frontWindow(target.element) else { exit(1) }
+    let maxDepth = args.count >= 3 ? (Int(args[2]) ?? 6) : 6
+    func dumpElements(_ el: AXUIElement, path: [Int], depth: Int) {
+        let kids = (axAttr(el, kAXChildrenAttribute) as [AXUIElement]?) ?? []
+        for (i, kid) in kids.enumerated() {
+            let p = path + [i]
+            let role: String = axAttr(kid, kAXRoleAttribute) ?? ""
+            let title: String = axAttr(kid, kAXTitleAttribute) ?? (axAttr(kid, kAXValueAttribute) as String? ?? "")
+            let enabled = (axAttr(kid, kAXEnabledAttribute) as NSNumber?)?.boolValue
+            let f = frame(of: kid)
+            let indent = String(repeating: "  ", count: depth)
+            let box = f.map { describe($0) } ?? "no frame"
+            let en = enabled.map { " enabled=\($0)" } ?? ""
+            print("\(indent)[\(p.map(String.init).joined(separator: "."))] \(role) \"\(title)\"\(en) \(box)")
+            if depth < maxDepth { dumpElements(kid, path: p, depth: depth + 1) }
+        }
+    }
+    report(window: w, label: "front window")
+    dumpElements(w, path: [], depth: 0)
+
+case "pressel":
+    // AXPress on one element of the front window, by the index path `elements` prints. It bypasses
+    // hit testing entirely, which is what separates "the button's action is broken" from "the click
+    // never reached the button".
+    guard args.count >= 3, let target = appElement(args[1]), let w = frontWindow(target.element) else { exit(1) }
+    let path = args[2].split(separator: ".").compactMap { Int($0) }
+    var el: AXUIElement? = w
+    for index in path {
+        guard let here = el, let kids = axAttr(here, kAXChildrenAttribute) as [AXUIElement]?, index < kids.count
+        else { el = nil; break }
+        el = kids[index]
+    }
+    guard let el else { print("bad path"); exit(1) }
+    let role: String = axAttr(el, kAXRoleAttribute) ?? ""
+    let title: String = axAttr(el, kAXTitleAttribute) ?? ""
+    let err = AXUIElementPerformAction(el, kAXPressAction as CFString)
+    print("AXPress \(role) \"\(title)\" -> \(err == .success ? "success" : "error \(err.rawValue)")")
+
+case "hit":
+    // What Accessibility says is at a screen point, and every element under it. The one honest answer
+    // to "is my click reaching the button".
+    guard args.count >= 3, let x = Double(args[1]), let y = Double(args[2]) else { exit(1) }
+    let system = AXUIElementCreateSystemWide()
+    var hit: AXUIElement?
+    var raw: AXUIElement?
+    let err = AXUIElementCopyElementAtPosition(system, Float(x), Float(y), &raw)
+    hit = raw
+    guard err == .success, let hit else { print("no element at \(x), \(y): error \(err.rawValue)"); exit(1) }
+    var pid: pid_t = 0
+    AXUIElementGetPid(hit, &pid)
+    let owner = NSRunningApplication(processIdentifier: pid)?.localizedName ?? "?"
+    let role: String = axAttr(hit, kAXRoleAttribute) ?? ""
+    let title: String = axAttr(hit, kAXTitleAttribute) ?? (axAttr(hit, kAXValueAttribute) as String? ?? "")
+    let enabled = (axAttr(hit, kAXEnabledAttribute) as NSNumber?)?.boolValue
+    print("at \(x), \(y): \(owner) (pid \(pid)) \(role) \"\(title)\" enabled=\(enabled.map(String.init) ?? "?")")
+    if let f = frame(of: hit) { print("  frame: " + describe(f)) }
 
 case "menus":
     guard args.count >= 2, let target = appElement(args[1]) else { exit(1) }

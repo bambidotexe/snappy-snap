@@ -12,6 +12,10 @@ extension Logger {
     /// `handle`: the deck's cost is what a measurement of this feature is after, and it must not have
     /// to be sifted out of the choosing phase's own lines.
     static let deck = Logger(subsystem: "dev.rubens.SnappySnap", category: "deck")
+    /// The welcome window: which page is on screen, every press of the stepping button, and every grant
+    /// flow's start and outcome. The window has no automated test and is walked by hand, so the log is
+    /// the only account of what it did.
+    static let onboarding = Logger(subsystem: "dev.rubens.SnappySnap", category: "onboarding")
     /// The update feature: every check, what it found, the fetch, the unpacking and the hand-over to the
     /// install helper, at `notice` so that `log show` keeps them.
     static let update = Logger(subsystem: "dev.rubens.SnappySnap", category: "update")

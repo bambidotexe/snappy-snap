@@ -138,10 +138,15 @@ commit, and the newer of a request and a written rule wins only after the user h
 - `/usr/bin/log stream --predicate 'subsystem == "dev.rubens.SnappySnap"' --level debug` — live logs.
   `log` alone is a zsh builtin, hence the full path. `--level debug` is required for the deck, handle
   and junction lines. **`log show` returns nothing for this app at any level.** Categories: `app`,
-  `drag`, `assist`, `deck`, `handle`, `junction`.
+  `drag`, `assist`, `deck`, `handle`, `junction`, `onboarding`.
 - `swift run axprobe <command>` — dev probe (`Tools/axprobe`, never shipped). Run it with no argument
   for the usage line. Commands: `prefs`, `apps`, `windows`, `menus <app> [depth]`, `frame <app>`,
-  `minsize`, `floor <bundle id> [--front]` (measures a minimum the way the probe does), `press <app> <i.j.k> [--no-activate]`, `setframe <app> x y w h`,
+  `minsize`, `floor <bundle id> [--front]` (measures a minimum the way the probe does), `press <app> <i.j.k> [--no-activate]`,
+  **`elements <app> [depth]`** (the front window's Accessibility subtree, every element's role, title and
+  frame — the instrument for a window built in code), **`hit x y`** (what a *real* hit test finds at a
+  point: a frame that names a rectangle where `hit` finds nothing is `pitfalls.md` 57),
+  **`pressel <app> <i.j.k>`** (AXPress one element, which bypasses hit testing and so separates a broken
+  action from a click that never arrived), `setframe <app> x y w h`,
   `setframeid <id> x y w h`, `watch <app> [seconds]`, `dragtitle <app> dx dy [sx sy]`,
   `hover x y [seconds]`, `click x y`, `drag sx sy ex ey [steps]`, `dragvia <steps> x1 y1 x2 y2 …`,
   `dragappvia <app> <steps> x1 y1 x2 y2 …`. The `via` forms post a real multi-leg drag with a dwell at

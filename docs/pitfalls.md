@@ -927,3 +927,39 @@ been reaped by whoever started it.
 it: missing a running version would roll back a good install. It counts an exited, unreaped app
 (state `Z` in `ps`) as gone, and anything `ps` cannot say as still running, the safe way round.
 
+
+## Onboarding
+
+### 57. An `NSStackView` spacer with no intrinsic height absorbs every point of a page's slack
+
+**Symptom.** The welcome window's stepping button was drawn at the bottom right of a list page and
+could not be clicked, for ever, however many times it was pressed. `AXPress` on it worked. Every other
+element of the page — the header, the row text, the "Granted" labels, the title bar's close button —
+hit-tested correctly; only the button answered `AXWindow`, as if nothing were there. It began the
+moment a permission was granted.
+
+**Measured.** The footer was an `NSStackView` holding an invisible spacer and the button
+(`NSStackView(views: [spacer, primary])`), with a width constraint and no height constraint. A bare
+`NSView` has no intrinsic size, so nothing decided the footer's own height, and the enclosing vertical
+stack handed it every point the page was not using. Granting a permission swaps a row's 26 pt button
+for an 18 pt "Granted" label; the list shrinks by 36 pt, and that slack goes into the footer:
+
+```
+before the swap   footer bounds 460 × 24    button frame (381, 0,  79, 24)
+after the swap    footer bounds 460 × 186   button frame (381, 81, 79, 24)
+```
+
+The button is still inside the footer, so nothing reports a broken constraint and `AXFrame` keeps
+naming a plausible rectangle. It has simply stopped being where the page put it.
+
+**What holds.** A footer is a plain `NSView` with the button pinned to its trailing edge **and to both
+its top and bottom**, which fixes the footer's height to the button's. The slack is given somewhere on
+purpose — a dedicated view between the list and the footer, with vertical hugging and compression
+resistance at priority 1 — so it can never be taken by a control. `Metrics` decides sizes; a stack
+view left free to decide one will.
+
+**The instrument.** `swift run axprobe elements <app>` prints the front window's Accessibility subtree
+with every element's frame, and `axprobe hit x y` says what a real hit test finds at a point. A frame
+that names a rectangle and a hit test that finds nothing there is this class of bug. The
+`onboarding` log category at `--level debug` prints the button's frame and, up the chain, each
+superview's height and whether it still contains it.
