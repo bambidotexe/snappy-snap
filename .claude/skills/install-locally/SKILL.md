@@ -17,9 +17,8 @@ That is the whole action. It takes about five minutes, most of it Apple's notary
 
 ## What it does, and why each part is not optional
 
-1. **Checks the version rule** (`Scripts/version.sh`): the tree is always one patch ahead of the newest
-   release on GitHub. So the copy on this Mac is always newer than anything published, and is never
-   offered an update that would replace it with something older.
+1. **Builds exactly the tree's version** (`Scripts/version.sh`): no GitHub check, no requirement to be
+   ahead of what is published. A local install always carries the same version as the code in the tree.
 2. **Builds the real thing** — release configuration, signed with the Wooflab team's Developer ID under the
    Hardened Runtime, notarized by Apple, stapled, wrapped in the disk image. Not a shortcut, not a debug
    build, not an unsigned one. What lands in `/Applications` is byte-for-byte what a stranger would download.
@@ -73,7 +72,7 @@ codesign -dvv /Applications/SnappySnap.app 2>&1 | grep -E 'Authority=Developer|f
 ```
 
 The authority is `Developer ID Application: Wooflab (85F6AC5QZF)` and the flags include `runtime`. The
-version is whatever `Scripts/version.sh`'s rule gave, one patch above the newest GitHub release.
+version is whatever the tree holds, per `Scripts/version.sh`.
 
 ## The Accessibility grant
 
