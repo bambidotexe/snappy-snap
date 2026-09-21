@@ -25,6 +25,17 @@ Swift 6.4, SwiftPM, no Xcode project. Deployment target macOS 26; built and meas
 `Scripts/make-dmg.sh`'s disk image attached to a GitHub release. **The check is anonymous, so the
 repository has to be public for it to see anything**: a private one reads exactly like no release at all.
 
+## The family, and the shared documents
+
+This app is one of the macOS apps under `~/Projects` that share one shape; the `macos-map` skill lists
+them and routes a task to the right skill. **`docs/shared/` is a synced copy of
+`~/Projects/macos-app-template/docs/shared/`, and it is never edited here**: a change goes in the template
+and `sh ~/Projects/macos-app-template/scripts/sync-shared-docs.sh` replicates it to every app. A trap, a
+convention or a platform fact that applies to more than this app goes there, not in this app's own
+documents. `docs/shared/workflow.md` is the change workflow every app of the family follows and
+`docs/shared/pitfalls.md` the traps they all share; the sections below are this app's own statement of the
+workflow, with its own file names, and this app's own traps.
+
 ## Read first
 
 | File | What it is |
@@ -85,13 +96,13 @@ commit, and the newer of a request and a written rule wins only after the user h
 | what can hide a pill or a knob | `SnapCore/CoveringSurface.swift`, `WindowList.snapshotWithCoverers` | §17, `pitfalls.md` 49 |
 | updates: the check, its schedule, the notification | `SnapCore/UpdateCheck.swift`, `UpdateSchedule.swift`, `UpdatePanel.swift`, the numbers in `Settings.Fixed` (`update…`); `SnappySnap/UpdateController.swift` (the one owner), `UpdateNotifier.swift`; `SystemAdapters/UpdateChecker.swift`; the Updates group of `UI/SettingsGeneralPage.swift` | §14 *Updates*, §1, `architecture.md`, `macOS.md` *Updates* |
 | updates: the window, the fetch, making it ready, Install and Relaunch | `SnapCore/UpdateSession.swift`, `StagedUpdateCheck.swift`, `UpdateInstallScript.swift` (the helper's text, its plan, its result); `SystemAdapters/UpdateChecker.swift` (`UpdateDownload`), `UpdateStager.swift`, `CodeSignature.swift`, `UpdateInstaller.swift`, `DetachedProcess.swift`; `SnappySnap/UI/UpdateWindow.swift`, `UpdateController.installAndRelaunch` | the same, plus `pitfalls.md` 51–56 and the checklist's §9b. **Read `pitfalls.md` 51–56 before touching the order of an install** |
-| the welcome window: a page, a row, what a grant button does, who is in front | **Invoke the `building-onboarding` skill first.** `SnappySnap/UI/OnboardingWindow.swift` (the controller, the four pages), `GrantRow.swift` (`GrantItem`, `FocusReturnWatch`, `GrantRow`, `Metrics` — every number), `GrantCatalog.swift` (the rows: how each is **read**, how each is **asked for**), `ControlActionHandler.swift`; `SystemAdapters/OnboardingState.swift`; `AppDelegate.showOnboarding`; the Start over group of `UI/SettingsSystemPage.swift` | `functional.md` §14 *The welcome window*, §1 |
+| the welcome window: a page, a row, what a grant button does, who is in front | **Invoke the `macos-building-onboarding` skill first.** `SnappySnap/UI/OnboardingWindow.swift` (the controller, the four pages), `GrantRow.swift` (`GrantItem`, `FocusReturnWatch`, `GrantRow`, `Metrics` — every number), `GrantCatalog.swift` (the rows: how each is **read**, how each is **asked for**), `ControlActionHandler.swift`; `SystemAdapters/OnboardingState.swift`; `AppDelegate.showOnboarding`; the Start over group of `UI/SettingsSystemPage.swift` | `functional.md` §14 *The welcome window*, §1 |
 | the menu-bar icon, or what opens Settings | `SnappySnap/SnappySnapApp.swift` (the AppKit `@main`), `AppDelegate` (`installMainMenu`, `launchedAsLoginItem`, `followShowInMenuBarSetting`, the status item) | §14–15, `macOS.md`, `pitfalls.md` 50 |
 | either brand mark | `Assets/` holds both sources. The menu bar: `Scripts/make-menu-bar-mark.swift` (the two fitted numbers) → the committed `SnappySnap/Resources/MenuBarMark.pdf`, shown by `AppDelegate.menuBarMark()`. The app icon: `Assets/snappy-snap.icon` → the `actool` step in `Scripts/build-app.sh` → the keys in `Resources/Info.plist` | §15, `architecture.md` §15 |
 | a sentence the user reads, in either language | the call site, which says `L("The English sentence")`, then **both** `Sources/<target>/Resources/{en,fr}.lproj/Localizable.strings` — each of the three targets carries its own pair, and `Localized.swift` is that target's one route | `functional.md` §18, plus §14 or §15 if the words are the window's or the menu's |
 | a constant | `SnapCore/Settings.swift` `Fixed` | the section that states the number |
-| a user setting | **Invoke the `building-settings-pages` skill first.** `Settings` stored property + a row on its page, `UI/Settings…Page.swift` + `SettingsTests` roster | §14, `README.md` |
-| the Settings window's pages, look or copy | **Invoke the `building-settings-pages` skill first**: it holds every rule of the window's structure, numbers and wording. `UI/SettingsRows.swift` (the kit: `SettingsGroup`, `ToggleRow`, `StatusRow` + `StatusMark`, `SettingsMetrics` with every spacing number), `UI/SettingsView.swift` (`SettingsPageID`: the pages, their titles and symbols), `UI/SettingsWindow.swift` (the toolbar, the height that follows the page), `UI/Settings…Page.swift`; an option's own words sit beside its title in `SnapCore/Settings.swift`, a private feature's in `SystemAdapters/PrivateAPI.swift` (`PrivateFeature`) | §14 *How every page is built*: the group's three parts, the status row, the four copy rules |
+| a user setting | **Invoke the `macos-building-settings-pages` skill first.** `Settings` stored property + a row on its page, `UI/Settings…Page.swift` + `SettingsTests` roster | §14, `README.md` |
+| the Settings window's pages, look or copy | **Invoke the `macos-building-settings-pages` skill first**: it holds every rule of the window's structure, numbers and wording. `UI/SettingsRows.swift` (the kit: `SettingsGroup`, `ToggleRow`, `StatusRow` + `StatusMark`, `SettingsMetrics` with every spacing number), `UI/SettingsView.swift` (`SettingsPageID`: the pages, their titles and symbols), `UI/SettingsWindow.swift` (the toolbar, the height that follows the page), `UI/Settings…Page.swift`; an option's own words sit beside its title in `SnapCore/Settings.swift`, a private feature's in `SystemAdapters/PrivateAPI.swift` (`PrivateFeature`) | §14 *How every page is built*: the group's three parts, the status row, the four copy rules |
 | Space / Mission Control handling | `SystemAdapters/SpaceWatcher.swift`, `SnapCore/SpaceInterruption.swift`, `AppDelegate.leftTheArrangement`, `DragSessionController.cancelSession` (the one gesture a Space change suspends rather than ends) | §13 |
 | a private symbol | `SystemAdapters/PrivateAPI.swift` + a call site that asks `pointer(for:)` every time + a public route | `private-api-index.md` |
 | whether a launch opens Settings | `SystemAdapters/QuietLaunch.swift` (the marker and its freshness), `AppDelegate.applicationDidFinishLaunching` (`openedByHand`), `Scripts/install.sh` and `UpdateController.installAndRelaunch` (write the marker) | `functional.md` §14 |
@@ -211,8 +222,8 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
 ## Rules
 
 - **A build of this app reaches a Mac in exactly two ways, and there is no third.** `Scripts/install.sh`
-  (skill `install-locally`) builds the production bundle and puts it in `/Applications`;
-  `Scripts/publish.sh` (skill `publish-release`) does the same and puts the disk image on GitHub. Both
+  (skill `macos-install-locally`) builds the production bundle and puts it in `/Applications`;
+  `Scripts/publish.sh` (skill `macos-publish-release`) does the same and puts the disk image on GitHub. Both
   build the real thing — release, Developer ID, Hardened Runtime, notarized, stapled — so what runs here
   is what a stranger would download. **Neither leaves an `.app` or a `.dmg` anywhere under the
   repository**, on any exit path including a failed one: a signed bundle in `build/` is a complete

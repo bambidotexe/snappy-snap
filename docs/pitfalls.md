@@ -371,18 +371,7 @@ flight.
 
 ### 23. A SwiftUI `Settings` scene cannot bring an `LSUIElement` accessory forward
 
-**Symptom.** The Settings window opens behind the window it covers; the cooperative `activate()` lands
-behind Finder.
-
-**Why.** `.onAppear` fires once per scene, not per open, so there is no hook to activate from, and an
-accessory app needs `activate(ignoringOtherApps: true)` to come forward. Centring in `init` measured
-x = 756 on a 1512 pt display: it must wait for the first layout.
-
-**What the code does.** `SettingsWindow` is an ordinary `NSWindow` the delegate owns; every `show()`
-activates with `ignoringOtherApps: true`, and `windowWentAway` deactivates unless Snap Assist or
-onboarding still needs the app active.
-
-**How to avoid.** Own the window.
+This is every app's trap: `docs/shared/pitfalls.md`, **S3**.
 
 ### 24. Overlay window levels are structural, not per-panel
 
@@ -430,64 +419,19 @@ mouse event in the last one. A cancelled drag writes nothing; a `.up` with no li
 
 ### 28. A persisted default is not a default
 
-**Symptom.** A default raised in code reached nobody whose file already held the old value, and the
-migration written to fix it re-ran on every launch, because `didSet` does not fire in `init`.
-
-**What the code does.** `SettingsStore` loads and never rewrites; every number that used to be a
-slider is a constant in `Settings.Fixed` that was never persisted; the one key whose meaning changed
-(`gap`, a number → a switch) is reinterpreted on read, not migrated on disk.
-
-**How to avoid.** A control the user can move, or a constant that was never persisted. Never a rule
-that rewrites their file.
+This is every app's trap: `docs/shared/pitfalls.md`, **S4**. Here the one key whose meaning changed (`gap`, a number → a switch) is reinterpreted on read, not migrated on disk.
 
 ---
 
 ### 47. A `Toggle` is a switch inside a grouped `Form` and a checkbox outside one
 
-**Symptom.** The Settings window's Custom areas page was built as a `ScrollView` over a `VStack`,
-because a full-height text editor does not belong in a settings form. The same `Toggle(_:isOn:)`
-that draws a switch on the Settings tab drew a **checkbox** there, and the two tabs did not look
-like the same application.
-
-**Why.** On macOS a bare `Toggle` has no fixed appearance: `.formStyle(.grouped)` gives its
-descendants the switch style and the trailing placement, and outside that context AppKit's default
-is a checkbox. Nothing in the control says which it will be, and it is correct in both places.
-
-**What the code does.** No page depends on a `Form`'s context. Every switch in the window is the
-kit's `ToggleRow` (`UI/SettingsRows.swift`), which fixes both halves itself: `.toggleStyle(.switch)` at
-`.controlSize(.mini)` with its label hidden, at the trailing edge of a row whose own `Text` is the
-label. A page with a text editor in it and a page of switches are built from the same rows.
-
-**How to avoid.** `.toggleStyle(.switch)` fixes the control and not its placement, so a toggle patched
-that way on one page still reads as foreign beside a real form row on another. Build every row from
-one kit, or every row from a grouped form, and never some of each. **A control's appearance is a property of where it is,
-and the only way to know is to look at it in the running app beside the one it must match.**
+This is every app's trap: `docs/shared/pitfalls.md`, **S1**.
 
 ---
 
 ### 50. A `MenuBarExtra`'s `isInserted` binding is read when the scene is re-evaluated, and an app with one scene is not re-evaluated
 
-**Symptom.** *Show in menu bar* (§14) was built as
-`MenuBarExtra("SnappySnap", systemImage: …, isInserted: <binding>)`, with the binding reading an
-`@Published` property on the `AppDelegate` that mirrored the setting. The property changed — the
-store published, the sink ran, the value was right — and the icon stayed in the menu bar. It only
-ever followed the setting across a relaunch, which is the one thing the feature exists to avoid.
-
-**Why.** `isInserted` is not observed. It is read when SwiftUI re-evaluates the scene, and nothing
-made it: `@NSApplicationDelegateAdaptor` re-evaluating a *view* on an `ObservableObject` delegate is
-not the same as a `Scene` body being rebuilt, and an `App` whose whole body is one `MenuBarExtra` has
-no other reason to rebuild. The binding was read once, at launch.
-
-**What the code does.** The SwiftUI app lifecycle is gone. `SnappySnapApp.swift` is a plain AppKit
-`@main` that sets `.accessory` and calls `NSApplication.run()`, and `AppDelegate` owns an
-`NSStatusItem` it adds to and removes from `NSStatusBar.system` in the same Combine sink that every
-other followed setting uses. `NSStatusBar.system.removeStatusItem(_:)` takes the icon out and the
-icons beside it close up; there is no state to observe and nothing to re-evaluate.
-
-**How to avoid.** **A SwiftUI `Scene` is not a view: do not put a value that has to change at
-runtime into one and expect it to be re-read.** Where the presence of a piece of AppKit is itself
-the feature, own the AppKit object. The cost here was one round of "the toggle does nothing", which
-looked like a broken binding and was a scene that was never asked again.
+This is every app's trap: `docs/shared/pitfalls.md`, **S2**.
 
 ---
 
@@ -505,42 +449,23 @@ identical gap, or to look at a glyph.
 
 ### 30. `swift build` is the truth; SourceKit diagnostics are stale
 
-**Symptom.** Tool-result diagnostics describe a file as it was several edits ago.
-
-**How to avoid.** Build.
+This is every app's trap: `docs/shared/pitfalls.md`, **T1**.
 
 ### 31. `swift test` prints one summary line per target, and a crashed target prints none
 
-**Symptom.** A crashed target prints `Note: Some test targets reported failures:` with no summary
-line, so a grep finds the other target's green line and the crash reads as a pass.
-
-**How to avoid.** Count two summary lines for plain `swift test` (the sandboxed
-`--build-system native --disable-sandbox` fallback merges the targets and prints one). A filter that
-matches nothing in a target means that target prints no line either.
+This is every app's trap: `docs/shared/pitfalls.md`, **T2**. The sandboxed `--build-system native --disable-sandbox` fallback merges the targets and prints ONE line.
 
 ### 32. `#expect` does not abort, and it boxes `CGFloat` against `Double`
 
-**Symptom.** `#expect(x.count == 1)` followed by `x[0]` traps and crashes the whole target (see 31);
-two identical numbers print the same and compare unequal.
-
-**How to avoid.** `try #require` where the next line indexes; compare whole `CGPoint`/`CGRect` values
-or make both sides the same type (the tests use a `near` helper with an epsilon).
+This is every app's trap: `docs/shared/pitfalls.md`, **T3**. The tests use a `near` helper with an epsilon.
 
 ### 33. A test that reads the live desktop is nondeterministic
 
-**Symptom.** `WindowListTests.onScreenSurfacesKeepsWhatSnapshotFiltersOut` failed twice in one day.
-
-**Why.** It makes two window-list calls and a window changed between them.
-
-**How to avoid.** Treat a one-off failure there as environmental; rerun before investigating.
+This is every app's trap: `docs/shared/pitfalls.md`, **T4**. Here it is `WindowListTests.onScreenSurfacesKeepsWhatSnapshotFiltersOut`.
 
 ### 34. `log show` returns nothing for this app; `log stream` does
 
-**Symptom.** A diagnostic session with no data.
-
-**How to avoid.** Start `/usr/bin/log stream --predicate 'subsystem == "dev.rubens.SnappySnap"'
---level debug` before reproducing. `--level debug` is required for the deck, handle and junction
-lines; `log` alone is a zsh builtin.
+This is every app's trap: `docs/shared/pitfalls.md`, **T6**. `--level debug` is required for the deck, handle and junction lines.
 
 ### 35. Silence is a defect
 
@@ -559,15 +484,7 @@ adding a guard.
 
 ### 36. `open` fails with Launch Services error −600 from a sandboxed shell
 
-**Symptom.** `Scripts/run.sh` builds, signs, kills the running app, and then prints
-`_LSOpenURLsWithCompletionHandler() failed with error -600.` The app is left not running.
-
-**Why.** Launch Services is not reachable from an agent's sandboxed shell; `pkill` ran, `open` did
-not.
-
-**How to avoid.** Run the relaunch step outside the sandbox (or `open /Applications/SnappySnap.app`
-by hand) and confirm with `pgrep -x SnappySnap`. Never `open` a folder from an agent shell: it
-navigates the user's own frontmost Finder window.
+This is every app's trap: `docs/shared/pitfalls.md`, **T5**.
 
 ### 37. The development relaunch always exercises the crash path
 
@@ -654,21 +571,7 @@ clear of the real contour: near a flare's tip the legitimate outline runs along 
 
 ### 42. A number read off a screenshot by eye is not a measurement
 
-**Symptom.** Four builds of the notch appearance, each rejected as looking nothing like the
-reference: a 20 pt tinted halo where the reference has a 95 pt untinted blur, two tight dark shadows
-where it has one soft one, corner radii of 14.5 and 26 pt where it has 17 and 34.
-
-**Why.** Each number had been estimated from a glance at a capture, and an agent's shell has no
-Screen Recording grant (`screencapture` fails with *could not create image from rect*), so nothing it
-built was ever looked at before the user did.
-
-**What the code does.** Every drawing number in `NotchGeometry` carries the measurement it was fitted
-to: edge profiles and grey levels extracted from a 2× capture with a CoreGraphics script, this app's
-own shape and shadow rendered offline through `ImageRenderer` and compared row by row, and the blur
-calibrated on a bench of the app's own windows read by luminance probes.
-
-**How to avoid.** Fit, then build. A row-0 reading of a concave fillet under-reads its radius — the
-tip is thinner than any darkness threshold — so fit the whole profile, not its first point.
+This is every app's trap: `docs/shared/pitfalls.md`, **T7**. Here every drawing number in `NotchGeometry` carries the measurement it was fitted to: edge profiles and grey levels from a 2× capture, the app's own shape rendered through `ImageRenderer` and compared row by row, the blur calibrated by luminance probes. A row-0 reading of a concave fillet under-reads its radius: fit the whole profile.
 
 ### 43. An overlay panel cannot be drawn across a display seam
 
@@ -743,32 +646,7 @@ its panel is not key-capable at all.
 
 ### 46. A pipette on a translucent overlay reads a composite, not a colour
 
-**Symptom.** Five opaque greys were tried for the drop preview's stroke against macOS's own, each
-rejected: 186 too dark, 216 slightly too light, 204 slightly too dark, 210 too light, and 135 — the
-value a colour pipette returned from the native preview itself — far too dark. The bracket kept
-collapsing without closing.
-
-**Why.** macOS strokes its preview with a **translucent** grey, so what a pipette returns is that
-grey composited over whatever the stroke happens to cross. The same stroke reads ~147 over near-black
-content, 204 over a mid wallpaper and ~227 over a pale one. No opaque colour is all three, so an
-opaque stroke fitted against one wallpaper is wrong on the next, and a verdict gathered on a second
-wallpaper reopens a number that was already right.
-
-**What the measurement was.** Decomposing a capture of the native preview over a **yellow** wallpaper
-— whose blue channel is 0, which makes the blend a two-equation solve rather than one equation in two
-unknowns — gives the stroke's own colour as grey 216 at 68 % opacity: `c·a = 148` from blue, and red
-falling 237 → 222 fixes `a = 0.685`. Green then predicts 206 against 204 measured, a residual of 2,
-which is what confirms the colour is neutral rather than tinted.
-
-**What the code does.** `OverlayAppearance.shapeColor` is opaque on purpose and is **not** trying to
-track the system's. It is fitted by eye against the installed app, and `functional.md` §7 records
-that it drifts from macOS's over very dark and very pale desktops by design.
-
-**How to avoid.** Before fitting a colour to a system surface, establish whether that surface is
-opaque. If it is not, a single sample is one equation in two unknowns: find a background with a
-channel pinned at 0 or 255, or sample the same surface over two backgrounds, and solve for the colour
-and its alpha together. Then decide whether to copy the alpha too — and if not, say in the document
-that the match holds on one background only, so the next verdict is not read as a new defect.
+This is every app's trap: `docs/shared/pitfalls.md`, **T8**. Here `OverlayAppearance.shapeColor` is opaque on purpose and is not trying to track the system's translucent grey 216 at 68 %; `functional.md` §7 records that it drifts over very dark and very pale desktops by design.
 
 ---
 
@@ -803,25 +681,7 @@ gesture it is meant to serve, with the app installed, before writing the behavio
 
 ### 47. A window-server gesture reaches a session event tap as drags with no press and no release
 
-**Symptom.** Holding fn and dragging from anywhere inside a window moved the window and nothing of
-this app ever appeared: no zone, no snap bar, no custom areas. Nothing was logged either, because
-nothing had been declined — the drag session arms on a press, and there was no press.
-
-**Measured.** A listen-only tap at `.cgSessionEventTap` during a posted fn-drag received the two
-`flagsChanged` and **30 `leftMouseDragged`, no `leftMouseDown` and no `leftMouseUp`**, while the
-window's origin followed the pointer on every event. The same drag under a tap at `.cghidEventTap`
-received the press, the 30 drags and the release. The window server takes the press and the release
-between the two levels and lets the drags through.
-
-**What holds.** One event carries **the same `timestamp` at both levels**, and the device-level
-callback ran first on all six samples, registered second. `SnapCore.PressReconciler` pairs the two
-streams on that: the session stays the authority, and the device tap — masked to presses and
-releases, two events a click — supplies only a press no session press claimed before the first drag,
-and that gesture's release. A device-level tap needs nothing beyond the Accessibility grant (it is
-created or it is not; `MouseEvents.hearsDevicePresses`).
-
-**Do not** move the whole tap to the device level: an event another process posts at the session
-level never passes it.
+This is every app's trap: `docs/shared/pitfalls.md`, **S1**.
 
 ### 48. `AXUIElementCopyElementAtPosition` fails over a view that implements no hit testing
 
@@ -861,111 +721,30 @@ including, the Dock's — where windows are panels somebody put there to be look
 
 ### 51. A helper started by the app dies with the app
 
-**Symptom.** The app quits for an update and nothing happens: the helper that was to swap the two
-bundles is gone.
-
-**Measured.** Three throwaway launchd jobs, each spawning `sh -c 'sleep 4; echo > marker'` and
-exiting at once. The plain `posix_spawn` child never wrote its marker: launchd kills whatever is left
-in a job's process group when the job's main process exits, and an app opened through LaunchServices
-is a launchd job too. The child spawned with `POSIX_SPAWN_SETPGROUP` and group 0 wrote it.
-
-**What holds.** `DetachedProcess`: a process group of its own, no inherited descriptors, and an
-environment of the app's making. Never a plain `posix_spawn`, never a shell `&`.
+This is every app's trap: `docs/shared/pitfalls.md`, **U1**.
 
 ### 52. Everything that can refuse an update has to happen before the quit
 
-**Symptom.** An updater that quits first and installs after can end with no app running and nothing
-on screen to say why: the download was cut short, the image would not mount, the copy was not signed
-by the same team, the folder was not writable.
-
-**What holds.** The release is fetched, held against GitHub's length and SHA-256, unpacked, checked
-(`StagedUpdateCheck`, `CodeSignature`) and the folder tried (`UpdateInstaller.obstacle`) while the
-app is still up, where a failure is a sentence in the window. **Install and Relaunch** is enabled
-only after all of it. What is left for after the quit is two renames on one volume and a launch,
-each with its way back: a failed second rename undoes the first, and a new version that is not seen
-running within 15 s, or is gone 2 s after it was seen, is moved out and the previous one moved back
-and opened. The helper touches nothing until the app's pid is gone, and gives up untouched after
-20 s.
+This is every app's trap: `docs/shared/pitfalls.md`, **U2**.
 
 ### 53. The outcome has to be written before the new version starts
 
-**Symptom.** The new version starts, finds no outcome to read and opens nothing; or it tidies the
-`updates` folder while the helper still needs the previous bundle.
-
-**What holds.** The helper writes `installed` before it opens the app and overwrites it if it rolls
-back. The app's own tidying at launch removes the disk image, `staged` and `install.sh`, **never
-`previous`**, which only the helper deletes, once it has seen the new version running.
+This is every app's trap: `docs/shared/pitfalls.md`, **U3**.
 
 ### 54. A new version that is gone two seconds later has crashed, or has been quit
 
-**Symptom.** The update is rolled back, and the previous version comes back, because the user quit
-the new one as soon as it appeared: the relaunch shows the update window saying the install worked,
-with a **Done** button and the menu bar a click away.
-
-**What holds.** The launch that reads the outcome renames it to `result.read`. Gone with that mark in
-place, the version had started and its quit is the user's; gone without it, the helper looks again for
-as long as it first looked (an app changing hands with launchd is gone for that moment), and only if
-it is still nowhere is the previous one put back. `UpdateController.start()` runs last in
-`applicationDidFinishLaunching`, so the mark means the launch got that far.
+This is every app's trap: `docs/shared/pitfalls.md`, **U4**.
 
 ### 55. A helper that gives up while the app may still quit
 
-**Symptom.** Two clocks, the helper's limit and the app's "did not quit" notice, leave a gap in which
-the app quits with no helper left: nothing installed, nothing running, nothing said.
-
-**What holds.** One clock decides. After `Settings.Fixed.updateStallNotice` the app stops the helper
-(`SIGTERM`; while the app runs the helper can only be in its wait, having touched nothing) and then
-says so. The helper's own, longer limit serves only an app too hung to do that.
+This is every app's trap: `docs/shared/pitfalls.md`, **U5**. Here the clock is `Settings.Fixed.updateStallNotice`.
 
 ### 56. `ps` lists the path the kernel ran, not the one the app was installed at
 
-**Measured.** An app reached through a symbolic link (`/tmp` is one) runs under its resolved path,
-and `ps -axo comm=` lists that one. `kill -0` still answers for a process that has exited and has not
-been reaped by whoever started it.
-
-**What holds.** The helper looks for the executable under the installed path and under `pwd -P` of
-it: missing a running version would roll back a good install. It counts an exited, unreaped app
-(state `Z` in `ps`) as gone, and anything `ps` cannot say as still running, the safe way round.
-
+This is every app's trap: `docs/shared/pitfalls.md`, **U6**.
 
 ## Onboarding
 
 ### 57. An `NSStackView` spacer with no intrinsic height absorbs every point of a page's slack
 
-**Symptom.** The welcome window's stepping button was drawn at the bottom right of a list page and
-could not be clicked, for ever, however many times it was pressed. `AXPress` on it worked. Every other
-element of the page — the header, the row text, the "Granted" labels, the title bar's close button —
-hit-tested correctly; only the button answered `AXWindow`, as if nothing were there. It began the
-moment a permission was granted.
-
-**Measured.** The footer was an `NSStackView` holding an invisible spacer and the button
-(`NSStackView(views: [spacer, primary])`), with a width constraint and no height constraint. A bare
-`NSView` has no intrinsic size, so nothing decided the footer's own height, and the enclosing vertical
-stack handed it every point the page was not using. Granting a permission swaps a row's 26 pt button
-for an 18 pt "Granted" label; the list shrinks by 36 pt, and that slack goes into the footer:
-
-```
-before the swap   footer bounds 460 × 24    button frame (381, 0,  79, 24)
-after the swap    footer bounds 460 × 186   button frame (381, 81, 79, 24)
-```
-
-The button is still inside the footer, so nothing reports a broken constraint and `AXFrame` keeps
-naming a plausible rectangle. It has simply stopped being where the page put it.
-
-**What holds.** A footer is a plain `NSView` with the button pinned to its trailing edge **and to both
-its top and bottom**, which fixes the footer's height to the button's. The slack is given somewhere on
-purpose — a dedicated view between the list and the footer, with vertical hugging and compression
-resistance at priority 1 — so it can never be taken by a control. `Metrics` decides sizes; a stack
-view left free to decide one will.
-
-**How it travelled.** This window was fixed and the `building-onboarding` skill's
-`reference/OnboardingWindow.swift` was not, so koffeelid copied the spacer from it, my-sidepulse copied it,
-and ShiftPick copied koffeelid: three more windows with the same dead button. All four references now carry
-the fix. **A trap fixed in a window and not in the reference is a trap that ships again**, and the skill is
-the reference.
-
-**The instrument.** `swift run axprobe elements <app>` prints the front window's Accessibility subtree
-with every element's frame, and `axprobe hit x y` says what a real hit test finds at a point. A frame
-that names a rectangle and a hit test that finds nothing there is this class of bug. The
-`onboarding` log category at `--level debug` prints the button's frame and, up the chain, each
-superview's height and whether it still contains it.
+This is every app's trap: `docs/shared/pitfalls.md`, **O9**. It was found and first fixed here; `swift run axprobe elements SnappySnap` and `axprobe hit x y` are the instruments.

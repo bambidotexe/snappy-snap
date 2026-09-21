@@ -43,3 +43,10 @@ Mission Control detection. `SystemAdapters` is the only code that talks to Acces
 list, the event tap, screens and defaults, and `WindowWriter` in it is the only place a window is
 written. `SnappySnap` wires the two into features: a drag session, the overlays, Snap Assist, the
 handle pill, the junction knob, the oversize watcher, the Settings window.
+
+## The shared documents
+
+`shared/` is a byte-for-byte copy of `~/Projects/macos-app-template/docs/shared/`: the workflow every app
+of the family follows, the conventions, the platform facts, the traps and the walks they all share. **It is
+never edited here**; a change goes in the template and `sh ~/Projects/macos-app-template/scripts/sync-shared-docs.sh`
+replicates it. What is this app's own stays in the documents above.
