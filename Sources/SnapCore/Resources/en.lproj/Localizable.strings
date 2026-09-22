@@ -74,14 +74,9 @@
 "a number needs a digit in its exponent" = "a number needs a digit in its exponent";
 "this number is out of range" = "this number is out of range";
 
-/* HealthWords.swift — the Health page: the overview, and the words a state takes */
-"Overview" = "Overview";
-"Everything works" = "Everything works";
-"1 thing to look at" = "1 thing to look at";
-"%lld things to look at" = "%lld things to look at";
-"Not working: 1 problem" = "Not working: 1 problem";
-"Not working: %lld problems" = "Not working: %lld problems";
-"Checking" = "Checking";
+/* HealthWords.swift — the Health page: its two tables, and the words a state takes */
+"Health" = "Health";
+"Information" = "Information";
 "Check Again" = "Check Again";
 "Granted" = "Granted";
 "Denied" = "Denied";
@@ -89,12 +84,10 @@
 "Disabled" = "Disabled";
 "Available" = "Available";
 "Missing" = "Missing";
-"Valid" = "Valid";
 "Invalid" = "Invalid";
 "Failed" = "Failed";
 
 /* HealthWords.swift — the permissions */
-"Permissions" = "Permissions";
 "Accessibility permission" = "Accessibility permission";
 "In Privacy & Security, turn on SnappySnap under “Device Control and Data Access”. Snapping starts the moment it is on." = "In Privacy & Security, turn on SnappySnap under “Device Control and Data Access”. Snapping starts the moment it is on.";
 "Notifications permission" = "Notifications permission";
@@ -111,18 +104,24 @@
 "macOS tiling while ⌥ Option is held" = "macOS tiling while ⌥ Option is held";
 "With the halves held under ⌥ Option on, macOS tiles the window too. In Desktop & Dock, turn off “Hold ⌥ key while dragging windows to tile”." = "With the halves held under ⌥ Option on, macOS tiles the window too. In Desktop & Dock, turn off “Hold ⌥ key while dragging windows to tile”.";
 
-/* HealthWords.swift — snapping: the drag detection, and what it has done */
-"Snapping" = "Snapping";
+/* HealthWords.swift — the drag detection, and what stops it doing its job */
 "Drag detection" = "Drag detection";
 "SnappySnap could not start following your drags. Quit it and open it again." = "SnappySnap could not start following your drags. Quit it and open it again.";
 "Drags with fn held" = "Drags with fn held";
 "A window dragged with fn held is not snapped. Quit SnappySnap and open it again." = "A window dragged with fn held is not snapped. Quit SnappySnap and open it again.";
 "Drag detection pauses" = "Drag detection pauses";
-"Never" = "Never";
 "%lld for answering too slowly, %lld by macOS" = "%lld for answering too slowly, %lld by macOS";
-"macOS paused the drag detection because SnappySnap answered too slowly, so a drag may have been missed. Copy the report below to send it along." = "macOS paused the drag detection because SnappySnap answered too slowly, so a drag may have been missed. Copy the report below to send it along.";
-"Space changes and Mission Control" = "Space changes and Mission Control";
+"macOS paused the drag detection because SnappySnap answered too slowly, so a drag may have been missed. If it keeps happening, quit SnappySnap and open it again." = "macOS paused the drag detection because SnappySnap answered too slowly, so a drag may have been missed. If it keeps happening, quit SnappySnap and open it again.";
+"Space tracking" = "Space tracking";
 "Snapping does not stand down when you change Space or open Mission Control. Quit SnappySnap and open it again." = "Snapping does not stand down when you change Space or open Mission Control. Quit SnappySnap and open it again.";
+"Windows not put back" = "Windows not put back";
+"Snap Assist could not put them back, so they sit in a corner of the screen. Quit SnappySnap and open it again: it puts them back as it starts." = "Snap Assist could not put them back, so they sit in a corner of the screen. Quit SnappySnap and open it again: it puts them back as it starts.";
+"The windows Snap Assist had moved aside when SnappySnap last quit could not be found again. Look for them in a corner of the screen and drag them back." = "The windows Snap Assist had moved aside when SnappySnap last quit could not be found again. Look for them in a corner of the screen and drag them back.";
+"Crashes in the last %lld days" = "Crashes in the last %lld days";
+"Last one %@" = "Last one %@";
+"Console shows what happened, under “Crash Reports”." = "Console shows what happened, under “Crash Reports”.";
+
+/* HealthWords.swift — the readings */
 "Last snap" = "Last snap";
 "None yet" = "None yet";
 "%lld s ago" = "%lld s ago";
@@ -130,55 +129,7 @@
 "%lld h ago" = "%lld h ago";
 "%lld d ago" = "%lld d ago";
 "Windows where a snap left them" = "Windows where a snap left them";
-"Windows not put back" = "Windows not put back";
-"Snap Assist could not put them back, so they sit in a corner of the screen. Quit SnappySnap and open it again: it puts them back as it starts." = "Snap Assist could not put them back, so they sit in a corner of the screen. Quit SnappySnap and open it again: it puts them back as it starts.";
-"The windows Snap Assist had moved aside when SnappySnap last quit could not be found again. Look for them in a corner of the screen and drag them back." = "The windows Snap Assist had moved aside when SnappySnap last quit could not be found again. Look for them in a corner of the screen and drag them back.";
 
-/* HealthWords.swift — the handles */
-"Handles" = "Handles";
-"Handles on offer" = "Handles on offer";
-"Smallest window sizes" = "Smallest window sizes";
-"1 app" = "1 app";
-"%lld apps" = "%lld apps";
-"%lld built in, %lld measured, %lld edited" = "%lld built in, %lld measured, %lld edited";
-"The saved list could not be read, so the built-in one is used and the rest is measured again." = "The saved list could not be read, so the built-in one is used and the rest is measured again.";
-
-/* HealthWords.swift — the custom areas */
-"Custom areas" = "Custom areas";
-"1 area" = "1 area";
-"%lld areas" = "%lld areas";
-"No area is offered until the text is fixed. Settings › Custom Areas says what is wrong." = "No area is offered until the text is fixed. Settings › Custom Areas says what is wrong.";
-
-/* HealthWords.swift — compatibility: the hidden features, and which bar each display gets */
+/* HealthWords.swift — the System page's hidden macOS features */
 "Compatibility" = "Compatibility";
 "Use hidden macOS features" = "Use hidden macOS features";
-"This macOS lacks a hidden part SnappySnap uses, so it does without: everything still works, a little less precisely." = "This macOS lacks a hidden part SnappySnap uses, so it does without: everything still works, a little less precisely.";
-"Snap bar on “%@”" = "Snap bar on “%@”";
-"Notch" = "Notch";
-"Island" = "Island";
-"%@, camera housing %@ × %@ pt" = "%@, camera housing %@ × %@ pt";
-
-/* HealthWords.swift — the app itself */
-"App" = "App";
-"Launch at login" = "Launch at login";
-"In System Settings › General › Login Items & Extensions, turn on SnappySnap under “Open at Login”." = "In System Settings › General › Login Items & Extensions, turn on SnappySnap under “Open at Login”.";
-"Running for" = "Running for";
-"%lld d %lld h" = "%lld d %lld h";
-"%lld h %lld min" = "%lld h %lld min";
-"%lld min" = "%lld min";
-"Less than a minute" = "Less than a minute";
-"Memory used" = "Memory used";
-"%lld MB" = "%lld MB";
-"Crashes in the last %lld days" = "Crashes in the last %lld days";
-"None" = "None";
-"Last one %@" = "Last one %@";
-"Console shows what happened, under “Crash Reports”. Copy the report below to send it along." = "Console shows what happened, under “Crash Reports”. Copy the report below to send it along.";
-"Installed in" = "Installed in";
-"Disk image" = "Disk image";
-"Temporary copy" = "Temporary copy";
-"Quit SnappySnap, drag it to the Applications folder, and open it from there. Where it runs now, it cannot update itself." = "Quit SnappySnap, drag it to the Applications folder, and open it from there. Where it runs now, it cannot update itself.";
-
-/* HealthWords.swift — the report to copy */
-"Report" = "Report";
-"Copies everything on this page as text, to paste into a bug report." = "Copies everything on this page as text, to paste into a bug report.";
-"Copy Report" = "Copy Report";

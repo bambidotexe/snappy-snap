@@ -62,7 +62,7 @@ final class SettingsWindow: NSObject, NSWindowDelegate, NSToolbarDelegate {
          othersNeedUsActive: @escaping @MainActor () -> Bool) {
         self.othersNeedUsActive = othersNeedUsActive
         status = SystemStatus(engine: engine)
-        health = HealthCheck(store: store, minimums: minimums, app: app)
+        health = HealthCheck(store: store, app: app)
         window = NSWindow(contentRect: .zero, styleMask: [.titled, .closable, .miniaturizable],
                           backing: .buffered, defer: false)
         window.title = selection.page.title

@@ -301,12 +301,11 @@ struct StatusMark {
 }
 
 extension StatusMark {
-    /// The mark for one of the Health rules' four levels (`SnapCore.HealthLevel`): blue, green, orange,
-    /// red. Every page that colours a state by those rules draws it through this, so a state reads the
-    /// same colour on the page that owns it and on the Health page.
+    /// The mark for one of the Health rules' three levels (`SnapCore.HealthLevel`): green, orange, red.
+    /// Every page that colours a state by those rules draws it through this, so a state reads the same
+    /// colour on the page that owns it and on the Health page.
     init(_ level: HealthLevel, _ text: String) {
         switch level {
-        case .info: self = .info(text)
         case .good: self = .good(text)
         case .warning: self = .warning(text)
         case .failure: self = .failure(text)

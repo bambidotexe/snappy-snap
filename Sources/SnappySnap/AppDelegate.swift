@@ -62,8 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                                 AppHealthState(lastSnap: self?.state.lastSnap,
                                                                registry: self?.state.registry ?? SnapRegistry(),
                                                                strandedWindows: self?.assist?.strandedCount ?? 0,
-                                                               parkedRecordReadable: self?.assist?.parkedRecordWasUnreadable != true,
-                                                               displays: self?.screens.displays ?? [])
+                                                               parkedRecordReadable: self?.assist?.parkedRecordWasUnreadable != true)
                                             },
                                             othersNeedUsActive: { [weak self] in
                                                 self?.assist?.isActive == true || self?.onboarding?.isUp == true

@@ -49,8 +49,9 @@ ever asks for is notifications, and only to announce an update (last bullet).
 (`com.apple.WindowManager`'s "Drag windows to left or right edge of screen to tile" and "Drag windows
 to menu bar to fill screen" — the names macOS gives those two switches, quoted wherever the app names
 them). The app does not require it, and **it raises no alert about it at launch**: the welcome window's
-*Out of the way* page offers it as a row on the first run, and Settings › System › macOS tiling and
-Settings › Health report the live state for ever after, System with a button to the Desktop & Dock pane.
+*Out of the way* page offers it as a row on the first run, Settings › System › macOS tiling reports the
+live state for ever after with a button to the Desktop & Dock pane, and Settings › Health has an orange
+line for it while it is on.
 A third switch, "Hold ⌥ key while dragging windows to tile", fights only the halves held under ⌥ Option
 (§3), and is reported in orange only while both are on.
 
@@ -1306,8 +1307,7 @@ of the three.
 **A state is always one row**: what is reported on the left, in ordinary text, and at the trailing edge
 a symbol and one word — or a short sentence, which wraps — both in the state's colour. There are five
 marks and each keeps its symbol and its colour on every page: a **green checkmark** for what is as it
-should be; a **blue info mark** for a reading with nothing to judge, and for a switch of the app's own
-that the user turned off; an **orange triangle** for what is not as it should be while windows still
+should be; a **blue info mark** for a reading with nothing to judge; an **orange triangle** for what is not as it should be while windows still
 snap (an optional permission missing, a macOS switch that fights a feature, a feature switched on that
 cannot work, something that did not work this time); a **red stop sign** for what stops windows from
 snapping (the Accessibility permission denied, the drag detection down), and for text in front of the
@@ -1315,12 +1315,11 @@ user that does not parse; and a **spinner** for what is still happening.
 
 **One colour rule holds on every page** (`SnapCore.HealthRules`, the same rule on System, on a feature
 page and on Health): a grant the welcome window marks required is red while it is missing, an optional
-one orange, and neither is ever blue; a preference the welcome window merely offers, Open at Login, reads
-blue when it is off, because that is the user's choice. **A state that says whether something works is
-always on Health**, and on another page only as the context of what is there: beside the control that
-changes it (a permission above its button, macOS's switches above the button to their pane, the
+one orange, and neither is ever blue. **Health holds what has to be in place or running for windows to
+snap**, and another page shows the same state only as the context of what is there: beside the control
+that changes it (a permission above its button, macOS's switches above the button to their pane, the
 margins beside the gap switch, the hidden features' lines beside their switch, the custom areas'
-verdict beside the editor, the login item's failure beside its switch).
+verdict beside the editor).
 
 **The copy has four rules.** Every text is the default size — body, bold for a group's title,
 monospaced for what is code — and nothing is smaller. A keyboard key is written symbol first:
@@ -1420,57 +1419,46 @@ macOS for anything.
 
 ### The Health page
 
-**Whether SnappySnap is doing its job, at a glance.** The second to last page, between System and Tip,
-titled *Health* (*Santé*) with a stethoscope. It reports and changes nothing but itself: a state is put
-right on the page that owns it, and each orange or red row says where in a warning under its group. The
-app's version and its updates are not on it: they are General's.
+**Whether SnappySnap works, at a glance.** The second to last page, between System and Tip, titled
+*Health* (*Santé*) with a stethoscope. It is **two tables and nothing else**, and it reports and changes
+nothing: a state is put right on the page that owns it. The app's version and its updates are not on it:
+they are General's. Neither is a preference, whichever way it is set (the gap, the handles, the custom
+areas, the hidden macOS features, the snap bar, Launch at login), nor the macOS version, the memory used
+or how long the app has run.
 
-The first group, **Overview**, is one row named *SnappySnap* whose mark sums up every row under it: green
-**Everything works**; orange **N things to look at**, counting the orange rows; red **Not working: N
-problems**, counting the red rows, red winning over orange. Under it one button, **Check Again**, which
-reads everything at once and shows **Checking** with a spinner for at least **0.5 s**
-(`Settings.Fixed.healthMinimumBusy`), so the press is seen to do something.
+**Health** (*Santé*) holds the checks, each one line, **green, orange or red and never blue**: what has
+to be in place or running for windows to snap. Three are always there; every other one is a line only
+while it is wrong, because it has nothing to say while it is fine. Under the lines, one button, **Check
+Again**, which reads everything at once and shows a spinner beside itself for at least **0.5 s**
+(`Settings.Fixed.healthMinimumBusy`), so the press is seen to do something. Under the card, while a line
+is orange or red, the sentence that says how to put it right, each once. With everything gone wrong at
+once the table holds nine lines, within the ten every app of the family is held to
+(`HealthLimits.checks`).
 
-Then, in this order, with each row's colour and, for a row that can be orange or red, the sentence under
-its group while it is:
-
-| Group | Row | Reads |
+| Line | When | Reads |
 |---|---|---|
-| Permissions | Accessibility permission | **Granted** green; **Denied** red, "In Privacy & Security, turn on SnappySnap under “Device Control and Data Access”…" |
-| Permissions | Notifications permission | **Granted** green; **Denied** orange: never asked, the fix names Show Onboarding Again; refused, it names System Settings › Notifications › “Allow notifications” |
-| macOS tiling | macOS edge tiling | **Disabled** green; **Enabled** orange, naming both of Desktop & Dock's switches |
-| macOS tiling | macOS margins for tiled windows | green while they agree with the gap switch, orange otherwise, naming the direction to flip “Tiled windows have margins” |
-| macOS tiling | macOS tiling while ⌥ Option is held | orange only while “Hold ⌥ key while dragging windows to tile” and the halves held under ⌥ Option are both on; green otherwise |
-| Snapping | Drag detection | **Enabled** green; **Failed** red when the event tap could not be started once the permission arrived, or macOS keeps it switched off: quit and reopen. No row while the permission is still missing, whose own row is then the one red |
-| Snapping | Drags with fn held | **Enabled** green; **Failed** orange when the device-level listener could not be started (§3 *Arming*) |
-| Snapping | Drag detection pauses | since launch: **Never** green; a count, blue when every pause was macOS's own, orange once one was for the app answering too slowly (a drag may have been missed); the split is the tooltip |
-| Snapping | Space changes and Mission Control | **Enabled** green while §13's watcher runs; **Failed** orange otherwise |
-| Snapping | Last snap | blue, how long ago a window last landed where a snap put it (*12 s ago*, *3 min ago*), or **None yet**; the moment is the tooltip |
-| Snapping | Windows where a snap left them | blue, how many windows on screen still sit (±2 pt) where a snap left them |
-| Snapping | Windows not put back | a count: 0 green; more orange, the windows Snap Assist could not deal home (§8), which the next launch puts back; **Invalid** orange when the record an earlier run left could not be read at launch, so those windows cannot be named: look for them in a corner of the screen |
-| Handles | Handles on offer | blue, how many dividers between two windows would offer a pill right now; **Disabled** blue with the handles switched off |
-| Handles | Smallest window sizes | blue, how many apps the list holds, the built-in, measured and edited counts as the tooltip; **Invalid** orange when the saved list could not be read and the built-in one stands in |
-| Custom areas | Custom areas | **Valid** green, the number of areas as the tooltip; **Invalid** orange with the failure as the tooltip; **Disabled** blue with the feature switched off. Orange here and red beside the editor: on Health it is one feature that cannot work while every other drag snaps |
-| Compatibility | macOS | blue, the version; macOS's own description with its build as the tooltip |
-| Compatibility | Use hidden macOS features | **Enabled** green; **Disabled** blue, the user's choice |
-| Compatibility | one row per thing the hidden parts of macOS buy | **Available** green; **Missing** orange; the symbols as the tooltip, exactly as on System |
-| Compatibility | Snap bar on “display” | one row per attached display, blue: what the bar is drawn as there with the chosen appearance (**Notch**, **Island**, **Floating bar**), **Disabled** with the bar off; the display's size and camera housing as the tooltip |
-| App | Launch at login | **Enabled** green; **Disabled** blue, the user's choice; **Disabled** orange when switched off in System Settings while the app asked for it, naming *Open at Login* in Login Items & Extensions |
-| App | Running for | blue, in the two largest units |
-| App | Memory used | blue, in MB, as Activity Monitor counts it |
-| App | Crashes in the last 7 days | **None** green; a count orange, the last one's date as the tooltip, from `~/Library/Logs/DiagnosticReports` |
-| App | Installed in | **Applications** green; another folder blue; **Disk image** or **Temporary copy** orange: move it to Applications |
+| Accessibility permission | always | **Granted** green; **Denied** red, "In Privacy & Security, turn on SnappySnap under “Device Control and Data Access”…" |
+| Notifications permission | always | **Granted** green; **Denied** orange: never asked, the fix names Show Onboarding Again; refused, it names System Settings › Notifications › “Allow notifications” |
+| Drag detection | always, once the permission is there | **Enabled** green; **Failed** red when the event tap could not be started once the permission arrived, or macOS keeps it switched off: quit and reopen. No line while the permission is still missing, whose own line is then the one red |
+| Drags with fn held | only while it is wrong | **Failed** orange: the device-level listener could not be started (§3 *Arming*), so a drag made with fn held is not snapped |
+| Drag detection pauses | only while it is wrong | orange once macOS paused the detection because the app answered too slowly (a drag may have been missed); the word is how many pauses since launch, the split the tooltip. A pause macOS makes for its own reasons is no line |
+| Space tracking | only while it is wrong | **Failed** orange: §13's watcher is not running, so a gesture does not stand down on a Space change or Mission Control |
+| macOS tiling | only while it is wrong | **Enabled** orange, one line, while “Drag windows to left or right edge of screen to tile” or “Drag windows to menu bar to fill screen” is on, or “Hold ⌥ key while dragging windows to tile” is on with the halves held under ⌥ Option: the fix names each switch that fights the drag. “Tiled windows have margins” is not on Health |
+| Windows not put back | only while it is wrong | a count, orange: the windows Snap Assist could not deal home (§8), which the next launch puts back; **Invalid** orange when the record an earlier run left could not be read at launch, so those windows cannot be named: look for them in a corner of the screen |
+| Crashes in the last 7 days | only while there is one | a count, orange, the last one's date as the tooltip, from `~/Library/Logs/DiagnosticReports`; the fix names Console's “Crash Reports” |
 
-The last group, **Report**, is a hint and one button, **Copy Report**, which puts the whole page on the
-clipboard as text: the app's version and macOS's first, the summary, then one line per row with its
-level, its word and its tooltip. Nothing in it is secret: the page reads no window title and no file of
-the user's.
+**Information** (*Informations*) holds two readings, blue:
 
-**When it reads.** The permissions, the tiling switches, the login item and whether the drag detection
-runs are the window's 2 s poll, shared with System. The rest is read when the window opens on Health,
-when Health is picked, and on Check Again, **never on a timer**: every one of those readings is a cheap
-local read (a sysctl, a directory listing, one window list, a parse of the custom areas' text), taken on
-the main thread. The settings each row is judged against are read as they are.
+| Line | Reads |
+|---|---|
+| Last snap | how long ago a window last landed where a snap put it (*12 s ago*, *3 min ago*), or **None yet**; the moment is the tooltip |
+| Windows where a snap left them | how many windows on screen still sit (±2 pt) where a snap left them |
+
+**When it reads.** The permissions, the tiling switches and whether the drag detection runs are the
+window's 2 s poll, shared with System. The rest is read when the window opens on Health, when Health is
+picked, and on Check Again, **never on a timer**: every one of those readings is a cheap local read (a
+directory listing, one window list), taken on the main thread. The one setting a line is judged against,
+the halves held under ⌥ Option, is read as it is.
 
 ### The welcome window
 
@@ -1795,8 +1783,8 @@ else. Changing the language is quitting and reopening the app, because a catalog
 site reads `L("Show in menu bar")`, so the sentence is still beside the thing it labels; `en.lproj`
 maps each key to itself and `fr.lproj` to the French. A value inside a sentence is interpolated into
 the key, so the French is free to put it where its own sentence needs it. Three catalogues, one per
-target that shows text: **`SnapCore` 152 sentences, `SystemAdapters` 4, `SnappySnap` 184 — 340 in all.**
-The Health page's words are `SnapCore`'s, because its rows are built there, and so are the System page's
+target that shows text: **`SnapCore` 109 sentences, `SystemAdapters` 4, `SnappySnap` 184 — 297 in all.**
+The Health page's words are `SnapCore`'s, because its lines are built there, and so are the System page's
 states it shares with Health.
 
 **A sentence with no French falls back to its English key, silently**, which is the one failure this

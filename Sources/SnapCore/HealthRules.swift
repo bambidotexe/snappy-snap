@@ -1,8 +1,8 @@
 import Foundation
 
 /// The rules that turn what was found into a level. Every page that reports one of these states reads it
-/// from here, so the System page's permission row and the Health page's agree, and so do the Gap group's
-/// margins row and the Health page's.
+/// from here, so the System page's permission row and the Health page's agree, and so do the System page's
+/// tiling rows and the Health page's.
 ///
 /// **What red is for.** SnappySnap's job is to snap a window the user drags, through Accessibility. Red
 /// is reserved for what stops that: the Accessibility permission denied, the drag detection down. Every
@@ -56,13 +56,12 @@ public enum HealthRules {
 
     /// How often macOS paused the drag detection since launch. A pause for answering too slowly is this
     /// app's own fault and a drag may have been missed: orange. A pause macOS makes for its own reasons (a
-    /// password field taking the keyboard) is nobody's fault: a reading.
+    /// password field taking the keyboard) is nobody's fault and nothing to fix: fine.
     public static func pauses(slow: Int, byMacOS: Int) -> HealthLevel {
-        if slow > 0 { return .warning }
-        return byMacOS > 0 ? .info : .good
+        slow > 0 ? .warning : .good
     }
 
-    /// Whether Space changes and Mission Control are watched. Without it a gesture is not stood down when
+    /// Whether Space changes and Mission Control are followed. Without it a gesture is not stood down when
     /// the screen changes under it, and windows parked by Snap Assist can be stranded.
     public static func spaces(watched: Bool) -> HealthLevel {
         watched ? .good : .warning
@@ -75,56 +74,10 @@ public enum HealthRules {
         count == 0 && recordReadable ? .good : .warning
     }
 
-    /// The custom areas held under ⌘ Command. Switched off is the user's choice; switched on over text that
-    /// does not parse is a feature that cannot work, and every other drag still snaps.
-    public static func customAreas(enabled: Bool, valid: Bool) -> HealthLevel {
-        guard enabled else { return .info }
-        return valid ? .good : .warning
-    }
-
-    /// The saved list of window sizes. A reading while it could be read; a list that could not be read
-    /// was replaced by the built-in one, and the rest is measured again.
-    public static func windowSizes(readable: Bool) -> HealthLevel {
-        readable ? .info : .warning
-    }
-
-    /// The switch over every hidden part of macOS the app uses: on is as shipped, off is the user's
-    /// choice, and every feature then takes its public route.
-    public static func hiddenFeatures(on: Bool) -> HealthLevel {
-        on ? .good : .info
-    }
-
     /// One thing the hidden parts of macOS buy, on this Mac. Missing sends it down its public route: it
     /// still works, a little less exactly.
     public static func hiddenFeature(available: Bool) -> HealthLevel {
         available ? .good : .warning
-    }
-
-    /// Open at Login. Off is the user's choice and only worth knowing; switched off in System Settings while
-    /// the app asked for it is a login that will not happen, which the user did not choose here.
-    public static func loginItem(_ state: LoginItemState) -> HealthLevel {
-        switch state {
-        case .enabled: .good
-        case .disabled: .info
-        case .needsApproval: .warning
-        }
-    }
-
-    /// A crash the app came back from still cost the user whatever it was doing, and a crash mid Snap
-    /// Assist leaves windows parked until the next launch: any crash in the window is worth a look.
-    public static func crashes(_ count: Int) -> HealthLevel {
-        count == 0 ? .good : .warning
-    }
-
-    /// Running out of a disk image, or out of the read-only copy macOS makes of an app launched from where
-    /// it was downloaded, is running an app that is not installed: it goes when the image is ejected, and an
-    /// update cannot replace it. Any other folder is a choice.
-    public static func location(_ location: AppLocation) -> HealthLevel {
-        switch location {
-        case .applications: .good
-        case .elsewhere: .info
-        case .diskImage, .temporaryCopy: .warning
-        }
     }
 }
 
@@ -141,18 +94,6 @@ extension HealthRules {
         let pattern = Array("0000-00-00-000000")
         guard stamp.count > pattern.count else { return false }
         return zip(stamp, pattern).allSatisfy { char, slot in slot == "-" ? char == "-" : char.isASCII && char.isNumber }
-    }
-
-    /// Where a bundle is, from its path. `home` is the user's home folder; `readOnlyVolume` is whether the
-    /// volume the bundle is on is mounted read-only, which is what a disk image is.
-    public static func location(bundlePath: String, home: String, readOnlyVolume: Bool) -> AppLocation {
-        if bundlePath.contains("/AppTranslocation/") { return .temporaryCopy }
-        if readOnlyVolume { return .diskImage }
-        let folder = (bundlePath as NSString).deletingLastPathComponent
-        if folder == "/Applications" || folder == (home as NSString).appendingPathComponent("Applications") {
-            return .applications
-        }
-        return .elsewhere(folder: (folder as NSString).lastPathComponent)
     }
 }
 
@@ -197,25 +138,4 @@ public enum NotificationGrant: Equatable, Sendable {
     case denied
     /// Never asked: the welcome window's Allow button has not been pressed.
     case notAsked
-}
-
-/// What `SMAppService` says about the app as a login item, in the app's own words.
-public enum LoginItemState: Equatable, Sendable {
-    case enabled
-    /// Not registered: the switch is off, which is the user's to decide.
-    case disabled
-    /// Registered, then switched off in System Settings › General › Login Items & Extensions.
-    case needsApproval
-}
-
-/// Where the running bundle is.
-public enum AppLocation: Equatable, Sendable {
-    /// `/Applications` or `~/Applications`.
-    case applications
-    /// A folder of the user's choosing, named by its last component.
-    case elsewhere(folder: String)
-    /// A read-only volume: the disk image it came in.
-    case diskImage
-    /// The randomised read-only copy macOS runs a quarantined app from (App Translocation).
-    case temporaryCopy
 }

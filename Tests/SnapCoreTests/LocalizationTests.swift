@@ -231,21 +231,18 @@ import Foundation
         let en = try Self.catalogue("SnapCore", "en")
         let fr = try Self.catalogue("SnapCore", "fr")
         let words = [
-            "Overview", "Everything works", "1 thing to look at", "%lld things to look at",
-            "Not working: 1 problem", "Not working: %lld problems", "Checking", "Check Again",
-            "Granted", "Denied", "Enabled", "Disabled", "Available", "Missing", "Valid", "Invalid", "Failed",
-            "Permissions", "Accessibility permission", "Notifications permission",
+            "Health", "Information", "Check Again",
+            "Granted", "Denied", "Enabled", "Disabled", "Available", "Missing", "Invalid", "Failed",
+            "Accessibility permission", "Notifications permission",
             "macOS tiling", "macOS edge tiling", "macOS margins for tiled windows",
             "macOS tiling while ⌥ Option is held",
-            "Snapping", "Drag detection", "Drags with fn held", "Drag detection pauses", "Never",
-            "Space changes and Mission Control", "Last snap", "None yet", "Windows where a snap left them",
-            "Windows not put back", "Handles", "Handles on offer", "Smallest window sizes", "Custom areas",
-            "Compatibility", "Use hidden macOS features", "Notch", "Island", "Floating bar", "App",
-            "Launch at login", "Running for", "Memory used", "Crashes in the last %lld days", "None",
-            "Installed in", "Disk image", "Temporary copy", "Report", "Copy Report",
-            "%lld s ago", "%lld min ago", "%lld h ago", "%lld d ago", "Less than a minute", "%lld MB",
+            "Drag detection", "Drags with fn held", "Drag detection pauses", "Space tracking",
+            "Windows not put back", "Crashes in the last %lld days", "Last one %@",
+            "Last snap", "None yet", "Windows where a snap left them",
+            "%lld s ago", "%lld min ago", "%lld h ago", "%lld d ago",
+            "Compatibility", "Use hidden macOS features",
         ]
-        let sameInBothLanguages: Set<String> = ["App"]
+        let sameInBothLanguages: Set<String> = []
         for word in words {
             #expect(en[word] == word, "the Health page has lost the English \"\(word)\"")
             #expect(fr[word]?.isEmpty == false, "\"\(word)\" has no French")

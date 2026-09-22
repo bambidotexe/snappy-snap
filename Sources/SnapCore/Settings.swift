@@ -172,9 +172,9 @@ public struct Settings: Codable, Hashable, Sendable {
         /// update checks, and a crash older than that has either been fixed by a release or been seen
         /// again since.
         public static let healthCrashWindow: TimeInterval = 7 * 24 * 60 * 60
-        /// The shortest time the Health page's overview reads *Checking* after Check Again. Most checks
-        /// answer in a few milliseconds, and a mark that changes back before it can be seen reads as a
-        /// button that did nothing; half a second is seen and does not keep anyone waiting.
+        /// The shortest time Check Again shows its spinner. Most checks answer in a few milliseconds, and
+        /// a spinner that goes before it can be seen reads as a button that did nothing; half a second is
+        /// seen and does not keep anyone waiting.
         public static let healthMinimumBusy: TimeInterval = 0.5
     }
 

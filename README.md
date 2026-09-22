@@ -195,7 +195,8 @@ no area under the pointer, it places nothing.
   the app starts the moment the grant arrives, with no relaunch.
 - **macOS's own edge tiling turned off.** In Desktop & Dock, turn off “Drag windows to left or right edge of
   screen to tile” and “Drag windows to menu bar to fill screen”. The two systems answer the same drags. The
-  welcome window offers it on the first run, and Settings › System and Settings › Health show the live state.
+  welcome window offers it on the first run, Settings › System shows the live state, and Settings › Health
+  flags it while it is on.
 
 ## Install
 
@@ -238,8 +239,9 @@ the app and the disk image, and checks Gatekeeper accepts both.
 Open them from the menu-bar item (⌘,), or open SnappySnap again from Applications or Spotlight, which is the
 way in when the icon is hidden. Eight pages; every change applies as you make it. General also holds the
 update check and a **Quit SnappySnap** button, which is there whether or not the icon is; **Health** says at a
-glance whether SnappySnap is doing its job, from the permission and the drag detection to the last snap, with
-**Check Again** and **Copy Report** for a bug report; and **Tip** is where you can offer a coffee.
+glance whether SnappySnap works, in two short tables: the checks (the permissions, the drag detection, and
+anything that stops it while it does) with **Check Again**, and two readings, the last snap and the windows
+still where a snap left them; and **Tip** is where you can offer a coffee.
 
 <details>
 <summary><strong>Every setting, with its default</strong></summary>
@@ -274,8 +276,8 @@ Battery at 30. Snaps and handle releases always run at the display's own rate.
 *Use hidden macOS features* relies on parts of macOS that Apple does not document. On, you get four things:
 exact window matching, a resize pointer over the handles, a snap bar drawn above other notch apps, and the blur
 behind it. Off, every feature still works, a little less exactly and with no pointer over the handles. A macOS
-update can break these parts. The app still opens without them, and Settings › System and Health say which of
-the four your macOS offers. The full list is `docs/private-api-index.md`.
+update can break these parts. The app still opens without them, and Settings › System says which of the four
+your macOS offers. The full list is `docs/private-api-index.md`.
 
 There is no pause switch: if you do not want SnappySnap snapping, quit it, from the menu bar or from the
 button at the bottom of Settings › General.

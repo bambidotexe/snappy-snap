@@ -73,14 +73,9 @@
 "a number needs a digit in its exponent" = "un nombre a besoin d’un chiffre dans son exposant";
 "this number is out of range" = "ce nombre est hors limites";
 
-/* HealthWords.swift — la page Santé : la vue d’ensemble et le vocabulaire des états */
-"Overview" = "Vue d’ensemble";
-"Everything works" = "Tout fonctionne";
-"1 thing to look at" = "1 point à vérifier";
-"%lld things to look at" = "%lld points à vérifier";
-"Not working: 1 problem" = "Ne fonctionne pas : 1 problème";
-"Not working: %lld problems" = "Ne fonctionne pas : %lld problèmes";
-"Checking" = "Vérification";
+/* HealthWords.swift — la page Santé : ses deux tableaux, et le vocabulaire des états */
+"Health" = "Santé";
+"Information" = "Informations";
 "Check Again" = "Vérifier à nouveau";
 "Granted" = "Accordée";
 "Denied" = "Refusée";
@@ -88,12 +83,10 @@
 "Disabled" = "Désactivé";
 "Available" = "Disponible";
 "Missing" = "Absent";
-"Valid" = "Valide";
 "Invalid" = "Invalide";
 "Failed" = "Échec";
 
 /* HealthWords.swift — les autorisations */
-"Permissions" = "Autorisations";
 "Accessibility permission" = "Autorisation d’accessibilité";
 "In Privacy & Security, turn on SnappySnap under “Device Control and Data Access”. Snapping starts the moment it is on." = "Dans Confidentialité et sécurité, activez SnappySnap sous “Contrôle de l’appareil et accès aux données”. L’aimantation démarre dès qu’il est activé.";
 "Notifications permission" = "Autorisation des notifications";
@@ -110,18 +103,24 @@
 "macOS tiling while ⌥ Option is held" = "Mosaïque de macOS avec ⌥ Option enfoncée";
 "With the halves held under ⌥ Option on, macOS tiles the window too. In Desktop & Dock, turn off “Hold ⌥ key while dragging windows to tile”." = "Avec les moitiés sous ⌥ Option activées, macOS dispose aussi la fenêtre en mosaïque. Dans Bureau et Dock, désactivez “Maintenir la touche ⌥ enfoncée tout en faisant glisser les fenêtres pour les disposer en mosaïque”.";
 
-/* HealthWords.swift — l’aimantation : la détection des glissements et ce qu’elle a fait */
-"Snapping" = "Aimantation";
+/* HealthWords.swift — la détection des glissements, et ce qui l’empêche de faire son travail */
 "Drag detection" = "Détection des glissements";
 "SnappySnap could not start following your drags. Quit it and open it again." = "SnappySnap n’a pas pu commencer à suivre vos glissements. Quittez-le et rouvrez-le.";
 "Drags with fn held" = "Glissements avec fn enfoncée";
 "A window dragged with fn held is not snapped. Quit SnappySnap and open it again." = "Une fenêtre glissée avec fn enfoncée n’est pas aimantée. Quittez SnappySnap et rouvrez-le.";
 "Drag detection pauses" = "Pauses de la détection des glissements";
-"Never" = "Jamais";
 "%lld for answering too slowly, %lld by macOS" = "%lld pour une réponse trop lente, %lld par macOS";
-"macOS paused the drag detection because SnappySnap answered too slowly, so a drag may have been missed. Copy the report below to send it along." = "macOS a mis la détection des glissements en pause parce que SnappySnap répondait trop lentement : un glissement a pu être manqué. Copiez le rapport ci-dessous pour l’envoyer avec.";
-"Space changes and Mission Control" = "Changements de Space et Mission Control";
+"macOS paused the drag detection because SnappySnap answered too slowly, so a drag may have been missed. If it keeps happening, quit SnappySnap and open it again." = "macOS a mis la détection des glissements en pause parce que SnappySnap répondait trop lentement : un glissement a pu être manqué. Si cela se répète, quittez SnappySnap et rouvrez-le.";
+"Space tracking" = "Suivi des Spaces";
 "Snapping does not stand down when you change Space or open Mission Control. Quit SnappySnap and open it again." = "L’aimantation ne s’interrompt pas quand vous changez de Space ou ouvrez Mission Control. Quittez SnappySnap et rouvrez-le.";
+"Windows not put back" = "Fenêtres non remises en place";
+"Snap Assist could not put them back, so they sit in a corner of the screen. Quit SnappySnap and open it again: it puts them back as it starts." = "L’assistant d’aimantation n’a pas pu les remettre en place : elles attendent dans un coin de l’écran. Quittez SnappySnap et rouvrez-le, il les remet en place au démarrage.";
+"The windows Snap Assist had moved aside when SnappySnap last quit could not be found again. Look for them in a corner of the screen and drag them back." = "Les fenêtres que l’assistant d’aimantation avait mises de côté quand SnappySnap a quitté n’ont pas pu être retrouvées. Cherchez-les dans un coin de l’écran et faites-les glisser à leur place.";
+"Crashes in the last %lld days" = "Plantages ces %lld derniers jours";
+"Last one %@" = "Le dernier le %@";
+"Console shows what happened, under “Crash Reports”." = "Console montre ce qui s’est passé, sous “Rapports de blocage”.";
+
+/* HealthWords.swift — les relevés */
 "Last snap" = "Dernière aimantation";
 "None yet" = "Aucune pour l’instant";
 "%lld s ago" = "Il y a %lld s";
@@ -129,55 +128,7 @@
 "%lld h ago" = "Il y a %lld h";
 "%lld d ago" = "Il y a %lld j";
 "Windows where a snap left them" = "Fenêtres là où l’aimantation les a laissées";
-"Windows not put back" = "Fenêtres non remises en place";
-"Snap Assist could not put them back, so they sit in a corner of the screen. Quit SnappySnap and open it again: it puts them back as it starts." = "L’assistant d’aimantation n’a pas pu les remettre en place : elles attendent dans un coin de l’écran. Quittez SnappySnap et rouvrez-le, il les remet en place au démarrage.";
-"The windows Snap Assist had moved aside when SnappySnap last quit could not be found again. Look for them in a corner of the screen and drag them back." = "Les fenêtres que l’assistant d’aimantation avait mises de côté quand SnappySnap a quitté n’ont pas pu être retrouvées. Cherchez-les dans un coin de l’écran et faites-les glisser à leur place.";
 
-/* HealthWords.swift — les poignées */
-"Handles" = "Poignées";
-"Handles on offer" = "Poignées proposées";
-"Smallest window sizes" = "Tailles de fenêtre minimales";
-"1 app" = "1 app";
-"%lld apps" = "%lld apps";
-"%lld built in, %lld measured, %lld edited" = "%lld intégrées, %lld mesurées, %lld modifiées";
-"The saved list could not be read, so the built-in one is used and the rest is measured again." = "La liste enregistrée n’a pas pu être lue : la liste intégrée est utilisée et le reste est mesuré à nouveau.";
-
-/* HealthWords.swift — les zones personnalisées */
-"Custom areas" = "Zones personnalisées";
-"1 area" = "1 zone";
-"%lld areas" = "%lld zones";
-"No area is offered until the text is fixed. Settings › Custom Areas says what is wrong." = "Aucune zone n’est proposée tant que le texte n’est pas corrigé. Réglages › Zones personnalisées dit ce qui ne va pas.";
-
-/* HealthWords.swift — la compatibilité : les fonctions cachées, et ce que chaque écran reçoit comme barre */
+/* HealthWords.swift — les fonctions cachées de macOS de la page Système */
 "Compatibility" = "Compatibilité";
 "Use hidden macOS features" = "Utiliser les fonctions cachées de macOS";
-"This macOS lacks a hidden part SnappySnap uses, so it does without: everything still works, a little less precisely." = "Ce macOS n’a pas une partie cachée qu’utilise SnappySnap, qui s’en passe : tout fonctionne encore, un peu moins précisément.";
-"Snap bar on “%@”" = "Barre d’aimantation sur “%@”";
-"Notch" = "Encoche";
-"Island" = "Îlot";
-"%@, camera housing %@ × %@ pt" = "%@, encoche %@ × %@ pt";
-
-/* HealthWords.swift — l’app elle-même */
-"App" = "App";
-"Launch at login" = "Démarrer à l’ouverture de session";
-"In System Settings › General › Login Items & Extensions, turn on SnappySnap under “Open at Login”." = "Dans Réglages Système › Général › Ouverture et extensions, activez SnappySnap sous “Ouvrir avec la session”.";
-"Running for" = "En marche depuis";
-"%lld d %lld h" = "%lld j %lld h";
-"%lld h %lld min" = "%lld h %lld min";
-"%lld min" = "%lld min";
-"Less than a minute" = "Moins d’une minute";
-"Memory used" = "Mémoire utilisée";
-"%lld MB" = "%lld Mo";
-"Crashes in the last %lld days" = "Plantages ces %lld derniers jours";
-"None" = "Aucun";
-"Last one %@" = "Le dernier le %@";
-"Console shows what happened, under “Crash Reports”. Copy the report below to send it along." = "Console montre ce qui s’est passé, sous “Rapports de blocage”. Copiez le rapport ci-dessous pour l’envoyer avec.";
-"Installed in" = "Emplacement";
-"Disk image" = "Image disque";
-"Temporary copy" = "Copie temporaire";
-"Quit SnappySnap, drag it to the Applications folder, and open it from there. Where it runs now, it cannot update itself." = "Quittez SnappySnap, glissez-le dans le dossier Applications et ouvrez-le depuis là. Là où il tourne, il ne peut pas se mettre à jour.";
-
-/* HealthWords.swift — le rapport à copier */
-"Report" = "Rapport";
-"Copies everything on this page as text, to paste into a bug report." = "Copie tout le contenu de cette page sous forme de texte, à coller dans un rapport de bug.";
-"Copy Report" = "Copier le rapport";

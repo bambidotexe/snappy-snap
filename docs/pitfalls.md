@@ -671,8 +671,8 @@ layer below. No amount of reading this app's own frames or log lines would have 
 the window without activating it — but a press that begins on the resize edge is resolved as a resize
 before that gesture applies, which is what makes ⌘ usable here where fn is not. ⌥ is claimed by macOS
 too, by `EnableTilingOptionAccelerator` — "Hold ⌥ key while dragging windows to tile" — which is off
-on this Mac; the app reads it and reports it on Settings › System and Health, orange while its own
-halves held under ⌥ Option are on, and cannot stop it (`functional.md` §20).
+on this Mac; the app reads it and reports it in orange on Settings › System, and as a line on Settings ›
+Health, while its own halves held under ⌥ Option are on, and cannot stop it (`functional.md` §20).
 
 **The same gesture hides its press from a session tap** — entry 47.
 

@@ -59,15 +59,10 @@ public final class MinimumSizeStore: ObservableObject {
     private var clock: UInt64 = 0
     private let defaults: UserDefaults
 
-    /// True when a saved list was there at launch and could not be read, so the built-in one stands in
-    /// for it. The Health page reports it; the next change writes a readable list over it.
-    public let storedListWasUnreadable: Bool
-
     public init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        let data = defaults.data(forKey: Self.defaultsKey)
-        let stored = data.flatMap { try? JSONDecoder().decode(MinimumSizeList.Stored.self, from: $0) }
-        storedListWasUnreadable = data != nil && stored == nil
+        let stored = defaults.data(forKey: Self.defaultsKey)
+            .flatMap { try? JSONDecoder().decode(MinimumSizeList.Stored.self, from: $0) }
         list = MinimumSizeList(stored: stored ?? MinimumSizeList.Stored())
         for key in Self.retiredKeys where defaults.object(forKey: key) != nil {
             defaults.removeObject(forKey: key)

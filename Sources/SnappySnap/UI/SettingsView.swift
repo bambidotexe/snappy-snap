@@ -53,7 +53,7 @@ struct SettingsView: View {
         case .handles: HandlesPage(store: store, minimums: minimums)
         case .customAreas: CustomAreasPage(store: store)
         case .system: SystemPage(store: store, status: status)
-        case .health: HealthPage(store: store, status: status, health: health)
+        case .health: HealthPage(status: status, health: health)
         case .tip: TipPage()
         }
     }
@@ -117,8 +117,8 @@ private struct SettingsPageHeight: PreferenceKey {
 // MARK: - The system state the window shows
 
 /// The facts this window reports but does not own: whether Accessibility and notifications are granted,
-/// what the system's tiling switches say, whether SnappySnap is registered as a login item, and whether
-/// the drag detection is running. All of them can change while the window is shut, and none of them
+/// what the system's tiling switches say, whether SnappySnap is registered as a login item, and where the
+/// drag detection is. All of them can change while the window is shut, and none of them
 /// lives in `Settings`.
 ///
 /// **The window drives this, not a view.** `.onAppear` fires once per hosting view, and this window
@@ -142,15 +142,10 @@ final class SystemStatus: ObservableObject {
     @Published private(set) var accessibilityGranted: Bool
     @Published private(set) var notifications: NotificationGrant
     @Published private(set) var tiling: SystemTilingState
-    /// What `SMAppService` says, including the one state the General page's switch cannot show: registered,
-    /// then switched off in System Settings. The Health page reports that one.
-    @Published private(set) var loginItem: LoginItemState
+    @Published private(set) var launchAtLogin: Bool
     /// Whether the drag detection is waiting for the permission, running, or failed to start. Read with the
-    /// permission, so the Health page's two rows move together when the grant arrives.
+    /// permission, so the Health page's two lines move together when the grant arrives.
     @Published private(set) var engine: EngineState
-
-    /// The General page's switch: on only while the system would open the app at login.
-    var launchAtLogin: Bool { loginItem == .enabled }
 
     private let readEngine: @MainActor () -> EngineState
     private var timer: Timer?
@@ -160,7 +155,7 @@ final class SystemStatus: ObservableObject {
         accessibilityGranted = Permissions.accessibilityGranted
         notifications = GrantCatalog.notificationGrant
         tiling = SystemTilingPrefs.read()
-        loginItem = LoginItem.state
+        launchAtLogin = LoginItem.isEnabled
         engine = readEngine()
     }
 
@@ -186,8 +181,8 @@ final class SystemStatus: ObservableObject {
     /// assumed: `register()` can fail, and a switch showing what the click asked for over a system that
     /// refused it is the worse of the two lies.
     func refreshLoginItem() {
-        let state = LoginItem.state
-        if state != loginItem { loginItem = state }
+        let enabled = LoginItem.isEnabled
+        if enabled != launchAtLogin { launchAtLogin = enabled }
     }
 
     /// Everything, now, rather than at the next tick: every tick, and the Health page's Check Again.
