@@ -151,6 +151,8 @@ overlapping one. Keep `log stream … --level debug` open on the `drag` category
 | [ ] | The same with an application that has **no row** (remove its row in Settings › Handles › Apps first) | The window lands larger than the preview showed, and a beat later the neighbour gives room. Log: `… was asked W×H and took W×H; solving the arrangement again`. Repeat the drop: one move, and the preview is right |
 | [ ] | Two applications with large minimums whose widths **cannot both fit**: snap one right, then the other left | No overlap. The left window takes its minimum from the left edge and the right one is **pushed right, partly off the display**. Log: `minimums do not fit: … runs W×H pt past the right/bottom edge` |
 | [ ] | After that last row, wait a few seconds | The oversize watcher leaves the overhanging window alone: it is not wider than the screen |
+| [ ] | With the gap on, zoom a **Terminal** window (double-click its title bar) and wait a second | It comes back inside the gap and stays there: its bottom edge is at or above the other windows', never below. Log: `window … rounded W×H up to W×H; asking for W×H so it rounds inside the gap` |
+| [ ] | Move that Terminal window somewhere else by its title bar | It stays where it was dropped. It does not slide back to the top |
 
 ## 3. The snap bar and the pair cell (3 min)
 

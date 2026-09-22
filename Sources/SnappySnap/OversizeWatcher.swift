@@ -8,7 +8,7 @@ import SystemAdapters
 /// is — because it was zoomed, because its title bar was double-clicked, or because it was already
 /// that size when the gap was switched on — is animated back inside that space, gap and all. The
 /// threshold is the working area less a gap at each end, not the working area itself: see
-/// `correction(for:in:gap:)`.
+/// `OversizeCorrection.correction(for:in:gap:)`.
 ///
 /// It is a preference of its own (`Settings.correctOversizedWindows`, on by default) as well as being
 /// governed by the gap, because a user who wants the gap on their own snaps and wants macOS's zoom
@@ -46,9 +46,12 @@ import SystemAdapters
 ///   in flight when it reads it.
 /// - The correction goes through the engine like every other placement in the app: it animates, it is
 ///   written by `WindowWriter`, and a refusal raises the window's own floor (§6), never its application's row.
+/// - An application that rounds its size to a grid (Terminal, to whole rows and columns) can land up
+///   to half a cell over the gap. Such a landing is asked once more for a size that rounds to the cell
+///   below (`OversizeCorrection.gridRetry`), so the window ends inside the gap rather than over it.
 /// - A window that **refuses** to come back inside the area is asked once and then left alone until
-///   its frame changes again, so an application with a large minimum size is not fought once a tenth
-///   of a second for ever.
+///   its **size** changes again, so an application with a large minimum size is not fought once a
+///   tenth of a second for ever — and moving it somewhere else does not send it back to the gap's edge.
 ///
 /// It logs a corrected window, with the numbers, and a refusal. A sweep that finds nothing is silent.
 ///
@@ -87,9 +90,8 @@ final class OversizeWatcher {
     /// gets: half a second of being exactly what was asked for before this puts the gap back around
     /// it.
     static let settleDelay: TimeInterval = 0.5
-    /// Slack on every comparison against the available area. A window that misses the area by half a
-    /// point has not been zoomed and is not worth a write.
-    static let tolerance: Double = 1
+    /// Slack on every comparison of two frames (`OversizeCorrection.tolerance`).
+    static let tolerance = OversizeCorrection.tolerance
 
     private let ax: AccessibilityWindows
     private let engine: SteppingSnapEngine
@@ -176,7 +178,7 @@ final class OversizeWatcher {
             // A native full-screen window fills the whole display, menu bar included. It is not
             // oversized, it is somewhere else, and resizing it would be the worst thing in this file.
             guard !fillsDisplay(window.frame, display.frame) else { continue }
-            guard let wanted = Self.correction(for: window.frame, in: display.visibleFrame, gap: gap) else {
+            guard let wanted = OversizeCorrection.correction(for: window.frame, in: display.visibleFrame, gap: gap) else {
                 continue
             }
             // A window the engine is moving is a window with posts in flight — not read, not written,
@@ -184,8 +186,8 @@ final class OversizeWatcher {
             // chose.
             guard !engine.isAnimating(windowID: window.id) else { continue }
             stillOversized.insert(window.id)
-            // Asked once and refused: left alone until it is at some other size.
-            if let landed = refused[window.id], Self.sameFrame(landed, window.frame) { continue }
+            // Asked once and refused: left alone until it is at some other size. Moved is not resized.
+            if let landed = refused[window.id], OversizeCorrection.sameSize(landed, window.frame) { continue }
             refused[window.id] = nil
             let entry = seen[window.id]
             if let entry, Self.sameFrame(entry.frame, window.frame) {
@@ -223,41 +225,6 @@ final class OversizeWatcher {
                   seen.loweredSomething else { continue }
             MinimumProbe.logLowering(seen, window: window.id, size: window.frame.size, log: Logger.app)
         }
-    }
-
-    // MARK: - The rule
-
-    /// The frame `frame` should be given inside `area`, or nil when it is already inside it.
-    ///
-    /// **Oversized means "wider than the gap leaves room for"**: bigger than the whole area minus
-    /// the margin. The space a snapped window is given on an axis is `area` less the gap at each
-    /// end, so anything wider than that on that axis has outgrown the arrangement and is brought
-    /// back to it. The threshold is `2 * gap` off the area and is read from the gap rather than
-    /// written down, so it follows the gap instead of outliving it.
-    ///
-    /// Asking instead for "fills or overflows the area" fires far too late: a window a gap's width
-    /// short of the screen edge is already breaking the arrangement everything else in it keeps.
-    /// `tolerance` is the slack that keeps a window at exactly the right size — the one this
-    /// feature has just placed — from reading as oversized on the next pass.
-    ///
-    /// **Only the offending axis is touched.** A window as wide as the display but half its height is
-    /// given the gap on the left and right and keeps its height and its top edge — the user put it
-    /// there. Both axes is the ordinary case (a zoom), and it comes out as the working area inset by
-    /// the gap, which is exactly where a top-edge snap would have put it.
-    static func correction(for frame: CGRect, in area: CGRect, gap: Double) -> CGRect? {
-        let wide = frame.width - (area.width - 2 * gap) > tolerance
-        let tall = frame.height - (area.height - 2 * gap) > tolerance
-        guard wide || tall else { return nil }
-        var wanted = frame
-        if wide {
-            wanted.origin.x = area.minX + gap
-            wanted.size.width = area.width - 2 * gap
-        }
-        if tall {
-            wanted.origin.y = area.minY + gap
-            wanted.size.height = area.height - 2 * gap
-        }
-        return wanted
     }
 
     private static func sameFrame(_ a: CGRect, _ b: CGRect) -> Bool {
@@ -299,17 +266,44 @@ final class OversizeWatcher {
             \(wanted.width, format: .fixed(precision: 0), privacy: .public)×\
             \(wanted.height, format: .fixed(precision: 0), privacy: .public) to keep the gap
             """)
-        engine.snap(handle, from: window.frame, to: wanted, within: area,
+        place(handle, window: window.id, from: window.frame, to: wanted, area: area, screen: screen, retry: true)
+    }
+
+    /// One write of a correction, and what its landing decides. A landing still oversized by no more
+    /// than an application's rounding is asked once more for a size that rounds down
+    /// (`OversizeCorrection.gridRetry`); anything else still oversized is a refusal.
+    private func place(_ handle: WindowHandle, window: UInt32, from: CGRect, to wanted: CGRect, area: CGRect,
+                       screen: NSScreen, retry: Bool) {
+        engine.snap(handle, from: from, to: wanted, within: area,
                     duration: settingsStore.settings.animationDuration, on: screen, refusal: .anchorInward) { [weak self] landed in
             guard let self else { return }
-            self.correcting.remove(window.id)
-            guard let landed else { return }
-            guard Self.correction(for: landed, in: area, gap: self.settingsStore.settings.gap) != nil else { return }
-            self.refused[window.id] = landed
+            guard let landed else {
+                self.correcting.remove(window)
+                return
+            }
+            guard OversizeCorrection.correction(for: landed, in: area, gap: self.settingsStore.settings.gap) != nil else {
+                self.correcting.remove(window)
+                return
+            }
+            if retry, let smaller = OversizeCorrection.gridRetry(asked: wanted, landed: landed) {
+                Logger.app.info("""
+                    window \(window, privacy: .public) rounded \
+                    \(wanted.width, format: .fixed(precision: 0), privacy: .public)×\
+                    \(wanted.height, format: .fixed(precision: 0), privacy: .public) up to \
+                    \(landed.width, format: .fixed(precision: 0), privacy: .public)×\
+                    \(landed.height, format: .fixed(precision: 0), privacy: .public); asking for \
+                    \(smaller.width, format: .fixed(precision: 0), privacy: .public)×\
+                    \(smaller.height, format: .fixed(precision: 0), privacy: .public) so it rounds inside the gap
+                    """)
+                self.place(handle, window: window, from: landed, to: smaller, area: area, screen: screen, retry: false)
+                return
+            }
+            self.correcting.remove(window)
+            self.refused[window] = landed
             Logger.app.info("""
-                window \(window.id, privacy: .public) would not come inside the working area: it took \
+                window \(window, privacy: .public) would not come inside the working area: it took \
                 \(landed.width, format: .fixed(precision: 0), privacy: .public)×\
-                \(landed.height, format: .fixed(precision: 0), privacy: .public); left as it is
+                \(landed.height, format: .fixed(precision: 0), privacy: .public); left as it is until it is resized
                 """)
         }
     }

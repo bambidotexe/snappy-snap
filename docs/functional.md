@@ -1164,8 +1164,13 @@ arrangement have one kind of edge in it.
   **while the left button is down** — a window being dragged or hand-resized is one the user is
   holding, whatever its frame says.
 - The correction animates through the engine like any other placement, one window per pass, and a
-  refusal raises the window's own floor (§6). A window that **refuses** to come inside is asked once and then
-  left alone until its frame changes again.
+  refusal raises the window's own floor (§6).
+- **An application that rounds its size to a grid** (Terminal: whole rows of 18 pt and columns of 8 pt,
+  to the nearest) can land up to half a cell over the gap. A landing over by no more than the rounding
+  allowance (12 pt) is asked once more, for the size as far under as it landed over, which rounds to the
+  cell below: the window ends inside the gap, up to one cell short of it, never over it.
+- A window that **refuses** to come inside is asked once and then left alone until its **size** changes
+  again. Moving it is not resizing it: a refused window put somewhere else stays where it was put.
 - It logs a correction and a refusal, with the numbers. A sweep that finds nothing is silent.
 - **A window left hanging past the right or the bottom edge by an arrangement (§5.5) is not
   oversized.** The test is the window's size, never where it stands, so such a window is left where

@@ -314,8 +314,10 @@ knobs, pills.
   and while the button is down.
 - **Correction** sits behind the gap switch, its own switch, `isSuspended()`, the left button, and its
   own in-flight set. It corrects one window per pass, through the engine, after the frame has been
-  stable for 0.5 s, and remembers a refusal so a window with a large floor is not fought ten times a
-  second.
+  stable for 0.5 s, asks a window that rounded itself just over the gap once more for a size that
+  rounds down, and remembers a refusal by its size so a window with a large floor is not fought ten
+  times a second nor sent back to the gap's edge when it is moved. The rules are
+  `SnapCore/OversizeCorrection.swift`.
 
 It is the one background feature that writes, which is why every guard above is about *not* writing.
 
@@ -348,6 +350,7 @@ It is the one background feature that writes, which is why every guard above is 
 | `Adjacency.swift` | `HandlePair`, `AdjacencyDetector.pairs` |
 | `HandleDragMath.swift` | Divider maths, gap normalisation, minimum clamping with the 12 pt rounding allowance, `refit` |
 | `MinimumSizeList.swift` | `MinimumRow` with its origin; `MinimumSizeList`: the built-in rows (every one a measurement), this Mac's own rows and removals, the effective list, and the four mutations — a row only ever comes down by itself |
+| `OversizeCorrection.swift` | The oversize watcher's rules: `correction(for:in:gap:)` (what an oversized window is asked for, the offending axis only), `gridRetry` (the second ask for a window that rounded itself just over the gap), `sameSize` (a refusal is remembered by size, so moving the window does not re-correct it) |
 | `PressReconciler.swift` | Pairs the device-level presses and releases with the session's mouse stream by timestamp, and says which ones the session never delivered |
 | `CoveringSurface.swift` | Which non-participating windows can hide a pill or a knob (layer 0 up to the Dock's), and the `zIndex` that places one among the participants |
 | `MinimumSizePolicy.swift` | `revealedFloor`, the one rule for what a landing reveals (past the 12 pt rounding allowance, per axis); what counts as evidence of a floor; `lowered(_:seeing:)`, how a saved size comes down; `WindowFloor`, a window's own raise over its row; the floor a press clamps with when the user has switched probing off (`unprobedFloor`, `floorWithoutProbing`); `presumedFloor`, how small an unmeasured window is presumed to go |
@@ -563,7 +566,7 @@ so the script needs nothing beyond CoreGraphics.
 
 ## 16. Testing
 
-`swift test` builds and runs two targets, `SnapCoreTests` (630 tests) and `SystemAdaptersTests`
+`swift test` builds and runs two targets, `SnapCoreTests` (638 tests) and `SystemAdaptersTests`
 (122), on Swift Testing. Count **two** summary lines: a crashed target prints none. They need no
 permission; a handful read the live desktop or the real `defaults` and tolerate what they find.
 `WindowWriterTests` drive the writer through a fake `Backend`.
