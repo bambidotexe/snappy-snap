@@ -41,7 +41,7 @@ import CoreGraphics
     /// reference. Both are written by hand, so both are parsed here rather than trusted.
     @Test func theDefaultConfigurationAndTheExampleBothParse() throws {
         #expect(try zones(CustomZones.defaultConfiguration).areaCount == 1)
-        #expect(try zones(CustomZones.example).areaCount == 1)
+        #expect(try zones(CustomZones.example).areaCount == 2)
     }
 
     /// The default is one almost-maximized area: nine tenths of the working area, centred, on the
@@ -384,6 +384,86 @@ import CoreGraphics
         #expect(try problem(#"{ "*": { "bounds": { "x": 0, "y": 0, "width": 1, "height": 1 } } }"#)
             .contains("array"))
         #expect(try problem("").contains("empty"))
+    }
+
+    // MARK: - Whose window an area is for
+
+    let draft = CustomAreaWindow(bundleIdentifier: "com.vorssaint.utils", applicationName: "Vorssaint",
+                                 title: "Vorssaint")
+    let terminal = CustomAreaWindow(bundleIdentifier: "com.apple.Terminal", applicationName: "Terminal",
+                                    title: "zsh")
+    /// One untargeted area filling the working area's left half, and one for Vorssaint's windows only,
+    /// filling its right half, both on every display.
+    let targetedConfiguration = """
+    [
+      { "*": { "anchor": "left", "size": { "widthPercent": 0.5, "heightPercent": 1 } } },
+      {
+        // The draft window
+        "app": "com.vorssaint.utils",
+        "*": { "anchor": "right", "size": { "widthPercent": 0.5, "heightPercent": 1 } }
+      }
+    ]
+    """
+
+    /// A window some area targets is offered those areas and no others; every other window is offered
+    /// the areas that target nobody, and never a targeted one.
+    @Test func aTargetedWindowIsOfferedOnlyItsOwnAreas() throws {
+        let all = try zones(targetedConfiguration)
+        #expect(all.areaCount == 2)
+        let forDraft = all.areas(on: builtIn, gap: 0, for: draft)
+        try expectRect(forDraft.rects.first, CGRect(x: 756, y: 37, width: 756, height: 900))
+        #expect(forDraft.rects.count == 1)
+        let forTerminal = all.areas(on: builtIn, gap: 0, for: terminal)
+        try expectRect(forTerminal.rects.first, CGRect(x: 0, y: 37, width: 756, height: 900))
+        #expect(forTerminal.rects.count == 1)
+        // A window nothing is known about is targeted by nothing.
+        #expect(all.areas(on: builtIn, gap: 0).rects.count == 1)
+    }
+
+    /// `app` takes the bundle identifier or the application's name, ignoring case and surrounding
+    /// space, one name or an array of them.
+    @Test func anApplicationIsNamedByItsIdentifierOrItsName() throws {
+        for app in [#""Vorssaint""#, #"" vorssaint ""#, #""COM.VORSSAINT.UTILS""#, #"["Terminal", "Vorssaint"]"#] {
+            let all = try zones(#"[{ "app": \#(app), "*": { "bounds": { "x": 0, "y": 0, "width": 10, "height": 10 } } }]"#)
+            #expect(all.areas(on: builtIn, gap: 0, for: draft).rects.count == 1, "\(app)")
+        }
+    }
+
+    /// `window` matches the title exactly, never a part of it, and with `app` beside it a window has to
+    /// answer both.
+    @Test func aWindowIsNamedByItsTitleAndBothKeysMustMatch() throws {
+        let byTitle = try zones(#"[{ "window": "zsh", "*": { "bounds": { "x": 0, "y": 0, "width": 10, "height": 10 } } }]"#)
+        #expect(byTitle.readsWindowTitles)
+        #expect(byTitle.areas(on: builtIn, gap: 0, for: terminal).rects.count == 1)
+        #expect(byTitle.areas(on: builtIn, gap: 0,
+                              for: CustomAreaWindow(applicationName: "Terminal", title: "zsh — 80×24")).rects.isEmpty)
+        let both = try zones(#"[{ "app": "Vorssaint", "window": "zsh", "*": { "bounds": { "x": 0, "y": 0, "width": 10, "height": 10 } } }]"#)
+        #expect(both.areas(on: builtIn, gap: 0, for: terminal).rects.isEmpty)
+        #expect(both.areas(on: builtIn, gap: 0, for: draft).rects.isEmpty)
+        #expect(try zones(targetedConfiguration).readsWindowTitles == false)
+    }
+
+    /// A targeted window whose areas do not exist on this display is offered nothing there: the choice
+    /// is made for the window, and Command never falls back.
+    @Test func aTargetedWindowGetsNothingWhereItsAreasDoNotExist() throws {
+        let all = try zones("""
+        [
+          { "*": { "anchor": "center", "size": { "widthPercent": 0.5, "heightPercent": 0.5 } } },
+          { "app": "Vorssaint", "screenName:built-in": { "anchor": "center", "size": { "width": 100, "height": 100 } } }
+        ]
+        """)
+        #expect(all.areas(on: builtIn, gap: 0, for: draft).rects.count == 1)
+        #expect(all.areas(on: monitor, gap: 0, for: draft).rects.isEmpty)
+        #expect(all.areas(on: monitor, gap: 0, for: terminal).rects.count == 1)
+    }
+
+    /// What `app` and `window` refuse, each naming where it is.
+    @Test func aTargetThatNamesNoOneIsReported() throws {
+        let area = #""*": { "bounds": { "x": 0, "y": 0, "width": 1, "height": 1 } }"#
+        #expect(try problem(#"[{ "app": 3, \#(area) }]"#).contains(#""app""#))
+        #expect(try problem(#"[{ "app": [], \#(area) }]"#).contains("no one"))
+        #expect(try problem(#"[{ "window": ["zsh", 1], \#(area) }]"#).contains("[1]"))
+        #expect(try problem(#"[{ "app": "  ", \#(area) }]"#).contains("empty"))
     }
 
     /// An empty array is a configuration that offers nothing — not a failure, and not a reason to fall

@@ -96,6 +96,23 @@ paste the one below, which overlaps on purpose.
 | [ ] | Turn it back on | The text is exactly as it was, comments included |
 | [ ] | Flick between the **Settings** tab and this one, watching the switch | The same control in both: a switch on the trailing edge, same row height and margins, the grey line wrapping the same way. Not a checkbox (`pitfalls.md` 47) |
 
+### Areas for one application (2 min)
+
+Paste this, then open Vorssaint's Brouillon with ⌃⌥⌘B.
+
+```json
+[
+  { "*": { "anchor": "left", "size": { "widthPercent": 0.5, "heightPercent": 1 } } },
+  { "app": "com.vorssaint.utils", "*": { "anchor": "top-right", "size": { "width": 600, "height": 400 } } }
+]
+```
+
+| | Do this | Expect |
+|---|---|---|
+| [ ] | Drag the Brouillon by its header and hold ⌘ | **Only** the 600 × 400 area in the top-right corner. The left half is not drawn. Release in it: the Brouillon lands there. Log: `custom areas see window … as app com.vorssaint.utils (Vorssaint)` |
+| [ ] | Drag any other window and hold ⌘ | **Only** the left half. The top-right area is never offered |
+| [ ] | Replace `"app": "com.vorssaint.utils"` by `"app": "Vorssaint"` and repeat the first row | The same: an application is named by its identifier or its name |
+
 ### The editor (3 min)
 
 | | Do this | Expect |

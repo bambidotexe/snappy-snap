@@ -10,6 +10,10 @@ import Foundation
 /// accept comments, and what lets a failure name the key or the array index that caused it, with the
 /// line and column for a syntax error.
 ///
+/// An area may also carry `app` and `window`, which say whose window it is for. A window that some area
+/// targets is offered those areas and no others; every other window is offered the areas that target
+/// nobody.
+///
 /// Pure logic over plain values: a display arrives as a `DisplayInfo` (name, frame, working area), never
 /// as an `NSScreen`. Every coordinate is CG space, measured from the top-left of the working area with y
 /// increasing downward, and nothing here rounds.
@@ -22,11 +26,21 @@ public struct CustomZones: Sendable {
         let placement: Placement?
     }
 
-    let elements: [[Entry]]
+    /// One element of the array: its screen keys, and the windows it is for — nil for every window
+    /// that no other area targets.
+    struct Element: Sendable {
+        let entries: [Entry]
+        let target: Target?
+    }
+
+    let elements: [Element]
 
     /// How many areas the array defines, whether or not any of them resolves on a given display.
     public var areaCount: Int { elements.count }
 
+    /// Whether any area names a window by its title, which is the one fact about a dragged window that
+    /// costs an Accessibility read to learn.
+    public var readsWindowTitles: Bool { elements.contains { $0.target?.windows != nil } }
 
     /// Reads the stored text. A failure is a sentence that names what is wrong.
     public static func parse(_ json: String) -> CustomZonesParse {
@@ -39,7 +53,11 @@ public struct CustomZones: Sendable {
         }
     }
 
-    /// Every area that exists on `display`, in array order, each already inset by the gap.
+    /// Every area that exists on `display` for `window`, in array order, each already inset by the gap.
+    ///
+    /// The areas are those that target `window` when at least one does — whether or not any of them
+    /// resolves on this display — and otherwise those that target nobody. A window nothing is known
+    /// about is targeted by no area.
     ///
     /// An element contributes an area when its most specific key that matches the display holds a
     /// placement — an exact `screenName:` before `screenName:built-in` before `screenResolution:` before
@@ -50,11 +68,14 @@ public struct CustomZones: Sendable {
     /// The inset reproduces what the app's other zones do: a whole `gap` on a side that lies on the
     /// working area's own edge, half a gap on every other side, so two areas written flush end exactly
     /// one gap apart. With no gap nothing is inset.
-    public func areas(on display: DisplayInfo, gap: Double) -> CustomAreas {
+    public func areas(on display: DisplayInfo, gap: Double,
+                      for window: CustomAreaWindow = CustomAreaWindow()) -> CustomAreas {
         let workingArea = display.visibleFrame
+        let targeted = elements.filter { $0.target?.matches(window) == true }
+        let offered = targeted.isEmpty ? elements.filter { $0.target == nil } : targeted
         var rects: [CGRect] = []
-        for element in elements {
-            guard let entry = Self.entry(of: element, on: display), let placement = entry.placement else { continue }
+        for element in offered {
+            guard let entry = Self.entry(of: element.entries, on: display), let placement = entry.placement else { continue }
             let inset = Self.inset(placement.rect(in: workingArea), within: workingArea, gap: gap)
             // An area the gap swallows has nothing to contain a pointer, and a negative extent would
             // make `CGRect.contains` standardize it into a rectangle that is not where it was written.
@@ -117,8 +138,8 @@ public struct CustomZones: Sendable {
     """#
 
     /// Shown on the Settings page as a reference rather than stored: it is the one place every way of
-    /// writing an area appears at once — `bounds`, an `anchor` with an `offset`, a percentage size, and
-    /// a `null` that takes the area off one display.
+    /// writing an area appears at once — `bounds`, an `anchor` with an `offset`, a percentage size, a
+    /// `null` that takes the area off one display, and an area kept for one application's windows.
     public static let example = #"""
     [
       {
@@ -143,9 +164,30 @@ public struct CustomZones: Sendable {
           "offset": { "x": 20, "y": 40 },
           "size": { "width": 800, "height": 600 }
         }
+      },
+      {
+        "app": "com.apple.TextEdit",
+        "*": {
+          "anchor": "right",
+          "size": { "widthPercent": 0.4, "heightPercent": 1 }
+        }
       }
     ]
     """#
+}
+
+/// The dragged window as an area's `app` and `window` keys see it. Any of the three may be unknown; an
+/// unknown one matches nothing.
+public struct CustomAreaWindow: Sendable, Equatable {
+    public var bundleIdentifier: String?
+    public var applicationName: String?
+    public var title: String?
+
+    public init(bundleIdentifier: String? = nil, applicationName: String? = nil, title: String? = nil) {
+        self.bundleIdentifier = bundleIdentifier
+        self.applicationName = applicationName
+        self.title = title
+    }
 }
 
 /// What reading the stored text produced: the zones, or the sentence that says what is wrong with it.
@@ -245,6 +287,28 @@ extension CustomZones {
         }
     }
 
+    /// Whose window an area is for. `apps` holds bundle identifiers or application names, `windows`
+    /// titles, all normalized like a screen name. A nil list asks nothing; when both are written a
+    /// window has to answer both.
+    struct Target: Sendable {
+        let apps: [String]?
+        let windows: [String]?
+
+        func matches(_ window: CustomAreaWindow) -> Bool {
+            if let apps {
+                let known = [window.bundleIdentifier, window.applicationName].compactMap { $0 }.map(Selector.normalized)
+                guard apps.contains(where: known.contains) else { return false }
+            }
+            if let windows {
+                guard let title = window.title.map(Selector.normalized), windows.contains(title) else { return false }
+            }
+            return true
+        }
+    }
+
+    /// The keys of an area that are not screen selectors.
+    static let targetKeys = ["app", "window"]
+
     enum Anchor: String, CaseIterable, Sendable {
         case topLeft = "top-left", top, topRight = "top-right"
         case left, center, right
@@ -312,21 +376,34 @@ extension CustomZones {
         }
     }
 
-    private static func decode(_ document: ConfigJSON) throws(CustomZonesError) -> [[Entry]] {
+    private static func decode(_ document: ConfigJSON) throws(CustomZonesError) -> [Element] {
         guard case .array(let items) = document else {
             throw CustomZonesError(message: L("the top level must be an array of areas, but it is \(document.kind)"))
         }
-        var elements: [[Entry]] = []
+        var elements: [Element] = []
         for (index, item) in items.enumerated() {
             let path = Path(parts: ["[\(index)]"])
             guard case .object(let members) = item else {
                 throw path.fail(L("an area must be an object of screen selectors, but it is \(item.kind)"))
             }
             var entries: [Entry] = []
+            var apps: [String]?
+            var windows: [String]?
             for member in members {
                 let keyPath = path.appending("\"\(member.key)\"")
+                // A key written twice resolves to the first of the two, as a selector does.
+                if member.key == "app" {
+                    let names = try decodeNames(member.value, at: keyPath)
+                    if apps == nil { apps = names }
+                    continue
+                }
+                if member.key == "window" {
+                    let names = try decodeNames(member.value, at: keyPath)
+                    if windows == nil { windows = names }
+                    continue
+                }
                 guard let selector = Selector.parse(member.key) else {
-                    throw keyPath.fail(L("not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\""))
+                    throw keyPath.fail(L("not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\", or \"app\" and \"window\" to say whose window the area is for"))
                 }
                 if case .null = member.value {
                     entries.append(Entry(key: member.key, selector: selector, placement: nil))
@@ -335,9 +412,33 @@ extension CustomZones {
                                          placement: try decodePlacement(member.value, at: keyPath)))
                 }
             }
-            elements.append(entries)
+            let target = apps == nil && windows == nil ? nil : Target(apps: apps, windows: windows)
+            elements.append(Element(entries: entries, target: target))
         }
         return elements
+    }
+
+    /// `app` and `window` take one name or an array of them, none empty.
+    private static func decodeNames(_ value: ConfigJSON, at path: Path) throws(CustomZonesError) -> [String] {
+        let items: [ConfigJSON]
+        let isArray: Bool
+        switch value {
+        case .string: (items, isArray) = ([value], false)
+        case .array(let values): (items, isArray) = (values, true)
+        default: throw path.fail(L("expected a name or an array of names, but it is \(value.kind)"))
+        }
+        guard !items.isEmpty else { throw path.fail(L("the array names no one")) }
+        var names: [String] = []
+        for (index, item) in items.enumerated() {
+            let itemPath = isArray ? path.appending("[\(index)]") : path
+            guard case .string(let text) = item else {
+                throw itemPath.fail(L("expected a name, but it is \(item.kind)"))
+            }
+            let name = Selector.normalized(text)
+            guard !name.isEmpty else { throw itemPath.fail(L("a name cannot be empty")) }
+            names.append(name)
+        }
+        return names
     }
 
     private static func decodePlacement(_ value: ConfigJSON, at path: Path) throws(CustomZonesError) -> Placement {

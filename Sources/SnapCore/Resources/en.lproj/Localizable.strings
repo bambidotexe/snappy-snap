@@ -28,7 +28,11 @@
 /* CustomZones.swift — what is wrong with the areas the user wrote */
 "the top level must be an array of areas, but it is %@" = "the top level must be an array of areas, but it is %@";
 "an area must be an object of screen selectors, but it is %@" = "an area must be an object of screen selectors, but it is %@";
-"not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\"" = "not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\"";
+"not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\", or \"app\" and \"window\" to say whose window the area is for" = "not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\", or \"app\" and \"window\" to say whose window the area is for";
+"expected a name or an array of names, but it is %@" = "expected a name or an array of names, but it is %@";
+"the array names no one" = "the array names no one";
+"expected a name, but it is %@" = "expected a name, but it is %@";
+"a name cannot be empty" = "a name cannot be empty";
 "expected an object or null, but it is %@" = "expected an object or null, but it is %@";
 "\"bounds\" cannot be combined with \"%@\"" = "\"bounds\" cannot be combined with \"%@\"";
 "needs either \"bounds\", or \"anchor\" with a \"size\"" = "needs either \"bounds\", or \"anchor\" with a \"size\"";

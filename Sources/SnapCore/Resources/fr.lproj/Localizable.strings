@@ -27,7 +27,11 @@
 /* CustomZones.swift — ce qui ne va pas dans les zones écrites par la personne */
 "the top level must be an array of areas, but it is %@" = "le niveau supérieur doit être une liste de zones, mais c’est %@";
 "an area must be an object of screen selectors, but it is %@" = "une zone doit être un objet de sélecteurs d’écran, mais c’est %@";
-"not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\"" = "ce n’est pas un sélecteur d’écran ; utilisez \"screenName:<nom>\", \"screenResolution:<L>x<H>\" ou \"*\"";
+"not a screen selector; use \"screenName:<name>\", \"screenResolution:<W>x<H>\" or \"*\", or \"app\" and \"window\" to say whose window the area is for" = "ce n’est pas un sélecteur d’écran ; utilisez \"screenName:<nom>\", \"screenResolution:<L>x<H>\" ou \"*\", ou \"app\" et \"window\" pour dire à quelle fenêtre la zone est destinée";
+"expected a name or an array of names, but it is %@" = "un nom ou un tableau de noms était attendu, mais c’est %@";
+"the array names no one" = "le tableau ne nomme personne";
+"expected a name, but it is %@" = "un nom était attendu, mais c’est %@";
+"a name cannot be empty" = "un nom ne peut pas être vide";
 "expected an object or null, but it is %@" = "un objet ou null était attendu, mais c’est %@";
 "\"bounds\" cannot be combined with \"%@\"" = "\"bounds\" ne peut pas être combiné avec \"%@\"";
 "needs either \"bounds\", or \"anchor\" with a \"size\"" = "il faut soit \"bounds\", soit \"anchor\" avec un \"size\"";

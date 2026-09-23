@@ -114,7 +114,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 
 - `swift build` — builds all four code targets. **This is the truth**; SourceKit diagnostics in tool
   results are frequently stale.
-- `swift test` — two targets, `SnapCoreTests` (638 tests) and `SystemAdaptersTests` (122). Plain
+- `swift test` — two targets, `SnapCoreTests` (643 tests) and `SystemAdaptersTests` (122). Plain
   `swift test` prints **one summary line per target — count two**; a crashed target prints none, so a
   crash reads as a pass if you grep for one green line.
 - `swift test --filter <SuiteName>` — one suite by name. A filter matching nothing in a target means
@@ -320,7 +320,7 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
 
 ## Status
 
-`swift build` is clean and `swift test` is green (122 + 638 tests) at this commit. The app target has
+`swift build` is clean and `swift test` is green (122 + 643 tests) at this commit. The app target has
 no automated tests; `docs/manual-test-checklist.md` is its verification. The full account of the
 September 2026 audit is `docs/_audit.md`, and `docs/_coverage.md` is that audit's own file manifest;
 both describe the tree as the audit found it.

@@ -219,8 +219,9 @@ The stored text is an **array**, and each element is **one area**. Comments are 
 whitespace is — `//` to the end of the line, and `/* … */` across lines, but not inside a string. The
 text is stored exactly as the user wrote it, comments and all; nothing is ever written back over it.
 
-Each element is an object whose keys are **screen selectors**. For a display, the area takes the first
-key that matches, tried in this order of specificity and **not** in the order the keys are written:
+Each element is an object whose keys are **screen selectors**, and optionally `app` and `window`
+(*Areas for one application or window* below). For a display, the area takes the first key that
+matches, tried in this order of specificity and **not** in the order the keys are written:
 
 1. `screenName:<name>` — the display's name exactly, ignoring case and surrounding space. Never a
    substring: that is what tells `Y27qf-30` and `Y27qf-30 (1)` apart.
@@ -255,6 +256,25 @@ inside out.
 
 Areas may overlap freely. The pointer is in the **first element of the array** that holds it: array
 order is priority.
+
+#### Areas for one application or window
+
+An area may also say whose window it is for, with two keys written beside its screen selectors:
+
+- `app` — the application's bundle identifier or its name (`"com.vorssaint.utils"` or `"Vorssaint"`);
+- `window` — the window's title, exactly, never a part of it.
+
+Each takes one name or an array of names, compared ignoring case and surrounding space, and neither may
+be empty. With both written, a window has to answer both. The application is known from the dragged
+window's process, which is what reaches a window of an application with no Dock icon, such as a
+menu-bar utility's floating panel; the title is read through Accessibility once per drag, and only
+while some area names a window by it.
+
+**A window that at least one area targets is offered those areas and no others**, and every other
+window is offered only the areas that target nobody. The choice is made for the window, not for the
+display: a targeted window on a display where none of its areas exists is offered nothing there, and
+Command does not fall back to the untargeted areas. Everything else — the screen selectors, the
+insetting, array order as priority — is the same for a targeted area as for any other.
 
 ## 4. The snap bar
 

@@ -81,6 +81,9 @@ final class DragSessionController {
     /// The stored JSON as last parsed. The text cannot change under a drag, so this is one parse per
     /// edit and not one per event.
     private var parsedCustomZones: (json: String, zones: CustomZones?)?
+    /// The dragged window as the custom areas' `app` and `window` keys see it, read once when the drag
+    /// is confirmed or resumed and held for the gesture.
+    private var customAreaWindow = CustomAreaWindow()
     /// The previews of the windows this drop **also** moves — a neighbour giving room so the dragged
     /// window can have its minimum. The same panel type and level the zone preview uses, from the
     /// pool the handle drag draws its outcome with, rather than a second multi-window preview.
@@ -266,6 +269,7 @@ final class DragSessionController {
         lastResolved = nil
         draggedMinimum = nil
         partnerMinimum = nil
+        customAreaWindow = CustomAreaWindow()
         // Otherwise a drag starting within 1/120 s of the last session's read skips its first read.
         lastFrameCheck = 0
         if interruption != nil {
@@ -340,6 +344,8 @@ final class DragSessionController {
             }
             phase = .dragging(handle)
             Logger.drag.debug("drag confirmed, window \(handle.windowID ?? 0)")
+            // Before `beginDrag`, which may post the restore write this identification must not wait behind.
+            customAreaWindow = identifyForCustomAreas(handle)
             beginDrag(handle, startFrame: startFrame, frame: frame, cursor: point)
             // The pair partner is resolved here, once, and held for the rest of the drag. This is
             // the one event where an Accessibility sweep is affordable — it happens once per
@@ -376,6 +382,7 @@ final class DragSessionController {
             Logger.drag.debug("drag of window \(handle.windowID ?? 0) resumed after \(elapsed, format: .fixed(precision: 3)) s, pointer moved \(travel, format: .fixed(precision: 1)) pt")
             // No `beginDrag`: the drag-away restore is a one-shot at the start of a gesture, and
             // this window was dragged away a Space ago.
+            customAreaWindow = identifyForCustomAreas(handle)
             if let display = screens.display(containing: point) {
                 snapBar.beginSession(draggedWindowID: handle.windowID, draggedPid: handle.pid,
                                      display: display, settings: settingsStore.settings)
@@ -513,11 +520,35 @@ final class DragSessionController {
     }
 
     private func customAreas(on display: DisplayInfo) -> CustomAreas? {
+        customZones()?.areas(on: display, gap: settingsStore.settings.gap, for: customAreaWindow)
+    }
+
+    private func customZones() -> CustomZones? {
         let json = settingsStore.customZonesJSON
         if parsedCustomZones?.json != json {
             parsedCustomZones = (json, CustomZones.parse(json).zones)
         }
-        return parsedCustomZones?.zones?.areas(on: display, gap: settingsStore.settings.gap)
+        return parsedCustomZones?.zones
+    }
+
+    /// Who the dragged window is, for the areas that say whose window they are for. Its application
+    /// comes from the pid, with no Accessibility at all; its title costs one read, made only when the
+    /// feature is on and some area names a window by it, and never while the writer holds a post for
+    /// this window.
+    private func identifyForCustomAreas(_ handle: WindowHandle) -> CustomAreaWindow {
+        guard settingsStore.settings.customAreas else { return CustomAreaWindow() }
+        let application = NSRunningApplication(processIdentifier: handle.pid)
+        var window = CustomAreaWindow(bundleIdentifier: application?.bundleIdentifier,
+                                      applicationName: application?.localizedName)
+        if customZones()?.readsWindowTitles == true {
+            if writer.hasPending(handle) {
+                Logger.drag.debug("window \(handle.windowID ?? 0) has posts in flight; its title is not read, and no area naming a window matches it")
+            } else {
+                window.title = ax.title(of: handle)
+            }
+        }
+        Logger.drag.debug("custom areas see window \(handle.windowID ?? 0) as app \(window.bundleIdentifier ?? "?") (\(window.applicationName ?? "?")), title \(window.title ?? "unread")")
+        return window
     }
 
     /// The drop under Command: the area holding the pointer *at the release point*, as one box in an
