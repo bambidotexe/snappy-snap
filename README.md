@@ -213,7 +213,7 @@ From this repository instead. It is a SwiftPM package with no Xcode project:
 
 ```sh
 Scripts/install.sh                # production build → /Applications/SnappySnap.app, launched
-Scripts/publish.sh <level>         # the same, plus a version bump (patch/minor/major) and the disk image on a GitHub release
+Scripts/publish.sh <level> --notes=<file>  # the same, plus a version bump (patch/minor/major) and the disk image on a GitHub release
 Scripts/run.sh                    # a familiar name for Scripts/install.sh
 swift test                        # the two library suites; count two summary lines
 ```
