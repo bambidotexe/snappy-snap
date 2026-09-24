@@ -4,12 +4,8 @@ import Foundation
 @testable import SystemAdapters
 
 @Suite @MainActor struct ParkedWindowsStoreTests {
-    func freshDefaults() -> UserDefaults {
-        let name = "ParkedWindowsStoreTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: name)!
-        defaults.removePersistentDomain(forName: name)
-        return defaults
-    }
+    private let scratch = ScratchDefaults()
+    func freshDefaults() -> UserDefaults { scratch.make("ParkedWindowsStoreTests") }
 
     let entries = [
         ParkedWindowsStore.Entry(windowID: 42, pid: 900, frame: CGRect(x: 8, y: 41, width: 744, height: 433)),

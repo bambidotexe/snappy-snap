@@ -18,12 +18,8 @@ import Testing
             .runningApplications(withBundleIdentifier: "com.apple.finder").first).processIdentifier
     }
 
-    func freshDefaults() -> UserDefaults {
-        let name = "MinimumSizeStoreTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: name)!
-        defaults.removePersistentDomain(forName: name)
-        return defaults
-    }
+    private let scratch = ScratchDefaults()
+    func freshDefaults() -> UserDefaults { scratch.make("MinimumSizeStoreTests") }
 
     /// The store never touches the element, so an application element stands in for a window's.
     func window(_ id: CGWindowID?) -> WindowHandle {

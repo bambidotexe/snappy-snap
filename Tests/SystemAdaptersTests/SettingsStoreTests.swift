@@ -4,12 +4,8 @@ import Foundation
 import SnapCore
 
 @Suite @MainActor struct SettingsStoreTests {
-    func freshDefaults() -> UserDefaults {
-        let name = "SettingsStoreTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: name)!
-        defaults.removePersistentDomain(forName: name)
-        return defaults
-    }
+    private let scratch = ScratchDefaults()
+    func freshDefaults() -> UserDefaults { scratch.make("SettingsStoreTests") }
 
     @Test func startsWithDefaultsWhenEmpty() {
         #expect(SettingsStore(defaults: freshDefaults()).settings == Settings())
