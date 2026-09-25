@@ -340,7 +340,7 @@ Known defects and limitations, in plain words (the authority is `docs/functional
   refused this app's own disk image; the notification, the update window and SnappySnap installing
   over itself are the checklist's §9b. The repository is **public** and carries releases (v1.0.0, v1.0.1,
   v1.0.2), so a check now finds one and the whole path is walkable from an installed copy a version behind:
-  `Scripts/publish.sh <level> --no-install` is what leaves one there to walk.
+  `Scripts/publish.sh <level>` leaves one there to walk (it installs only with `--install`).
 - **A login-item launch has never been seen.** Opening the app opens Settings; started by
   `SMAppService`, it should open nothing, and the Apple event that tells the two apart is unexercised
   because Launch at login is off on the dev Mac. It fails towards a Settings window at login, never
