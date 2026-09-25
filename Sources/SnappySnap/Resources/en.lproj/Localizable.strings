@@ -150,9 +150,10 @@
 
 /* SettingsCustomAreasPage.swift */
 "Custom areas" = "Custom areas";
-"Define your own snap areas below, then hold ⌘ Command during a drag to see them and drop a window into one." = "Define your own snap areas below, then hold ⌘ Command during a drag to see them and drop a window into one.";
-"While ⌘ Command is held, only your areas are offered. Edges, corners and the snap bar are off." = "While ⌘ Command is held, only your areas are offered. Edges, corners and the snap bar are off.";
-"Hold ⌘ Command while dragging to use your own areas" = "Hold ⌘ Command while dragging to use your own areas";
+"Define your own snap areas below, then hold %@ during a drag to see them and drop a window into one." = "Define your own snap areas below, then hold %@ during a drag to see them and drop a window into one.";
+"While %@ is held, only your areas are offered. Edges, corners and the snap bar are off." = "While %@ is held, only your areas are offered. Edges, corners and the snap bar are off.";
+"Hold %@ while dragging to use your own areas" = "Hold %@ while dragging to use your own areas";
+"Key to hold" = "Key to hold";
 "Areas" = "Areas";
 "Areas are written as JSON. Verify checks your text and says what to fix." = "Areas are written as JSON. Verify checks your text and says what to fix.";
 "Text with a mistake is kept, but no areas are offered until it is valid." = "Text with a mistake is kept, but no areas are offered until it is valid.";

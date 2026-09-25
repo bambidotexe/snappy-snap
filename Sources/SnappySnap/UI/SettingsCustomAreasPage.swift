@@ -3,7 +3,7 @@ import SnapCore
 import SwiftUI
 import SystemAdapters
 
-/// The JSON behind the areas held under ⌘ Command, written by hand and stored on every change. The
+/// The JSON behind the areas held under the chosen key, ⌘ Command or ⇧ Shift, written by hand and stored on every change. The
 /// status row reports the last **Verify**, pressed or run when the page appears, and never follows the
 /// typing: a verdict that changed at every key would spend most of its life saying Invalid.
 ///
@@ -16,11 +16,22 @@ struct CustomAreasPage: View {
 
     var body: some View {
         SettingsPage {
+            let key = store.settings.customAreaKey.title
             SettingsGroup(title: L("Custom areas"),
-                          hint: L("Define your own snap areas below, then hold ⌘ Command during a drag to see them and drop a window into one."),
-                          notes: [L("While ⌘ Command is held, only your areas are offered. Edges, corners and the snap bar are off.")]) {
-                ToggleRow(L("Hold ⌘ Command while dragging to use your own areas"),
+                          hint: L("Define your own snap areas below, then hold \(key) during a drag to see them and drop a window into one."),
+                          notes: [L("While \(key) is held, only your areas are offered. Edges, corners and the snap bar are off.")]) {
+                ToggleRow(L("Hold \(key) while dragging to use your own areas"),
                           isOn: $store.settings.customAreas)
+                SettingsRow(L("Key to hold"), enabled: store.settings.customAreas) {
+                    Picker(L("Key to hold"), selection: $store.settings.customAreaKey) {
+                        ForEach(CustomAreaKey.allCases, id: \.self) { key in
+                            Text(key.title).tag(key)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .fixedSize()
+                }
             }
             SettingsGroup(title: L("Areas"),
                           hint: L("Areas are written as JSON. Verify checks your text and says what to fix."),

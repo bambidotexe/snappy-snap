@@ -60,19 +60,23 @@ final class DragSessionController {
     private let minimums: MinimumSizeStore
     private let coordinator: ArrangementCoordinator
     private let customOverlay: CustomZonesController
-    /// Whether Command is down, as the last `flagsChanged` said. Kept whatever the phase is, so a drag
-    /// that begins with the key already held starts in the custom mode, and one that outlives a Space
-    /// change or Mission Control still knows the key's state when it comes back.
+    /// Whether Command and Shift are down, as the last `flagsChanged` said. Kept whatever the phase
+    /// is, so a drag that begins with the key already held starts in the custom mode, and one that
+    /// outlives a Space change or Mission Control still knows the keys' state when it comes back.
     private var commandHeld = false
+    private var shiftHeld = false
     /// Whether Option is down, as the last `flagsChanged` said. Recorded like `commandHeld`; it means
-    /// something only while Command is not offering the custom areas.
+    /// something only while the custom areas are not on offer.
     private var optionHeld = false
-    /// Whether Command is offering the custom areas *right now*: the key is down and the feature is on.
-    /// Read rather than `commandHeld` everywhere a decision is made, so that switching the feature off
-    /// mid-drag is the same as letting go of the key.
-    private var customModeActive: Bool { commandHeld && settingsStore.settings.customAreas }
+    /// Whether the key chosen in Settings is offering the custom areas *right now*: that key is down
+    /// and the feature is on. Read rather than the keys themselves everywhere a decision is made, so
+    /// that switching the feature off, or choosing the other key, mid-drag is the same as letting go.
+    private var customModeActive: Bool {
+        let settings = settingsStore.settings
+        return settings.customAreas && settings.customAreaKey.isHeld(command: commandHeld, shift: shiftHeld)
+    }
     /// Whether Option is growing the side halves *right now*: the key is down, the feature and the side
-    /// halves are on, and Command is not offering the custom areas. The snap bar is off the screen and
+    /// halves are on, and the custom areas are not on offer. The snap bar is off the screen and
     /// out of the resolution for as long as this holds.
     private var optionModeActive: Bool {
         optionHeld && settingsStore.settings.optionHalves && settingsStore.settings.sideHalves
@@ -212,9 +216,10 @@ final class DragSessionController {
     func handle(_ event: MouseEvents.Event) {
         // Recorded before anything can decline the event: the key's state is a fact about the keyboard,
         // and must not go stale because Mission Control had the screen when it changed.
-        if case .flagsChanged(let command, let option) = event {
+        if case .flagsChanged(let command, let option, let shift) = event {
             commandHeld = command
             optionHeld = option
+            shiftHeld = shift
         }
         // A live gesture is dropped once — the session and its overlays go rather than freeze — and
         // every gesture after it is declined until the screen is the user's again.
@@ -234,7 +239,7 @@ final class DragSessionController {
         case .dragged(let point): mouseDragged(to: point)
         case .up(let point): mouseUp(at: point)
         case .moved: break
-        case .flagsChanged: commandChanged()
+        case .flagsChanged: modifiersChanged()
         }
     }
 
@@ -395,8 +400,8 @@ final class DragSessionController {
     /// Re-resolves at the release point, because a fast flick can skip the last drag event, but
     /// without presenting: showing the preview here would flash it for the frame before the drop.
     private func mouseUp(at point: CGPoint) {
-        // Under Command the release goes to the custom area under the pointer, and to nothing when there
-        // is none: Command never falls back to the ordinary zones.
+        // Under the custom-area key the release goes to the custom area under the pointer, and to nothing
+        // when there is none: the key never falls back to the ordinary zones.
         if case .dragging(let handle) = phase,
            let resolved = customModeActive ? resolveCustomArea(at: point) : resolveZone(at: point) {
             finish(handle, resolved: resolved)
@@ -487,16 +492,16 @@ final class DragSessionController {
         setZone(resolved)
     }
 
-    /// Command went down or up. Only a confirmed drag has anything to switch: pressing it earlier is
-    /// picked up by `update` when the drag confirms. With the feature switched off this is a key that
-    /// means nothing to a window drag, and the branch below leaves the ordinary zones exactly as they
+    /// A modifier went down or up. Only a confirmed drag has anything to switch: a key pressed earlier
+    /// is picked up by `update` when the drag confirms. With the feature switched off, or for the key
+    /// not chosen for the custom areas, the branch below leaves the ordinary zones exactly as they
     /// were.
     ///
     /// Down takes the ordinary preview, its neighbours' previews and the snap bar off the screen and
     /// draws the custom areas in their place; up takes the areas away and lets `update` bring the bar
     /// and the zone back exactly as a pointer move would — from where the pointer stands now, since
     /// the key can change with the pointer standing still.
-    private func commandChanged() {
+    private func modifiersChanged() {
         guard case .dragging = phase else { return }
         if customModeActive {
             snapBar.highlight(nil)
@@ -551,7 +556,7 @@ final class DragSessionController {
         return window
     }
 
-    /// The drop under Command: the area holding the pointer *at the release point*, as one box in an
+    /// The drop under the custom-area key: the area holding the pointer *at the release point*, as one box in an
     /// arrangement of its own, so it is placed by the same `finish` — the coordinator, the engine, the
     /// writer, the 0.25 s ease — as every other zone. `.screenEdge` because no Snap Assist follows.
     private func resolveCustomArea(at point: CGPoint) -> ResolvedZone? {

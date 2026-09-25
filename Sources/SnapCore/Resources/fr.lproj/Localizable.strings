@@ -5,6 +5,10 @@
 "Balanced" = "Équilibré";
 "Battery" = "Batterie";
 
+/* Settings.swift — la touche des zones personnalisées, un segment chacune */
+"⌘ Command" = "⌘ Commande";
+"⇧ Shift" = "⇧ Majuscule";
+
 /* Settings.swift — les trois allures de la barre, et l'explication de celle qui est choisie */
 "Notch or island" = "Encoche ou îlot";
 "Floating bar" = "Barre flottante";

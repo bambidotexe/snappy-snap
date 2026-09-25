@@ -25,6 +25,31 @@ public enum Smoothness: String, Codable, Hashable, Sendable, CaseIterable {
     }
 }
 
+/// The key that, held during a confirmed window drag, offers the custom areas instead of the ordinary
+/// zones. The other key means nothing to a drag. Command keeps its meaning outside a drag, hiding the
+/// handles, whichever is chosen. The raw values are persisted in the user's settings file.
+public enum CustomAreaKey: String, Codable, Hashable, Sendable, CaseIterable {
+    case command
+    case shift
+
+    /// The segment's label in Settings, where the two are one segmented control, and the key's name in
+    /// every sentence of the Custom Areas page.
+    public var title: String {
+        switch self {
+        case .command: L("⌘ Command")
+        case .shift: L("⇧ Shift")
+        }
+    }
+
+    /// Whether this key is down, given the state of both as the last `flagsChanged` reported it.
+    public func isHeld(command: Bool, shift: Bool) -> Bool {
+        switch self {
+        case .command: command
+        case .shift: shift
+        }
+    }
+}
+
 /// Where the snap bar is drawn. The raw values are persisted in the user's settings file.
 public enum SnapBarAppearance: String, Codable, Hashable, Sendable, CaseIterable {
     /// Inside a black shape that grows out of the display's camera housing — or, on a display that
@@ -203,11 +228,13 @@ public struct Settings: Codable, Hashable, Sendable {
     /// there. That is not worth hiding the control for: there is no way to ask macOS whether a tap
     /// landed, and a row that disappears on some Macs is harder to explain than one that does nothing.
     public var hapticFeedback = true
-    /// Whether holding Command during a window drag offers the custom areas instead of the ordinary
-    /// zones. **On by default**: the switch is here for a user who wants Command to keep its one
-    /// other meaning — uncovering a window's resize edge — and nothing else. Off, Command changes
-    /// nothing about a drag and the areas are never drawn, whatever the JSON holds.
+    /// Whether holding `customAreaKey` during a window drag offers the custom areas instead of the
+    /// ordinary zones. **On by default**: the switch is here for a user who wants the key to mean
+    /// nothing to a drag. Off, neither key changes anything about a drag and the areas are never drawn,
+    /// whatever the JSON holds.
     public var customAreas = true
+    /// Which key offers the custom areas during a drag. **Command by default.**
+    public var customAreaKey: CustomAreaKey = .command
     // Layout
     /// The gap is a switch, not a number. On, windows keep `Fixed.gap` from the screen edges and from
     /// each other; off, they touch. The **size** of the gap is a code constant on purpose, so the only
@@ -299,6 +326,7 @@ public struct Settings: Codable, Hashable, Sendable {
         snapAssist = try c.decodeIfPresent(Bool.self, forKey: .snapAssist) ?? d.snapAssist
         hapticFeedback = try c.decodeIfPresent(Bool.self, forKey: .hapticFeedback) ?? d.hapticFeedback
         customAreas = try c.decodeIfPresent(Bool.self, forKey: .customAreas) ?? d.customAreas
+        customAreaKey = try c.decodeIfPresent(CustomAreaKey.self, forKey: .customAreaKey) ?? d.customAreaKey
         restoreOnDragAway = try c.decodeIfPresent(Bool.self, forKey: .restoreOnDragAway) ?? d.restoreOnDragAway
         smoothness = try c.decodeIfPresent(Smoothness.self, forKey: .smoothness) ?? d.smoothness
         handleBar = try c.decodeIfPresent(Bool.self, forKey: .handleBar) ?? d.handleBar

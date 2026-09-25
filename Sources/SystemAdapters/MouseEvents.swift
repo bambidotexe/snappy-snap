@@ -17,16 +17,16 @@ public final class MouseEvents {
         case dragged(CGPoint)
         case up(CGPoint)
         case moved(CGPoint)
-        /// Whether **Command (⌘)** and **Option (⌥)** are held, reported on every `flagsChanged`
-        /// rather than inferred from a mouse event: both must answer a key pressed with the pointer
-        /// standing still — `SnapCore.HandleSuppression` because the poll behind the handles stands
-        /// still with the pointer, and the drag session because a key changed mid-drag has to repaint
-        /// the preview where the pointer already is.
+        /// Whether **Command (⌘)**, **Option (⌥)** and **Shift (⇧)** are held, reported on every
+        /// `flagsChanged` rather than inferred from a mouse event: each must answer a key pressed with
+        /// the pointer standing still — `SnapCore.HandleSuppression` because the poll behind the
+        /// handles stands still with the pointer, and the drag session because a key changed mid-drag
+        /// has to repaint the preview where the pointer already is.
         ///
-        /// These two are the app's only modifiers, and this is the only place that says which bit of a
-        /// `CGEvent` each one is. **Not fn**: holding fn and dragging is a system window-move gesture,
+        /// These three are the app's only modifiers, and this is the only place that says which bit of
+        /// a `CGEvent` each one is. **Not fn**: holding fn and dragging is a system window-move gesture,
         /// so the key meant to uncover a window's resize edge moved the window instead (`pitfalls.md`).
-        case flagsChanged(command: Bool, option: Bool)
+        case flagsChanged(command: Bool, option: Bool, shift: Bool)
     }
 
     /// Why the system took the tap away. Silence is a defect, and these two are different defects: a
@@ -170,7 +170,8 @@ public final class MouseEvents {
             if presses.sessionUp(timestamp: event.timestamp) { handler?(.up(event.location)) }
         case .mouseMoved: handler?(.moved(event.location))
         case .flagsChanged: handler?(.flagsChanged(command: event.flags.contains(.maskCommand),
-                                            option: event.flags.contains(.maskAlternate)))
+                                            option: event.flags.contains(.maskAlternate),
+                                            shift: event.flags.contains(.maskShift)))
         default: break
         }
     }

@@ -252,14 +252,15 @@ import Foundation
         }
     }
 
-    /// The words the Settings window shows for the two choices `SnapCore` owns, pinned in English
+    /// The words the Settings window shows for the three choices `SnapCore` owns, pinned in English
     /// where they now live. `title` itself is localized, so on this French Mac it reads French and
     /// cannot be compared to an English literal.
     @Test func theChoicesSnapCoreOwnsAreTranslated() throws {
         let en = try Self.catalogue("SnapCore", "en")
         let fr = try Self.catalogue("SnapCore", "fr")
         for word in ["Smooth", "Balanced", "Battery",
-                     "Notch or island", "Floating bar", "Notch or floating bar"] {
+                     "Notch or island", "Floating bar", "Notch or floating bar",
+                     "⌘ Command", "⇧ Shift"] {
             #expect(en[word] == word, "the Settings window has lost the English word \"\(word)\"")
             #expect(fr[word]?.isEmpty == false, "\"\(word)\" has no French")
             #expect(fr[word] != word, "\"\(word)\" is untranslated French")

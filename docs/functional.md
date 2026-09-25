@@ -88,7 +88,7 @@ window is macOS's own window-move gesture, and the session-level event tap recei
 no press before them and no release after. A second, listen-only tap at the device level hears
 presses and releases only; a drag that arrives with a device press nobody delivered is preceded by
 that press, at the point it was made, and the gesture's release is delivered from the device tap. From
-there it is a drag like any other — the zones, the snap bar, ⌥ and the custom areas under ⌘, with fn
+there it is a drag like any other — the zones, the snap bar, ⌥ and the custom areas under their key, with fn
 still held or let go. Where the device tap cannot be created the app logs it once and such a gesture
 arms nothing.
 
@@ -158,7 +158,7 @@ showing the frame before cannot take the drop. Both come back on release.
 
 Releasing Option mid-drag restores the ordinary bands at once, resolved from where the pointer already
 stands rather than waiting for it to move, because the key can change with the pointer standing still.
-**Command outranks Option**: while Command is offering the custom areas, Option means nothing and the
+**The custom areas outrank Option**: while their key is offering them, Option means nothing and the
 areas behave exactly as §3 *Custom areas* says. With the feature switched off, Option changes nothing
 about a drag.
 
@@ -189,12 +189,16 @@ restores its pre-snap **size** as the drag is confirmed, keeping the pointer at 
 position along the title bar. The record is valid only while the window is within ±2 pt of the frame
 the snap gave it; a window the user has since resized or moved has no restore to offer.
 
-### Custom areas, held under Command
+### Custom areas, held under Command or Shift
 
-On by default, switchable in Settings (§14). **Holding Command (⌘) during a confirmed window drag
-replaces the ordinary zones with the user's own areas**, written as JSON on the Settings window's
-**Custom Areas** page. It is the one place a modifier *adds* a gesture rather than taking one away
-(§16).
+On by default, switchable in Settings (§14). **Holding the custom-area key during a confirmed window
+drag replaces the ordinary zones with the user's own areas**, written as JSON on the Settings window's
+**Custom Areas** page. The key is a choice on that page: **⌘ Command** (the default) or **⇧ Shift**.
+Only the chosen key offers the areas; the other means nothing to a drag, so with Shift chosen, Command
+held during a drag changes nothing. Command keeps its meaning outside a drag whichever is chosen
+(§9 *Holding Command*), and Shift has none. Choosing the other key mid-drag is the same as letting go
+of the one held. It is the one place a modifier *adds* a gesture to a window drag rather than taking
+one away (§16).
 
 While the key is held: the zone preview, its neighbours' previews and the snap bar are taken off the
 screen, and **no edge, corner or top zone arms**. Every area that resolves on the display under the
@@ -202,16 +206,16 @@ pointer is drawn at once, each one the ordinary drop preview in full — same co
 stroke, same shadow, same fill. The one area holding the pointer is **only** more opaque: `2 ×` the
 ordinary fill, and nothing else about it differs.
 
-Releasing Command mid-drag restores the ordinary behaviour at once, resolved from where the pointer
+Releasing the key mid-drag restores the ordinary behaviour at once, resolved from where the pointer
 stands rather than from where it last moved — the key can change with the hand still. Releasing the
-mouse with Command held places the window in the area holding the pointer **at the release point**,
+mouse with the key held places the window in the area holding the pointer **at the release point**,
 animated by the same path as every other snap (§3 *The drop*). It is placed as a single box with no
 neighbours, and no Snap Assist follows.
 
-**Command never falls back.** With no area under the pointer, no area resolving on this display, an
+**The key never falls back.** With no area under the pointer, no area resolving on this display, an
 empty configuration or one that does not parse, nothing is drawn and the release places nothing: the
-window stays where the drag left it. With the feature switched off, Command changes nothing about a
-window drag at all.
+window stays where the drag left it. With the feature switched off, neither key changes anything about
+a window drag at all.
 
 #### What the configuration says
 
@@ -273,7 +277,7 @@ while some area names a window by it.
 **A window that at least one area targets is offered those areas and no others**, and every other
 window is offered only the areas that target nobody. The choice is made for the window, not for the
 display: a targeted window on a display where none of its areas exists is offered nothing there, and
-Command does not fall back to the untargeted areas. Everything else — the screen selectors, the
+the key does not fall back to the untargeted areas. Everything else — the screen selectors, the
 insetting, array order as priority — is the same for a targeted area as for any other.
 
 ## 4. The snap bar
@@ -444,7 +448,7 @@ it, so the two read as one object. The numbers are fitted to captures of that ut
 its island traced row by row, its motion traced frame by frame at 60 fps.
 
 - **Nothing is drawn at rest.** The island **arrives** on the first event of a drag confirmed over
-  the display and **departs** when the drag ends, when ⌥ or ⌘ takes the bar away — it arrives again
+  the display and **departs** when the drag ends, when ⌥ or the custom-area key takes the bar away — it arrives again
   on release — and when the drag moves to another display, departing on the one it left while
   arriving on the one it entered. It has no dwell and no haptic tap: both belong to the expansion.
   The island is up while the dwell is waited out; the dwell decides only when it grows.
@@ -473,8 +477,8 @@ its island traced row by row, its motion traced frame by frame at 60 fps.
   drawn above the utility's resting island, which starts 3 pt under the edge, and a dot at the edge
   shows above it.
 - **It expands and collapses** on the notch shape's springs, the cells fading as they do there. A
-  drag that ends on an expanded island collapses it, then departs. A motion reversed mid-way — ⌘
-  tapped and released — retargets from what is on screen.
+  drag that ends on an expanded island collapses it, then departs. A motion reversed mid-way — the
+  custom-area key tapped and released — retargets from what is on screen.
 - **The shape** has continuous corners: 12.5 pt collapsed, which makes it a capsule, and 38 pt
   expanded. Collapsed it casts no shadow and carries no outline — the utility's resting island has
   none. Expanded it has the notch shape's shadow, backdrop blur and contrast outline, the outline
@@ -1333,7 +1337,8 @@ already at that page's height and centred.
 | Handles | Smallest window sizes | Measure an app the first time you use a handle next to it | on |
 | Handles | Past the smallest size | Let handles go past a window's smallest size | off (governs the junction knobs too) |
 | Handles | Apps | The list of window sizes — one row per application, built in, measured or edited, with **Add…**, **Remove** and **Reset** (§6) | the built-in list |
-| Custom Areas | Custom areas | Hold ⌘ Command while dragging to use your own areas | on |
+| Custom Areas | Custom areas | Hold ⌘ Command while dragging to use your own areas (the key the row below names) | on |
+| Custom Areas | Custom areas | Key to hold — ⌘ Command · ⇧ Shift | ⌘ Command (needs the custom areas) |
 | System | Compatibility | Use hidden macOS features | on |
 
 A control that *needs* a switch that is off is disabled, and its label is dimmed with it.
@@ -1415,8 +1420,8 @@ Add button is enabled only for a complete, unlisted row. Remove takes the select
 what that application's windows had shown and been asked this session; Reset is disabled while the list
 already equals the built-in one.
 
-**The Custom Areas page is the whole of §3 *Custom areas, held under Command***: the switch that governs
-the feature, a monospaced editor holding the JSON, a status row, a **Verify** button, the displays
+**The Custom Areas page is the whole of §3 *Custom areas, held under Command or Shift***: the switch
+that governs the feature, the key it answers to, whose name every sentence of the group carries, a monospaced editor holding the JSON, a status row, a **Verify** button, the displays
 attached right now, and the example.
 
 The editor stores on every keystroke like every other control, and macOS's smart quotes, dashes and
@@ -1760,29 +1765,32 @@ than as an error.
 Every gesture is a left-button drag from the event tap; the trackpad counts. No keyboard shortcut
 snaps a window.
 
-**Command (⌘) and Option (⌥) are the two modifiers the app reads.** Command has exactly two meanings,
-told apart by whether a window drag is in flight; Option has one, and only during a drag.
+**Command (⌘), Option (⌥) and Shift (⇧) are the three modifiers the app reads.** Command has at most
+two meanings, told apart by whether a window drag is in flight; Option has one, and only during a drag;
+Shift has one, during a drag, and only when it is the key chosen for the custom areas.
 
 **Command with no drag in flight takes something away**: it hides the handle pill and the junction
 knobs so that the window edge underneath can be resized by macOS itself (§9 *Holding Command*).
 
-**Command during a confirmed window drag adds one**: it replaces the ordinary zones with the user's
-custom areas (§3 *Custom areas, held under Command*). The two never collide — no pill or knob is
-offered while a window is being dragged — and the drag meaning can be switched off in Settings, which
-leaves Command with its first meaning alone.
+**The custom-area key during a confirmed window drag adds one**: it replaces the ordinary zones with
+the user's custom areas (§3 *Custom areas, held under Command or Shift*). That key is ⌘ Command by
+default and ⇧ Shift when the user chooses it, and the key not chosen means nothing to a drag. Command's
+two meanings never collide — no pill or knob is offered while a window is being dragged — and the drag
+meaning can be switched off in Settings, or given to Shift, which leaves Command with its first meaning
+alone.
 
 **Option during a confirmed window drag grows the left and right edge bands until they meet at the
 display's midpoint** (§3 *The halves, held under Option*), and takes the snap bar off the screen while
-it is held. Outside a drag it means nothing. **Command outranks it**: while the custom areas are on
-offer, Option is ignored.
+it is held. Outside a drag it means nothing. **The custom areas outrank it**: while their key is
+offering them, Option is ignored.
 
-No other key adds a gesture anywhere in the app. Snap Assist and the pair cell behave with either key
+No other key adds a gesture anywhere in the app. Snap Assist and the pair cell behave with any of the three
 down exactly as they do without it.
 
-Both are read from the event tap's own `flagsChanged` events, not inferred from the next mouse event,
+All three are read from the event tap's own `flagsChanged` events, not inferred from the next mouse event,
 because each must answer a key pressed with the pointer standing still — the handles because the poll
 behind them stands still with the pointer, the drag session because the preview has to be repainted
-where the pointer already is. **It is Command and Option and not fn**: holding fn and dragging is one
+where the pointer already is. **It is Command, Option and Shift and not fn**: holding fn and dragging is one
 of macOS's own window-move gestures, so the key meant to uncover a resize edge moved the window
 instead (`pitfalls.md` 45). fn is never read; the gesture it starts is followed like any other drag
 (§3 *Arming*).
@@ -1793,7 +1801,7 @@ on the development Mac. With it on and the halves held under ⌥ Option switched
 drag; Settings › System and Health report it in orange and name the switch (§14), and nothing stops it
 (§20).
 
-Besides Command the keyboard is read in two places: Escape ends a Snap Assist phase, and the menu-bar
+Besides the modifiers the keyboard is read in two places: Escape ends a Snap Assist phase, and the menu-bar
 item's items carry ⌘, and ⌘Q.
 
 ## 17. Which windows take part

@@ -87,7 +87,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 | the island (a display with no camera housing) | `SnapCore/IslandGeometry.swift` (every rect and drawing number, with its measurement), `IslandPresence.swift` (the motion: states, steps, springs, delays, the scale's anchor), `BackdropField.swift`; `Overlays/IslandBarView.swift`, `SnapBarPanel.presentIsland` / `collapseIsland` / `departIsland`, `SnapBarController.restIsland` / `standDown` / `islandPanels` | §4 *The island*, §13, `macOS.md` |
 | which surface an appearance comes to on a display | `SnapCore/Settings.swift` (`SnapBarAppearance.surface(on:)`, `SnapBarSurface`), `SnapBarGeometry.swift`, `SnapBarController.PanelRoute` | §4 (the table), §14 |
 | the bar's layouts | `Sources/SnappySnap/Resources/Layouts.json` (+ `LayoutCatalog` fallback) | §4 |
-| the custom areas held under ⌘ | `SnapCore/CustomZones.swift` (the format, the selectors, the geometry), `Overlays/CustomZonesPanel.swift`, `Drag/DragSessionController` (the ⌘ branch), `UI/SettingsCustomAreasPage` | §3 *Custom areas*, §14 |
+| the custom areas held under ⌘ or ⇧ | `SnapCore/CustomZones.swift` (the format, the selectors, the geometry), `SnapCore/Settings.swift` (`CustomAreaKey`, which key offers them), `Overlays/CustomZonesPanel.swift`, `Drag/DragSessionController` (`customModeActive`), `UI/SettingsCustomAreasPage` | §3 *Custom areas*, §14 |
 | the halves held under ⌥ | `SnapCore/ZoneResolver.swift` (the grown bands and the centre line), `Drag/DragSessionController` (`optionModeActive`, which also hides the bar), `SystemAdapters/MouseEvents` (the ⌥ bit) | §3 *The halves, held under Option*, §16 |
 | Snap Assist or the deck | `SnapCore/SnapAssist.swift`, `Deck.swift`, `Overlays/SnapAssist*`, `DeckAnimator.swift` | §8 |
 | the pill or knob | `SnapCore/Adjacency`, `HandleBarGeometry`, `HandleDragMath`, `Junction*`; `Overlays/Handle*`, `Junction*` | §9–10 |
@@ -115,7 +115,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 
 - `swift build` — builds all four code targets. **This is the truth**; SourceKit diagnostics in tool
   results are frequently stale.
-- `swift test` — two targets, `SnapCoreTests` (653 tests) and `SystemAdaptersTests` (122). Plain
+- `swift test` — two targets, `SnapCoreTests` (655 tests) and `SystemAdaptersTests` (122). Plain
   `swift test` prints **one summary line per target — count two**; a crashed target prints none, so a
   crash reads as a pass if you grep for one green line.
 - `swift test --filter <SuiteName>` — one suite by name. A filter matching nothing in a target means
@@ -175,7 +175,7 @@ Three targets, dependencies downward only. Full version in `docs/architecture.md
 - **`Sources/SnapCore`** — pure logic, no AppKit, in **CG space** (origin top-left of the primary
   display, y down). `Model` (`DisplayInfo`, `WindowInfo`, `Edge`) · `Settings` (the user's choices) +
   `Settings.Fixed` (every constant) · `Layouts`/`Geometry` (gap insetting, never rounds;
-  `anchoredOrigin`) · `ZoneResolver` · `CustomZones` (the areas held under Command, with the
+  `anchoredOrigin`) · `ZoneResolver` · `CustomZones` (the areas held under Command or Shift, with the
   configuration's own JSON parser) · `SnapBarGeometry` + `NotchGeometry` + `IslandGeometry` + `IslandPresence` +
   `BackdropField` · `PairCell` ·
   **`Arrangement`** + `ArrangementSolver` (what every snap places: dividers as variables, minimums as
@@ -321,7 +321,7 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
 
 ## Status
 
-`swift build` is clean and `swift test` is green (122 + 653 tests) at this commit. The app target has
+`swift build` is clean and `swift test` is green (122 + 655 tests) at this commit. The app target has
 no automated tests; `docs/manual-test-checklist.md` is its verification. The full account of the
 September 2026 audit is `docs/_audit.md`, and `docs/_coverage.md` is that audit's own file manifest;
 both describe the tree as the audit found it.

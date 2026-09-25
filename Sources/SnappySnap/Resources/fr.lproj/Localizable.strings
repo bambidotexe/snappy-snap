@@ -156,9 +156,10 @@
 
 /* SettingsCustomAreasPage.swift */
 "Custom areas" = "Zones personnalisées";
-"Define your own snap areas below, then hold ⌘ Command during a drag to see them and drop a window into one." = "Définissez vos propres zones ci-dessous, puis maintenez ⌘ Commande pendant un glissement pour les voir et y déposer une fenêtre.";
-"While ⌘ Command is held, only your areas are offered. Edges, corners and the snap bar are off." = "Tant que ⌘ Commande est enfoncée, seules vos zones sont proposées. Les bords, les coins et la barre d’aimantation sont inactifs.";
-"Hold ⌘ Command while dragging to use your own areas" = "Maintenir ⌘ Commande pendant un glissement pour utiliser vos propres zones";
+"Define your own snap areas below, then hold %@ during a drag to see them and drop a window into one." = "Définissez vos propres zones ci-dessous, puis maintenez %@ pendant un glissement pour les voir et y déposer une fenêtre.";
+"While %@ is held, only your areas are offered. Edges, corners and the snap bar are off." = "Tant que %@ est enfoncée, seules vos zones sont proposées. Les bords, les coins et la barre d’aimantation sont inactifs.";
+"Hold %@ while dragging to use your own areas" = "Maintenir %@ pendant un glissement pour utiliser vos propres zones";
+"Key to hold" = "Touche à maintenir";
 "Areas" = "Zones";
 "Areas are written as JSON. Verify checks your text and says what to fix." = "Les zones s’écrivent en JSON. Vérifier contrôle votre texte et dit quoi corriger.";
 "Text with a mistake is kept, but no areas are offered until it is valid." = "Un texte comportant une erreur est conservé, mais aucune zone n’est proposée tant qu’il n’est pas valide.";

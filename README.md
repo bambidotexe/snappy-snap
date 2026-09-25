@@ -144,7 +144,7 @@ share and the limits each one has.
   <img src="docs/assets/custom-areas.gif" width="720" alt="Three windows dragged while ⌘ Command is held: the user's own three areas appear at once, the one under the pointer more opaque, and each window lands in one: a main area of seventy percent of the width and two stacked areas beside it.">
 </p>
 
-Hold **⌘ Command** while dragging and the edges, the corners and the bar all stand down. What appears instead
+Hold **⌘ Command** (or **⇧ Shift**, if you pick it in Settings) while dragging and the edges, the corners and the bar all stand down. What appears instead
 is your own set of areas, all at once, the one under the pointer more opaque than the rest. Let go and the
 window lands exactly there.
 
@@ -269,6 +269,7 @@ still where a snap left them; and **Tip** is where you can offer a coffee.
 | Handles | Past the smallest size | Let handles go past a window's smallest size | off |
 | Handles | Apps | The list of window sizes, one row per app, with Add…, Remove and Reset | the built-in list |
 | Custom Areas | Custom areas | Hold ⌘ Command while dragging to use your own areas | on |
+| Custom Areas | Custom areas | Key to hold: ⌘ Command · ⇧ Shift | ⌘ Command |
 | System | Compatibility | Use hidden macOS features | on |
 
 *Animation* paces the Snap Assist deck only: Smooth aims at your display's refresh rate, Balanced at 60,

@@ -3,6 +3,34 @@ import Foundation
 @testable import SnapCore
 
 @Suite struct SettingsTests {
+    /// Command is the key of the custom areas until the user chooses Shift, and a file written before
+    /// the choice existed keeps Command rather than failing to read.
+    @Test func theCustomAreaKeyDefaultsToCommandAndSurvivesAFileWrittenBeforeItExisted() throws {
+        #expect(Settings().customAreaKey == .command)
+        let old = Data("{\"gap\": 12, \"customAreas\": true}".utf8)
+        #expect(try JSONDecoder().decode(Settings.self, from: old).customAreaKey == .command)
+        for key in CustomAreaKey.allCases {
+            var s = Settings()
+            s.customAreaKey = key
+            let round = try JSONDecoder().decode(Settings.self, from: JSONEncoder().encode(s))
+            #expect(round.customAreaKey == key)
+        }
+    }
+
+    /// The chosen key alone offers the custom areas: with Shift chosen, Command held means nothing to a
+    /// drag, and the other way round. The segments read Command first, the default.
+    @Test func onlyTheChosenKeyOffersTheCustomAreas() {
+        #expect(CustomAreaKey.allCases == [.command, .shift])
+        #expect(CustomAreaKey.command.isHeld(command: true, shift: false))
+        #expect(!CustomAreaKey.command.isHeld(command: false, shift: true))
+        #expect(CustomAreaKey.shift.isHeld(command: false, shift: true))
+        #expect(!CustomAreaKey.shift.isHeld(command: true, shift: false))
+        #expect(CustomAreaKey.command.isHeld(command: true, shift: true))
+        #expect(CustomAreaKey.shift.isHeld(command: true, shift: true))
+        #expect(!CustomAreaKey.command.isHeld(command: false, shift: false))
+        #expect(!CustomAreaKey.shift.isHeld(command: false, shift: false))
+    }
+
     @Test func smoothnessDefaultsToAdaptiveAndSurvivesAFileWrittenBeforeItExisted() throws {
         #expect(Settings().smoothness == .adaptive)
         let old = Data("{\"gap\": 12}".utf8)
@@ -76,7 +104,7 @@ import Foundation
             // Snap bar
             "snapBar", "snapBarAppearance", "snapAssist", "hapticFeedback",
             // Custom areas
-            "customAreas",
+            "customAreas", "customAreaKey",
             // Layout
             "gapEnabled", "correctOversizedWindows",
             // Handles

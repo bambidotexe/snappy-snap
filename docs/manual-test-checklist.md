@@ -68,7 +68,7 @@ Open at least **Finder**, **Safari or Chrome**, **TextEdit** and **Terminal**, u
 | [ ] | Hold **fn**, press in the **middle** of a window and drag it to the left edge; repeat to the top, and once more pressing ⌘ part-way, with fn still held and with fn let go | macOS moves the window and SnappySnap follows it as any drag: the preview, the snap bar, the custom areas under ⌘, and the snap on release. Log: `drag confirmed` |
 | [ ] | Drag **Affinity** by its title and tab strip — several places along it, not only the very top row | It snaps from every one of them. (Its strip answers Accessibility's hit test with an error; the window list names the window instead. A press that finds nothing logs `no window under it`) |
 
-## 1b. Custom areas, held under Command (5 min)
+## 1b. Custom areas, held under Command or Shift (6 min)
 
 Settings → **Custom areas**. Leave the configuration at its default for the first three rows, then
 paste the one below, which overlaps on purpose.
@@ -94,6 +94,12 @@ paste the one below, which overlaps on purpose.
 | [ ] | Press ⌘ **before** starting to drag, then drag | The areas appear as soon as the drag confirms |
 | [ ] | Turn the switch at the top of the page **off**, then drag with ⌘ held | Nothing changes about the drag: ordinary zones throughout. The editor and Verify go grey but keep the text |
 | [ ] | Turn it back on | The text is exactly as it was, comments included |
+| [ ] | Pick **⇧ Shift** under the switch | The switch's label, the hint and the note all say ⇧ Shift instead of ⌘ Command, in French too (⇧ Majuscule). Switched off, the picker goes grey with the switch |
+| [ ] | With ⇧ Shift picked, drag and hold ⇧, then let go of ⇧ mid-drag without moving, then release over an area with ⇧ held | Exactly the ⌘ rows above, with ⇧: the areas at the keystroke, the ordinary zones back on release of the key, the window placed in the area |
+| [ ] | With ⇧ Shift picked, drag and hold ⌘ | Nothing changes about the drag: ordinary zones, snap bar and all |
+| [ ] | With ⇧ Shift picked and no drag, hold ⌘ over a handle pill | The pill and the knobs go, exactly as with ⌘ Command picked (`functional.md` §9 *Holding Command*) |
+| [ ] | Hold ⇧ as well as ⌥ during a drag, ⇧ Shift picked | The custom areas: they outrank Option whichever key offers them |
+| [ ] | Pick ⌘ Command again | Everything as before, ⇧ means nothing to a drag |
 | [ ] | Flick between the **Settings** tab and this one, watching the switch | The same control in both: a switch on the trailing edge, same row height and margins, the grey line wrapping the same way. Not a checkbox (`pitfalls.md` 47) |
 
 ### Areas for one application (2 min)
@@ -143,7 +149,7 @@ Settings › Snapping › **⌥ Option key** → *Hold ⌥ Option to snap to hal
 | [ ] | ⌥ held, pointer in the top 24 pt, away from either end | **Fill**, exactly as without ⌥. Under ⌥ the top band is resolved ahead of the halves, which would otherwise swallow it |
 | [ ] | ⌥ held, anywhere | **No snap bar and no island** — nothing at all at the top of the screen, whatever the appearance; an island that was up leaves through its departure |
 | [ ] | Release ⌥ **without moving the mouse** | The bar and the pill come back and the ordinary narrow bands are back with them, resolved from where the pointer already stands. In the middle of the screen that means the preview goes |
-| [ ] | Hold ⌘ as well as ⌥ | The **custom areas**, exactly as §1b. Command outranks Option |
+| [ ] | Hold ⌘ as well as ⌥ | The **custom areas**, exactly as §1b. The custom areas outrank Option |
 | [ ] | Switch the feature off in Settings with ⌥ still held, then move the pointer | The grown halves go on that move. No key event announces a switch |
 | [ ] | Switch *Drag to the left or right edge for a half* off, with the Option switch still on | ⌥ does nothing. It grows a band that is switched off |
 | [ ] | Without ⌥: arm the left edge, pull the pointer slowly away | Still survives ~12 pt past where it armed. Option took the hysteresis off the **centre line only** |

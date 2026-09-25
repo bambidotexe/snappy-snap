@@ -6,6 +6,10 @@
 "Balanced" = "Balanced";
 "Battery" = "Battery";
 
+/* Settings.swift — the key held for the custom areas, one segment each */
+"⌘ Command" = "⌘ Command";
+"⇧ Shift" = "⇧ Shift";
+
 /* Settings.swift — the three snap bar appearances, and the hint under the one that is picked */
 "Notch or island" = "Notch or island";
 "Floating bar" = "Floating bar";

@@ -484,10 +484,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Fan-out for mouse events, in the order the features may claim one. Command has its own branch and
     /// never reaches the mouse fan-out below: it is not a click and claims nothing on its own.
     func route(_ event: MouseEvents.Event) {
-        // The drag session hears it too: during a window drag Command switches it to the custom areas
-        // and Option grows the side halves to the middle of the display. Only Command reaches the
-        // handles, so only Command is forwarded below.
-        if case .flagsChanged(let command, _) = event {
+        // The drag session hears it too: during a window drag the key chosen for the custom areas
+        // switches it to them, and Option grows the side halves to the middle of the display. Only
+        // Command reaches the handles, so only Command is forwarded below.
+        if case .flagsChanged(let command, _, _) = event {
             handleCommandChanged(command)
             dragSession?.handle(event)
             return
