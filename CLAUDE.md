@@ -125,7 +125,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 - `Scripts/install.sh` — production build → notarized disk image → `/Applications/SnappySnap.app` →
   relaunch, leaving no `.app` and no `.dmg` under the repository. **This is how the app is installed and
   reinstalled, and the app always runs from `/Applications`**; `build/` is only where the bundle is
-  assembled, and nothing launchable is left there. `Scripts/publish.sh` does the same and puts the image
+  assembled, and nothing launchable is left there. **It works on this Mac**: the signing identity and the notary profile are set up and nothing is wrong with them; if the notary check refuses, run it again and diagnose nothing (`docs/shared/workflow.md`, *Installing works on this Mac*). `Scripts/publish.sh` does the same and puts the image
   on a GitHub release. `Scripts/run.sh` is a familiar name for `Scripts/install.sh`. Signing
   identity comes from `Scripts/signing.env` (tracked, holds no secret): it looks the Wooflab team's
   Developer ID Application certificate up in the keychain by team id (`TEAM_ID=85F6AC5QZF`);
