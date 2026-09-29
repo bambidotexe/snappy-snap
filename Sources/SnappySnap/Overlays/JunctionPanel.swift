@@ -30,7 +30,7 @@ struct JunctionKnobView: View {
 final class JunctionPanel: OverlayPanel {
     static let fadeDuration: TimeInterval = HandlePanel.fadeDuration
 
-    private let content = HandleContentView()
+    private let content = HandleContentView(logger: .junction)
     /// Where the last layout put it, so `setDragging` can redo it at the new size.
     private var lastPoint: CGPoint?
     /// The hover band the knob is currently drawn for, in CG space — what the cursor keepalive tests

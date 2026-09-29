@@ -219,7 +219,15 @@ a Space change. Stopping never means `NSCursor.arrow.set()`, which would stomp t
 `ignoresMouseEvents = false` on the panel is load-bearing: a click-through panel loses the cursor
 region to the window beneath.
 
-**How to avoid.** Assert only inside the band; stop, never reset.
+A band test alone is not enough, because the override also wins over windows *in front of* the
+handle: a menu opened from the menu bar, a menu-bar extra's panel or Control Center sits above the
+handle's level and over its band, and a band test alone draws the resize glyph on it — which then
+stays after the pointer leaves the band, since the pointer never crosses into another window and
+nothing hands the cursor back. So outside a drag the keepalive also asks `BackgroundCursor.windowNumberUnderPointer`
+and sets nothing unless the answer is the handle's own panel.
+
+**How to avoid.** Assert only inside the band, and only while the handle's panel is the window under
+the pointer; stop, never reset.
 
 ### 13. A read-back taken before the application applied the write is the frame from before it
 

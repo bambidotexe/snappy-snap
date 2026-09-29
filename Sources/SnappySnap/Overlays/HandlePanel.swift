@@ -57,6 +57,13 @@ struct HandlePillView: View {
 /// - **The override is global.** Whatever we set wins everywhere, so a cursor is asserted only while
 ///   the pointer is genuinely inside the handle's hover band — and the band is re-tested on every
 ///   keepalive tick, not only when an event arrives, so a timer that outlives its reason self-corrects.
+/// - **Global also means it wins over windows in front of the handle.** A menu, Control Center or a
+///   notification can open over the band, above the handle's level, and the band test alone would
+///   put a resize glyph on it — which then stays there after the pointer leaves the band, because
+///   the pointer never crossed into another window and nothing hands the cursor back. So outside a
+///   drag each tick also asks the window server which window a press at the pointer would reach, and
+///   sets nothing unless it is this view's own panel. The keepalive keeps running while the band
+///   holds the pointer, so the glyph returns the moment the covering window closes.
 /// - **A single `set()` does not stick** and a tap-driven assert flickers. It is re-asserted on a
 ///   keepalive at one display frame (16 ms; 50 ms also held 10/10, 100 ms held 9/10). `NSCursor.set()`
 ///   costs 0.0003 ms, so the keepalive is free.
@@ -87,6 +94,20 @@ final class HandleContentView: NSView {
     private var isPointerInBand: (@MainActor () -> Bool)?
     private var keepalive: Timer?
     private var tracking: NSTrackingArea?
+
+    /// The pill's `handle` category or the knob's `junction`, for the one line a covered handle writes.
+    private let logger: Logger
+    /// The window last found on top of the handle, so the line is written on change only: the tick
+    /// runs at 60 Hz. nil while the handle's own panel is the window under the pointer.
+    private var lastCoveringWindow: Int?
+
+    init(logger: Logger) {
+        self.logger = logger
+        super.init(frame: .zero)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
 
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
@@ -130,12 +151,40 @@ final class HandleContentView: NSView {
         keepalive?.invalidate()
         keepalive = nil
         isPointerInBand = nil
+        lastCoveringWindow = nil
     }
 
-    /// Re-asserts, or stops when there is no longer a reason to assert. Runs at 60 Hz and logs nothing.
+    /// Re-asserts, or stops when there is no longer a reason to assert. Runs at 60 Hz and logs only
+    /// when the window on top of the handle changes.
+    ///
+    /// A drag is exempt from the covering test: the pointer walks off the panel onto the windows and
+    /// previews beside it for the whole gesture, and the gesture is entirely ours.
     private func tick() {
         guard isDragging || isPointerInBand?() == true else { stopAsserting(); return }
+        guard isDragging || isOwnPanelUnderPointer() else { return }
         cursor.set()
+    }
+
+    /// Whether a press at the pointer would reach this view's own panel rather than a window on top
+    /// of it. A panel not yet on screen, or at alpha 0 as the tick in `startAsserting` finds it before
+    /// its fade-in begins, is not reachable yet and says so silently: the fade makes it reachable
+    /// within a frame, and there is no covering window to report.
+    private func isOwnPanelUnderPointer() -> Bool {
+        guard let window, window.isVisible, window.alphaValue > 0 else { return false }
+        let top = BackgroundCursor.windowNumberUnderPointer
+        if top == window.windowNumber {
+            lastCoveringWindow = nil
+            return true
+        }
+        if lastCoveringWindow != top {
+            lastCoveringWindow = top
+            let pointer = BackgroundCursor.pointerLocation
+            logger.debug("""
+                cursor withheld: window \(top) is on top of the handle at \
+                (\(pointer.x, format: .fixed(precision: 0)), \(pointer.y, format: .fixed(precision: 0)))
+                """)
+        }
+        return false
     }
 
     func setDragging(_ dragging: Bool) {
@@ -178,7 +227,7 @@ final class HandlePanel: OverlayPanel {
     static let fadeDuration: TimeInterval = 0.12
 
     private let model = HandleModel()
-    private let content = HandleContentView()
+    private let content = HandleContentView(logger: .handle)
 
     /// What the last layout was for, so `setDragging` can redo it at the new width.
     private var lastPair: HandlePair?

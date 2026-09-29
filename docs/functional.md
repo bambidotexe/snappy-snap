@@ -1142,6 +1142,15 @@ The override is **global**, so the discipline around it is the design:
 
 - A cursor is asserted **only while the pointer is inside the handle's hover band**, and re-asserted
   on a **16 ms** keepalive — a single `set()` does not stick.
+- **And only while the handle's own panel is the window under the pointer.** A menu, a menu-bar
+  extra's panel, Control Center or a notification can open over the band, above the handle's level;
+  over it the band still holds the pointer, and the glyph would be drawn on that window and then left
+  on it after the pointer leaves the band, because the pointer never crosses into another window and
+  nothing hands the cursor back. Each tick outside a drag asks the window server which window a press
+  at the pointer would reach and sets nothing unless it is the handle's panel; the keepalive keeps
+  running while the band holds the pointer, so the glyph comes back the moment the covering window
+  closes. A drag is exempt: the gesture is entirely ours, and the pointer walks off the panel for it.
+  A withheld cursor logs the covering window's number and the pointer, once per change.
 - It **stops** on band exit, on dismissal, on the end of a drag outside the band, while Command is
   held (§9 *Holding Command*), and on both Mission Control and a Space change, before anything else
   is torn down. A global override left asserted across a Space change is this app's resize cursor
@@ -1149,8 +1158,8 @@ The override is **global**, so the discipline around it is the design:
   drag at the very moment the app has stood down from offering one.
 - **Stopping never means setting an arrow.** `NSCursor.arrow.set()` would stomp the I-beam of the
   application underneath. Stopping is stopping.
-- The keepalive re-tests the band every tick, so a stuck timer self-corrects; a kill mid-assert
-  restores the user's cursor at once.
+- The keepalive re-tests the band and the window on top every tick, so a stuck timer self-corrects;
+  a kill mid-assert restores the user's cursor at once.
 
 The glyphs are the system's own: a column-resize cursor on a vertical divider, row-resize on a
 horizontal one, and for a knob the system's **move** glyph read out of HIServices' own cursor

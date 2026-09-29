@@ -16,7 +16,8 @@ import os
 /// **The override is global, not window-scoped.** Setting it means our `set()` wins over every other
 /// application's, wherever the pointer is. That is why nothing here asserts a cursor on its own: the
 /// property is set once, and `HandleContentView` asserts only while the pointer is inside a handle's
-/// hover band, re-testing the band on every keepalive tick so a stuck timer self-corrects.
+/// hover band **and** the handle's own panel is the window under it, re-testing both on every keepalive
+/// tick so a stuck timer self-corrects.
 ///
 /// **Restoring never means `NSCursor.arrow.set()`.** Stopping the assertion hands the cursor back to
 /// whatever the application underneath had chosen — its I-beam over a text field, say. Setting an
@@ -142,5 +143,14 @@ public enum BackgroundCursor {
     /// arrived because the pointer stopped moving.
     public static var pointerLocation: CGPoint {
         CoordinateSpace.cgPoint(fromCocoa: NSEvent.mouseLocation)
+    }
+
+    /// The number of the window a press at the pointer would reach: the topmost window under it that
+    /// takes mouse events, **of any application**, which is the window the window server hands the
+    /// cursor region to. A handle's band says where the handle is drawn; this says whether anything
+    /// sits on top of it there — a menu, Control Center, a notification — which the band cannot know.
+    /// 0 when no window is under the pointer. Public AppKit, one window-server query, no permission.
+    public static var windowNumberUnderPointer: Int {
+        NSWindow.windowNumber(at: NSEvent.mouseLocation, belowWindowWithWindowNumber: 0)
     }
 }

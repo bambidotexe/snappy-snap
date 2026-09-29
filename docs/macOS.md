@@ -265,6 +265,11 @@ companion: the facts that look otherwise until measured. Every API named here ha
   connection, after which the public `NSCursor.set()` reaches the screen. The override is global to
   the connection, so it is asserted only while the pointer is inside a handle's band, re-asserted at
   60 Hz, and stopped, never reset to an arrow.
+- Global means it wins over **other applications' windows in front of the handle** too — a menu at
+  `.popUpMenu`, Control Center, a notification. `NSWindow.windowNumber(at:belowWindowWithWindowNumber: 0)`
+  answers which window a press at a screen point would reach, of any application, with no permission;
+  the cursor is set only while that is the handle's own panel. A window at alpha 0 is not treated as
+  reachable, so the tick that runs before a panel's fade-in sets nothing.
 - The system's `move` glyph is read from
   `/System/Library/Frameworks/ApplicationServices.framework/Frameworks/HIServices.framework/Versions/A/Resources/cursors/<name>/cursor.pdf`
   with its hotspot from the `info.plist` beside it, preferring a `macos27/<name>/` variant. That is a

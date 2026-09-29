@@ -327,6 +327,7 @@ existence are a function of those frames and of nothing else.
 | [ ] | Move the pointer along the gap, fast and slow | **No flicker.** The glyph is steady the whole time the pointer is in the band |
 | [ ] | Move off the band, then into a **text field** of the window beside it | The application's own **I-beam** comes back. An arrow here means we stomped it — the worst failure this design has |
 | [ ] | Drag a pill until the divider **stops** at a minimum, so the pointer leaves the band | The glyph **stays** for the whole gesture and goes on the mouse-up |
+| [ ] | Open a **menu** from the menu bar (or Control Center) so it hangs over a pill's band, and move the pointer across the band inside the menu | The **arrow** the whole time: no resize glyph on the menu. Move out of the band, still inside the menu: still the arrow, and nothing stuck. Close the menu with the pointer in the band: the glyph comes back. `--level debug` shows one `cursor withheld: window …` line per covering window |
 | [ ] | Hover a pill and **switch Space** | The cursor is an ordinary pointer on the far Space. A resize glyph riding a Space change onto somebody else's windows is the failure to report immediately |
 | [ ] | With a pill hovered, `pkill SnappySnap` | The pointer is normal again at once |
 | [ ] | Settings › System › Compatibility → turn **"Use hidden macOS features" off**, hover a pill | **No glyph at all**, with no relaunch. Turn it back on: the glyph returns on the next band entry |

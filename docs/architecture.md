@@ -213,7 +213,9 @@ The cursor is the other half of the same platform fact. `BackgroundCursor.enable
 `CGSSetConnectionProperty`, both resolved through `PrivateAPI`, both in `docs/private-api-index.md` —
 after which the public `NSCursor.set()` reaches the screen. The property is global, so
 `HandleContentView` asserts a cursor only while the pointer is inside the same band the controller
-hit-tests the press against, on a 16 ms keepalive, and `AppDelegate.leftTheArrangement` stops both
+hit-tests the press against and, outside a drag, the handle's own panel is the window a press there
+would reach (`BackgroundCursor.windowNumberUnderPointer`, so a menu or Control Center over the band
+never carries the glyph), on a 16 ms keepalive, and `AppDelegate.leftTheArrangement` stops both
 handle controllers' assertions **before** anything else is cancelled. With the switch off or a symbol
 missing, `enable()` returns false, no keepalive runs, and there is no cursor.
 
