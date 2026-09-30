@@ -94,6 +94,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 | minimum sizes — the list, a window's own floor, the probe | `SnapCore/MinimumSizeList.swift` (a row of `builtIn` is a measurement: `swift run axprobe floor <bundle id>`), `SnapCore/MinimumSizePolicy.swift` (`revealedFloor` is the one rule for what a landing reveals; `lowered` how a saved size comes down), `SystemAdapters/MinimumSizeStore.swift` (`observe`, `recordProbe`, `refused`), `Overlays/MinimumProbe.swift`, `UI/SettingsHandlesPage` (the Apps list and its Add sheet) | §6, §14 |
 | how a press arms a drag | `SystemAdapters/MouseEvents.swift` (the two taps), `SnapCore/PressReconciler.swift`, `AccessibilityWindows.window(at:)` (the hit test and its window-list fallback), `DragSessionController.mouseDown` | §3 *Arming*, `pitfalls.md` 47–48 |
 | what can hide a pill or a knob | `SnapCore/CoveringSurface.swift`, `WindowList.snapshotWithCoverers` | §17, `pitfalls.md` 49 |
+| the cursor over a handle, and a press under a menu in front of one | `SnapCore/HandleCursor.swift`, `SystemAdapters/PointerHit.swift`, `Overlays/HandlePanel.swift` (`HandleContentView`: the keepalive, `isCovered`, `handBack`), the `.down` of `HandleBarController` and `JunctionHandleController` | §11, §9 *Press*, `pitfalls.md` 58 |
 | updates: the check, its schedule, the notification | `SnapCore/UpdateCheck.swift`, `UpdateSchedule.swift`, `UpdatePanel.swift`, the numbers in `Settings.Fixed` (`update…`); `SnappySnap/UpdateController.swift` (the one owner), `UpdateNotifier.swift`; `SystemAdapters/UpdateChecker.swift`; the Updates group of `UI/SettingsGeneralPage.swift` | §14 *Updates*, §1, `architecture.md`, `macOS.md` *Updates* |
 | updates: the window, the fetch, making it ready, Install and Relaunch | `SnapCore/UpdateSession.swift`, `StagedUpdateCheck.swift`, `UpdateInstallScript.swift` (the helper's text, its plan, its result); `SystemAdapters/UpdateChecker.swift` (`UpdateDownload`), `UpdateStager.swift`, `CodeSignature.swift`, `UpdateInstaller.swift`, `DetachedProcess.swift`; `SnappySnap/UI/UpdateWindow.swift`, `UpdateController.installAndRelaunch` | the same, plus `pitfalls.md` 51–56 and the checklist's §9b. **Read `pitfalls.md` 51–56 before touching the order of an install** |
 | the welcome window: a page, a row, what a grant button does, who is in front | **Invoke the `macos-building-onboarding` skill first.** `SnappySnap/UI/OnboardingWindow.swift` (the controller, the four pages), `GrantRow.swift` (`GrantItem`, `FocusReturnWatch`, `GrantRow`, `Metrics` — every number), `GrantCatalog.swift` (the rows: how each is **read**, how each is **asked for**), `ControlActionHandler.swift`; `SystemAdapters/OnboardingState.swift`; `AppDelegate.showOnboarding`; the Start over group of `UI/SettingsSystemPage.swift` | `functional.md` §14 *The welcome window*, §1 |
@@ -114,7 +115,7 @@ commit, and the newer of a request and a written rule wins only after the user h
 
 - `swift build` — builds all four code targets. **This is the truth**; SourceKit diagnostics in tool
   results are frequently stale.
-- `swift test` — two targets, `SnapCoreTests` (643 tests) and `SystemAdaptersTests` (122). Plain
+- `swift test` — two targets, `SnapCoreTests` (650 tests) and `SystemAdaptersTests` (122). Plain
   `swift test` prints **one summary line per target — count two**; a crashed target prints none, so a
   crash reads as a pass if you grep for one green line.
 - `swift test --filter <SuiteName>` — one suite by name. A filter matching nothing in a target means
@@ -180,7 +181,7 @@ Three targets, dependencies downward only. Full version in `docs/architecture.md
   **`Arrangement`** + `ArrangementSolver` (what every snap places: dividers as variables, minimums as
   constraints, overflow past the right/bottom edge) · `LayoutArrangement` + `ArrangementFacts` ·
   `EdgeDrop` + `NeighbourEvidence` + `SnapOccupant` ·
-  `SnapAssist` · `Deck` · `Adjacency` + `HandleBarGeometry` + `HandleDragMath` + `MinimumSizeList` + `MinimumSizePolicy` ·
+  `SnapAssist` · `Deck` · `Adjacency` + `HandleBarGeometry` + `HandleDragMath` + `HandleCursor` + `MinimumSizeList` + `MinimumSizePolicy` ·
   `Junction` + `JunctionDetector` + `JunctionGeometry` + `JunctionDragMath` · `PostRate` (the deck's
   post rate; its only consumer is `DeckAnimator`) · `OrphanDetector` · `AnimationCurve` + `UnitBezier`
   · `SnapRegistry` · `Health` + `HealthRules` + `HealthReport` + `HealthWords` (the Health page's two tables,
@@ -192,7 +193,7 @@ Three targets, dependencies downward only. Full version in `docs/architecture.md
   **`WindowWriter`** (one serial queue per pid, one single-slot mailbox per window — **every animated
   window write in the app goes through it**; the probe's 1 × 1 press write and Snap Assist's bounded
   restore pass are the two direct writes) · `WindowList` (CGWindowList, three reads, **never window
-  names**) · `MouseEvents` (listen-only CGEventTap) · `Screens` · `CoordinateSpace` (Cocoa↔CG, at the
+  names**) · `MouseEvents` (listen-only CGEventTap) · `PointerHit` (what a click at a point reaches) · `Screens` · `CoordinateSpace` (Cocoa↔CG, at the
   panel boundary only) · `SpaceWatcher` (the 60/10 Hz poll and the Space sentinels) · `PrivateAPI`
   (`dlsym`, never linked) + `BackgroundCursor` + `ElevatedSpace` + `BackdropLayers` (the notch
   shape's and the island's Space, backdrop blur and luminance reading) · `MinimumSizeStore` · `SystemTilingPrefs` ·
@@ -320,7 +321,7 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
 
 ## Status
 
-`swift build` is clean and `swift test` is green (122 + 643 tests) at this commit. The app target has
+`swift build` is clean and `swift test` is green (122 + 650 tests) at this commit. The app target has
 no automated tests; `docs/manual-test-checklist.md` is its verification. The full account of the
 September 2026 audit is `docs/_audit.md`, and `docs/_coverage.md` is that audit's own file manifest;
 both describe the tree as the audit found it.

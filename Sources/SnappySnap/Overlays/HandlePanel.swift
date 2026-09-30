@@ -61,9 +61,16 @@ struct HandlePillView: View {
 ///   keepalive at one display frame (16 ms; 50 ms also held 10/10, 100 ms held 9/10). `NSCursor.set()`
 ///   costs 0.0003 ms, so the keepalive is free.
 ///
-/// **Stopping is not setting an arrow.** `stopAsserting()` stops; it never calls `NSCursor.arrow.set()`,
-/// which would stomp the I-beam of the app underneath — globally, since the override is global. The
-/// app underneath gets its own cursor back the moment we stop.
+/// **A covered handle asserts nothing.** The band is where the handle is drawn, not where it is seen: a
+/// menu, a menu-bar application's popover or Control Center can sit over it, and the resize glyph would
+/// then show over a surface that has nothing to do with it. Every tick asks the window server what a
+/// click at the pointer would reach (`HandleCursor.isCovered`), and a covered handle sets no cursor
+/// while the keepalive keeps running, so the glyph comes back the moment the cover goes.
+///
+/// **Stopping sets the arrow once, and only over an application that is not the frontmost one.**
+/// Measured: the frontmost application puts its own cursor back the instant we stop, and an arrow set
+/// there would stomp its I-beam — globally, since the override is global. Every other application
+/// never does, so without the arrow our resize glyph stays over its windows (`pitfalls.md` 58).
 ///
 /// `ignoresMouseEvents = false` on the panel is load-bearing and stays: the window server hands the
 /// cursor region to the topmost non-click-through window under the pointer, and a click-through panel
@@ -87,6 +94,11 @@ final class HandleContentView: NSView {
     private var isPointerInBand: (@MainActor () -> Bool)?
     private var keepalive: Timer?
     private var tracking: NSTrackingArea?
+    /// Whether the last tick set our cursor: what has something to hand back when the assertion stops
+    /// or the handle is covered, and nothing when it never started.
+    private var isAsserting = false
+    /// The category the hand-back is logged under: the pill's or the knob's.
+    var log = Logger.handle
 
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
@@ -125,17 +137,55 @@ final class HandleContentView: NSView {
         tick()
     }
 
-    /// Stops asserting. **Never sets a cursor** — see the class comment.
+    /// Stops asserting, and hands the pointer back — see the class comment.
     func stopAsserting() {
         keepalive?.invalidate()
         keepalive = nil
         isPointerInBand = nil
+        handBack()
     }
 
-    /// Re-asserts, or stops when there is no longer a reason to assert. Runs at 60 Hz and logs nothing.
+    /// Whether a window the user can click sits in front of this handle at `point` (CG space). False
+    /// while the panel is not on screen: there is then nothing to cover.
+    func isCovered(at point: CGPoint) -> Bool {
+        guard let window, window.isVisible else { return false }
+        let handle = window.windowNumber
+        return HandleCursor.isCovered(topmost: PointerHit.windowNumber(at: point),
+                                      belowHandle: PointerHit.windowNumber(at: point, below: handle),
+                                      handle: handle)
+    }
+
+    /// Re-asserts, holds off while the handle is covered, or stops when there is no longer a reason to
+    /// assert. Runs at 60 Hz and logs nothing but a hand-back.
     private func tick() {
         guard isDragging || isPointerInBand?() == true else { stopAsserting(); return }
+        if !isDragging, isCovered(at: BackgroundCursor.pointerLocation) {
+            handBack()
+            return
+        }
         cursor.set()
+        isAsserting = true
+    }
+
+    /// Gives the pointer back once after our cursor was on it: the arrow over a window of any
+    /// application but the frontmost one, nothing over the frontmost one's (`HandleCursor.handsBackArrow`).
+    private func handBack() {
+        guard isAsserting else { return }
+        isAsserting = false
+        let point = BackgroundCursor.pointerLocation
+        let handle = window?.windowNumber ?? 0
+        let under = HandleCursor.windowUnderPointer(topmost: PointerHit.windowNumber(at: point),
+                                                    belowHandle: PointerHit.windowNumber(at: point, below: handle),
+                                                    handle: handle)
+        let owner = PointerHit.ownerPID(ofWindow: under)
+        let frontmost = PointerHit.frontmostPID
+        let arrow = HandleCursor.handsBackArrow(ownerPID: owner, frontmostPID: frontmost)
+        if arrow { NSCursor.arrow.set() }
+        log.debug("""
+            cursor handed back over window \(under) (pid \(owner.map(String.init) ?? "none", privacy: .public), \
+            frontmost \(frontmost.map(String.init) ?? "none", privacy: .public)): \
+            \(arrow ? "arrow set" : "left to the frontmost app", privacy: .public)
+            """)
     }
 
     func setDragging(_ dragging: Bool) {
@@ -226,6 +276,10 @@ final class HandlePanel: OverlayPanel {
         // waiting for the first drag event.
         if let lastPair, let lastDivider { layout(pair: lastPair, divider: lastDivider) }
     }
+
+    /// Whether a window the user can click sits in front of the pill at `point` (CG space): a press
+    /// there is that window's, not the pill's.
+    func isCovered(at point: CGPoint) -> Bool { content.isCovered(at: point) }
 
     /// Stops the cursor assertion without taking the pill down, for the caller that owns this panel's
     /// visibility.

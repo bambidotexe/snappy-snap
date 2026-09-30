@@ -213,8 +213,12 @@ The cursor is the other half of the same platform fact. `BackgroundCursor.enable
 `CGSSetConnectionProperty`, both resolved through `PrivateAPI`, both in `docs/private-api-index.md` —
 after which the public `NSCursor.set()` reaches the screen. The property is global, so
 `HandleContentView` asserts a cursor only while the pointer is inside the same band the controller
-hit-tests the press against, on a 16 ms keepalive, and `AppDelegate.leftTheArrangement` stops both
-handle controllers' assertions **before** anything else is cancelled. With the switch off or a symbol
+hit-tests the press against, and only while nothing the user can click is in front of the handle
+there (`HandleCursor.isCovered`, asked of the window server through `PointerHit` on every tick; the
+press is refused by the same test), on a 16 ms keepalive. Stopping sets the arrow once over a window
+of an app that is not frontmost (`HandleCursor.handsBackArrow`), since no other app will. And
+`AppDelegate.leftTheArrangement` stops both handle controllers' assertions **before** anything else is
+cancelled. With the switch off or a symbol
 missing, `enable()` returns false, no keepalive runs, and there is no cursor.
 
 ## 7. A handle drag, and a junction drag
@@ -361,6 +365,7 @@ It is the one background feature that writes, which is why every guard above is 
 | `PostRate.swift` | The rate the deck *aims* posts at, from the display's refresh rate and `Smoothness`; `DeckAnimator` is its only consumer |
 | `OrphanDetector.swift` | The only evidence a mouse-up was lost |
 | `HandleSuppression.swift` | Whether Command is holding the pill and the knobs off the screen; never a drag already in flight |
+| `HandleCursor.swift` | Whether something clickable is in front of a handle (no cursor, no press), and whether stopping sets the arrow (only over an app that is not frontmost) |
 | `Animation.swift` | `AnimationCurve`, `UnitBezier` |
 | `SnapRegistry.swift` | `windowID → (preSnapFrame, snappedFrame, zone)`, valid within ±2 pt; `stillSnapped(among:)`, how many windows on screen still sit where a snap left them |
 | `Health.swift` | The Health page's shape: `HealthLevel` (green, orange, red; a reading is never a level), `HealthRow` (label, word, tooltip, fix) and `[HealthRow].warnings` (the fixes of its orange and red lines, each once), `InfoRow` (a blue reading), `HealthLimits` (at most 10 checks and 5 readings) |
@@ -380,6 +385,7 @@ It is the one background feature that writes, which is why every guard above is 
 | `Localized.swift` | `L(_:)` and `localizationBundle` for this target, as in `SnapCore` |
 | `AccessibilityWindows.swift` | Window at a point — by the application's hit test, and by the window list where that answers an error other than a timeout — frame and size reads, direct position/size writes for the probe and the restore pass, title, raise, `isResizable`, `isMinimized`, windows of a pid, CGWindowID for an AX window. **Every element carries the 0.25 s messaging timeout** |
 | `WindowList.swift` | Three `CGWindowList` reads, **no names**: `snapshot` (layer 0, regular apps, ≥ 50 × 50, own pid excluded) and `snapshotWithCoverers`, the same read with the `CoveringSurface`s beside it, `onScreenSurfaces` (unfiltered, for Mission Control), `onScreenIDsAndFrames` (for the sentinels) |
+| `PointerHit.swift` | What a click at a point reaches (`NSWindow.windowNumber(at:)`: click-through and alpha ≤ 0.02 windows skipped), its owner, and the frontmost app |
 | `WindowWriter.swift` | **Every window write in the app.** One serial queue per pid, one single-slot mailbox per window; `begin`/`post`/`flush`/`cancel`, generations, outcomes back on the main actor |
 | `MouseEvents.swift` | Listen-only session `CGEventTap` over the four left-button/move events **and `flagsChanged`**, beside a device-level one for presses and releases only, reconciled by `PressReconciler` so a gesture the window server keeps from the session still has its press and its release (`hearsDevicePresses`); which reports Command (⌘) and Option (⌥) — the app's two modifiers, named here and nowhere else; `onTapDisabled(reason, count)`, the pauses counted by reason, and `isListening`, whether macOS has the tap switched on |
 | `Screens.swift` | Displays in CG space — the camera housing included, from the two auxiliary top areas — display under a point, shared edges, change notifications |

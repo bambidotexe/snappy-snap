@@ -330,7 +330,10 @@ existence are a function of those frames and of nothing else.
 | [ ] | Hover a pill and **switch Space** | The cursor is an ordinary pointer on the far Space. A resize glyph riding a Space change onto somebody else's windows is the failure to report immediately |
 | [ ] | With a pill hovered, `pkill SnappySnap` | The pointer is normal again at once |
 | [ ] | Settings › System › Compatibility → turn **"Use hidden macOS features" off**, hover a pill | **No glyph at all**, with no relaunch. Turn it back on: the glyph returns on the next band entry |
-| [ ] | Hover a pill so the resize glyph is showing, then **hold ⌘** | The glyph **stops** with the pill. The window underneath gets its own cursor back — an arrow here is the same stomp as above |
+| [ ] | Hover a pill so the resize glyph is showing, then **hold ⌘** | The glyph **stops** with the pill. The window underneath gets its own cursor back — an arrow over the frontmost app's text is the same stomp as above |
+| [ ] | Make one of two side-by-side windows frontmost, hover their pill, then move off the band onto the **other** window | An **arrow** at once, and it stays while you move. A resize glyph that stays is the stuck cursor |
+| [ ] | Open **Control Center** (or the SnappySnap menu, or a right-click menu) over a pill's band and move the pointer across the band, then away | **No resize glyph** anywhere over the menu, and an ordinary arrow after. Close it with the pointer still in the band: the glyph comes back |
+| [ ] | With a right-click menu open over a pill, **click a menu item** that sits on the band | The menu item runs. No dim, no divider drag |
 
 The log should carry **one** `SetsCursorInBackground is on connection …` line, and nothing per hover
 or per frame.

@@ -42,6 +42,7 @@ final class JunctionPanel: OverlayPanel {
         let hosting = NSHostingView(rootView: JunctionKnobView())
         hosting.autoresizingMask = [.width, .height]
         content.addSubview(hosting)
+        content.log = .junction
         contentView = content
         alphaValue = 0
     }
@@ -70,6 +71,10 @@ final class JunctionPanel: OverlayPanel {
         // the first drag event to arrive.
         if let lastPoint { layout(at: lastPoint) }
     }
+
+    /// Whether a window the user can click sits in front of the knob at `point` (CG space): a press
+    /// there is that window's, not the knob's.
+    func isCovered(at point: CGPoint) -> Bool { content.isCovered(at: point) }
 
     /// Stops the cursor assertion without taking the knob down, for the caller that owns this
     /// panel's visibility.

@@ -256,6 +256,11 @@ final class JunctionHandleController {
             // same rule) nor nothing at all, but `DragSessionController`, which would arm a *window
             // drag* on whatever sits under the crossing. A press on a handle must never do that.
             guard active, claims(point) else { return false }
+            // A menu, a popover or Control Center over the knob takes the press, as it does the pill's.
+            guard isBusy || !panel.isCovered(at: point) else {
+                Logger.junction.debug("knob press under a window in front of the knob; left to that window")
+                return false
+            }
             guard !isBusy else {
                 // The button is up and the previous gesture's windows are still animating to the
                 // frames it left them. Beginning here would read a frame that is mid-flight and pivot
@@ -350,8 +355,9 @@ final class JunctionHandleController {
     /// belong to the interruption fan-out, which calls this. Idempotent, and safe to call when no
     /// cursor is being asserted.
     ///
-    /// Stopping is not setting a cursor: the application under the pointer gets its own back. If the
-    /// pointer is still in the band afterwards, the next `show` starts a fresh keepalive.
+    /// Stopping hands the pointer back: the frontmost application sets its own cursor, and over any
+    /// other the arrow is set once. If the pointer is still in the band afterwards, the next `show`
+    /// starts a fresh keepalive.
     func stopCursorAssertion() {
         panel.stopAsserting()
     }

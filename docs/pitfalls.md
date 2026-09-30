@@ -215,11 +215,13 @@ connection through `CGSMainConnectionID` and `CGSSetConnectionProperty` (SkyLigh
 which the public `NSCursor.set()` reaches the screen. The override is global, so `HandleContentView`
 asserts only while the pointer is inside the hover band, re-asserted at 60 Hz (16 ms and 50 ms held
 10/10, 100 ms 9/10; `set()` costs 0.0003 ms), and stops on band exit, dismissal, Mission Control and
-a Space change. Stopping never means `NSCursor.arrow.set()`, which would stomp the I-beam underneath.
+a Space change. Stopping sets the arrow only over an app that is not the frontmost one (58): over the
+frontmost one's windows it would stomp the I-beam.
 `ignoresMouseEvents = false` on the panel is load-bearing: a click-through panel loses the cursor
 region to the window beneath.
 
-**How to avoid.** Assert only inside the band; stop, never reset.
+**How to avoid.** Assert only inside the band and only where nothing is in front of the handle; on
+stopping, set the arrow only over an app that is not frontmost (58).
 
 ### 13. A read-back taken before the application applied the write is the frame from before it
 
@@ -749,3 +751,33 @@ This is every app's trap: `docs/shared/pitfalls.md`, **U6**.
 ### 57. An `NSStackView` spacer with no intrinsic height absorbs every point of a page's slack
 
 This is every app's trap: `docs/shared/pitfalls.md`, **O9**. It was found and first fixed here; `swift run axprobe elements SnappySnap` and `axprobe hit x y` are the instruments.
+
+## The cursor over the handles
+
+### 58. A band is where the handle is drawn, not where it is seen, and nobody takes the cursor back but the frontmost app
+
+**Symptom.** The resize glyph showed over a context menu, the menu bar item's own menu and Control
+Center wherever one sat over a pill's band; and once shown, it stayed after the pointer left, over
+Control Center and over the windows of other apps.
+
+**Measured.** Two causes. First, the band test is geometry: a menu (level 101) or a popover over the
+band is not a covering surface (§17 of `functional.md` stops at the Dock's layer, 20), so the pill is
+still "hovered" underneath it. Second, with `SetsCursorInBackground` on, the glyph on screen is the
+last one set by anybody. With a mouse-taking panel under the pointer, the resize glyph asserted and
+then stopped: over **Terminal, frontmost**, its I-beam (9 × 18) was back at once, whether the pointer
+left the panel or the panel went away; over **Slack, not frontmost**, the resize glyph (30 × 24) was
+still there 0.3 s later and after further 3 pt moves. An application that is not frontmost never
+sets its cursor. With the arrow set once on stopping, Slack showed the arrow (28 × 40) and kept it.
+
+**What the window server says.** `NSWindow.windowNumber(at:belowWindowWithWindowNumber:)` is the
+window a click would reach: it skips a click-through panel at level 1000 over a mouse-taking one, and
+it skips a panel at alpha 0 **and at 0.02**, so a handle fading in is not hit for its first frames.
+0.05 ms a call. Asked "below the handle", it names what the handle stands on.
+
+**What the code does.** `HandleCursor.isCovered`: the handle is covered when the topmost window at the
+pointer is neither the handle nor the window below it; a covered handle sets no cursor, and its press
+is left to what covers it. `HandleCursor.handsBackArrow`: stopping sets the arrow once when the window
+under the pointer is not the frontmost app's.
+
+**How to avoid.** Ask the window server what a click reaches before claiming a cursor or a press, and
+never assume someone else will reset a global cursor.

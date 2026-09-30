@@ -304,8 +304,9 @@ final class HandleBarController {
     /// the interruption fan-out, which calls this. Idempotent, and safe to call when no cursor is
     /// being asserted.
     ///
-    /// Stopping is not setting a cursor: the application under the pointer gets its own back. If the
-    /// pointer is still in the band afterwards, the next `show` starts a fresh keepalive.
+    /// Stopping hands the pointer back: the frontmost application sets its own cursor, and over any
+    /// other the arrow is set once. If the pointer is still in the band afterwards, the next `show`
+    /// starts a fresh keepalive.
     func stopCursorAssertion() {
         panel.stopAsserting()
     }
@@ -334,6 +335,12 @@ final class HandleBarController {
         case .down(let point):
             guard active, claimsPoint?(point) != true, let pair = hovered,
                   HandleBarGeometry.band(for: pair).contains(point) else { return false }
+            // A menu, a popover or Control Center over the pill takes the press: the band is where the
+            // pill is drawn, and the press belongs to whatever the user sees there.
+            guard drag != nil || !panel.isCovered(at: point) else {
+                Logger.handle.debug("pill press under a window in front of the pill; left to that window")
+                return false
+            }
             // A press inside the band this feature offered is **ours whether or not a gesture
             // starts**, which is the rule `JunctionHandleController` states at its own `.down`.
             // `beginDrag` declines four ways — no Accessibility window either side, a window that

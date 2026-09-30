@@ -263,8 +263,12 @@ companion: the facts that look otherwise until measured. Every API named here ha
 - The window server shows a cursor only for the active application. Two private SkyLight symbols,
   `CGSMainConnectionID` and `CGSSetConnectionProperty`, set `SetsCursorInBackground` on the app's own
   connection, after which the public `NSCursor.set()` reaches the screen. The override is global to
-  the connection, so it is asserted only while the pointer is inside a handle's band, re-asserted at
-  60 Hz, and stopped, never reset to an arrow.
+  the connection, so it is asserted only while the pointer is inside a handle's band and nothing is in
+  front of the handle there, re-asserted at 60 Hz. The glyph on screen is the last one anybody set,
+  and only the frontmost app sets its own again: stopping sets the arrow once over any other app's
+  window, never over the frontmost one's (`pitfalls.md` 58).
+- `NSWindow.windowNumber(at:belowWindowWithWindowNumber:)` answers what a click at a point reaches:
+  click-through windows and windows at alpha ≤ 0.02 are skipped. 0.05 ms a call, no permission.
 - The system's `move` glyph is read from
   `/System/Library/Frameworks/ApplicationServices.framework/Frameworks/HIServices.framework/Versions/A/Resources/cursors/<name>/cursor.pdf`
   with its hotspot from the `info.plist` beside it, preferring a `macos27/<name>/` variant. That is a

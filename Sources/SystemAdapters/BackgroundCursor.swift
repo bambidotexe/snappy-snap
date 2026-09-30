@@ -18,9 +18,10 @@ import os
 /// property is set once, and `HandleContentView` asserts only while the pointer is inside a handle's
 /// hover band, re-testing the band on every keepalive tick so a stuck timer self-corrects.
 ///
-/// **Restoring never means `NSCursor.arrow.set()`.** Stopping the assertion hands the cursor back to
-/// whatever the application underneath had chosen — its I-beam over a text field, say. Setting an
-/// arrow would stomp it, globally. There is no "un-set"; there is only stopping.
+/// **There is no "un-set".** The glyph on screen stays the last one anybody set. The frontmost
+/// application sets its own again the instant we stop, and an arrow set over it would stomp its
+/// I-beam; no other application ever does. `HandleContentView` therefore sets the arrow once on
+/// stopping, and only over a window of an application that is not the frontmost one.
 ///
 /// **Safety.** A SIGKILL mid-assert restores the user's cursor at once (measured), so a crash cannot
 /// strand one on screen.

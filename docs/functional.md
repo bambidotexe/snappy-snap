@@ -1027,6 +1027,11 @@ The press is the **only** part of the gesture that touches Accessibility: two wi
 resizable checks, one frame read per window, and a minimum-size probe for a window whose application
 has no row and which has not been probed this session (§6).
 
+**A press where something the user can click sits in front of the pill is not the pill's.** A menu, a
+menu-bar app's popover or Control Center can be open over the band; the press is left to it and no
+drag begins. What is in front is what a click at that point reaches, asked of the window server: a
+click-through overlay covers nothing, and neither does anything while the pill is still fading in.
+
 ### Drag
 
 **A drag event makes no Accessibility call whatsoever, and no window moves.** What follows the pointer
@@ -1129,7 +1134,8 @@ knob moves. What each axis means depends on what is around it:
 
 Everything else is the pill's behaviour: no Accessibility during the drag, one preview per member,
 the dim, the button-state check, Command taking the knob away while it is held (§9 *Holding
-Command*), and a release that animates every member to its preview's frame, shrinkers first.
+Command*), a press left to a menu or popover in front of the knob (§9 *Press*), and a release that
+animates every member to its preview's frame, shrinkers first.
 
 ## 11. The cursor over the handles
 
@@ -1140,15 +1146,21 @@ non-key accessory.
 
 The override is **global**, so the discipline around it is the design:
 
-- A cursor is asserted **only while the pointer is inside the handle's hover band**, and re-asserted
-  on a **16 ms** keepalive — a single `set()` does not stick.
+- A cursor is asserted **only while the pointer is inside the handle's hover band and nothing the
+  user can click is in front of the handle there** — a menu, a menu-bar app's popover, Control
+  Center — and re-asserted on a **16 ms** keepalive; a single `set()` does not stick. What is in front
+  is asked of the window server on every tick, as for the press (§9 *Press*). While the band is
+  covered the keepalive keeps running and sets nothing, so the cursor comes back when the cover goes.
 - It **stops** on band exit, on dismissal, on the end of a drag outside the band, while Command is
   held (§9 *Holding Command*), and on both Mission Control and a Space change, before anything else
   is torn down. A global override left asserted across a Space change is this app's resize cursor
   sitting over somebody else's windows — and one left asserted under Command would promise a divider
   drag at the very moment the app has stood down from offering one.
-- **Stopping never means setting an arrow.** `NSCursor.arrow.set()` would stomp the I-beam of the
-  application underneath. Stopping is stopping.
+- **Stopping, or being covered, sets the arrow once — only when the window under the pointer belongs
+  to an app that is not the frontmost one**, or when there is no window there. The frontmost app puts
+  its own cursor back the instant the handle stops, and an arrow would stomp its I-beam; any other
+  app never does, so the resize glyph would otherwise stay over its windows, its menus, Control
+  Center or the desktop until the pointer reached the frontmost app again.
 - The keepalive re-tests the band every tick, so a stuck timer self-corrects; a kill mid-assert
   restores the user's cursor at once.
 
