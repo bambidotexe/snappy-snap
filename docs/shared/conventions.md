@@ -182,14 +182,14 @@ One pipeline, carried whole:
   the app → staple → image → sign and notarize the image → staple → `spctl` on both. Publishes nothing.
 - `scripts/publish.sh <patch|minor|major> --notes=<file>` — refuses before the version bump without
   release notes, and publishes the file as the release's description, as it is.
-  It leaves `/Applications` alone unless `--install` is passed (`make release … INSTALL=1`), which
+  It leaves `/Applications` alone unless `--install` is passed, which
   happens only when the owner asks for it: the installed copy finds the release and updates itself.
 - `scripts/install.sh` / `scripts/publish.sh` — **the only two ways a build reaches a Mac**, and neither
   leaves a `.app` or a `.dmg` anywhere under the repository, on any exit path (`scripts/no-leftovers.sh`).
   `install.sh` stops the running copy (`pkill`; an app with state to put back, or a launch agent, stops
   more gently and says so), writes the quiet-launch marker, `ditto`s the bundle out of the mounted image,
-  verifies its signature, version and ticket, and opens it. A `Makefile` names them `make install` and
-  `make release LEVEL=…`. **`install.sh` works on this Mac**: it is the way a build is installed, and a
+  verifies its signature, version and ticket, and opens it. They are called directly, never through
+  `make`. **`install.sh` works on this Mac**: it is the way a build is installed, and a
   refusal at the notary check is run again, never diagnosed (`workflow.md`, *Installing works on this Mac*).
 - **Not sandboxed**, Hardened Runtime on, `get-task-allow` never shipped. One-time setup by the Wooflab
   team's Account Holder, **already done on this Mac and not to be doubted or redone**: the Developer ID

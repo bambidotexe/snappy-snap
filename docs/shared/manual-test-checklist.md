@@ -83,7 +83,7 @@ swift run axprobe hit <x> <y>        # what a real hit test finds at a point
       it again and open the app from the Applications folder while it still runs: the wizard, not Settings.
 - [ ] **Settings › System › Start over**: a fresh wizard at page one, with every row re-read.
 - [ ] **Launch at login** on, wizard never finished, log out and in: the app starts and **opens no window**.
-- [ ] `make install` over a running copy: no window, wizard included.
+- [ ] `sh scripts/install.sh` over a running copy: no window, wizard included.
 
 ## 2. The Settings window
 
@@ -117,7 +117,7 @@ swift run axprobe hit <x> <y>        # what a real hit test finds at a point
       and *Tip €5*. The button opens `ko-fi.com/bambidotexe` in the browser and the window stays put.
 - [ ] Turn **Show in menu bar** off, then press **Quit <App>**, the last group but one of General: the app
       is gone, `pgrep -x <App>` finds nothing. Reopen it and it comes back with Settings.
-- [ ] `make install` over a running copy: the app is replaced and **opens no window**, and every grant
+- [ ] `sh scripts/install.sh` over a running copy: the app is replaced and **opens no window**, and every grant
       survives.
 - [ ] The whole window in **French** and in **English** (System Settings › General › Language & Region, the
       per-app list).
