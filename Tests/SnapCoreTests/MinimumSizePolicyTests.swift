@@ -3,6 +3,23 @@ import Testing
 @testable import SnapCore
 
 @Suite struct MinimumSizePolicyTests {
+    // MARK: - What a handle drag previews with
+
+    @Test func aHandleDragPreviewsWithTheWindowsOwnMinimumByDefault() {
+        let own = CGSize(width: 500, height: 320)
+        #expect(MinimumSizePolicy.previewFloor(own: own, ignoringMinimums: false) == own)
+    }
+
+    // Both ways: a larger own minimum is not kept, and a smaller one is raised, since the floor is
+    // what stops a divider taking a window down to a point.
+    @Test func ignoringMinimumsPreviewsEveryWindowWithTheFixedFloor() {
+        for own in [CGSize(width: 500, height: 320), CGSize(width: 1, height: 1)] {
+            #expect(MinimumSizePolicy.previewFloor(own: own, ignoringMinimums: true)
+                    == Settings.Fixed.handlePreviewFloor)
+        }
+        #expect(Settings.Fixed.handlePreviewFloor == CGSize(width: 50, height: 50))
+    }
+
     // MARK: - Clamping without a probe
 
     /// Nothing measured, nothing to honour: the bound is the whole answer.

@@ -1045,7 +1045,11 @@ is a picture:
   on screen is true, and a bright menu bar over a dimmed desktop reads as a rendering fault.
 
 The divider follows the pointer, each window keeps its far edge, the gap between them is normalised
-to the standard gap, and the divider is clamped so neither window goes under its floor. Because the
+to the standard gap, and the divider is clamped so neither window goes under its floor — or, with
+*Let handles go past a window's smallest size* on (§14), under **50 × 50 pt**, whatever its floor.
+That setting changes the preview and nothing else: the press still probes and reads the floors, the
+release asks for exactly the frames the preview showed, and a window that cannot be that small lands
+at its own size and has its neighbour re-fitted, as every refusal does (*Release*). Because the
 clamp is a pure function of the requested divider and nothing is carried between passes, the pill and
 both previews simply **stop** at a minimum while the pointer carries on, and re-engage without a jump
 when it comes back.
@@ -1129,8 +1133,9 @@ knob moves. What each axis means depends on what is around it:
   menu bar or behind the Dock. With the gap switched off it stops flush instead.
 - **A spanning member** is not resized on the axis it runs past, and says nothing about where that
   divider is.
-- Either axis may clamp on a minimum, or on the working area, independently — a drag blocked
-  horizontally still moves vertically.
+- Either axis may clamp on a minimum (the 50 × 50 pt floor instead, with *Let handles go past a
+  window's smallest size* on, as for the pill), or on the working area, independently — a drag
+  blocked horizontally still moves vertically.
 
 Everything else is the pill's behaviour: no Accessibility during the drag, one preview per member,
 the dim, the button-state check, Command taking the knob away while it is held (§9 *Holding
@@ -1326,6 +1331,7 @@ already at that page's height and centred.
 | Snap Bar | Snap Assist | Animation — Smooth · Balanced · Battery | Balanced (needs the snap bar and Snap Assist) |
 | Handles | Handles | Show handles between windows | on (governs the junction knobs too) |
 | Handles | Smallest window sizes | Measure an app the first time you use a handle next to it | on |
+| Handles | Past the smallest size | Let handles go past a window's smallest size | off (governs the junction knobs too) |
 | Handles | Apps | The list of window sizes — one row per application, built in, measured or edited, with **Add…**, **Remove** and **Reset** (§6) | the built-in list |
 | Custom Areas | Custom areas | Hold ⌘ Command while dragging to use your own areas | on |
 | System | Compatibility | Use hidden macOS features | on |
@@ -1395,7 +1401,11 @@ margins*; once it is green both are gone and the row stays. With the gap off the
 and the knobs so a window can be resized by its own edge** (§9 *Holding Command*). It is text and not
 a control: the behaviour is always on, and there is nothing to switch.
 
-**The Handles page holds §6's list, under the probe switch.** A row shows the application's name, its
+**Under the probe switch, *Past the smallest size* lets a pill or knob preview go down to 50 × 50 pt**
+(§9 *Drag*). Its hint states the trade: on, the handle follows the pointer and a window that cannot be
+that small stops at its own size on release; off, the handle stops where the window stops.
+
+**The Handles page holds §6's list, under those two switches.** A row shows the application's name, its
 width and height, and where the numbers came from — *Built in*, *Measured* or *Edited*; the bundle
 identifier is the row's tooltip. The list follows the store live, so a row a window lowers while the
 page is open changes as the user watches. Width and height commit on Return or when the field loses

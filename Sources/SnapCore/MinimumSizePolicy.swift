@@ -72,6 +72,16 @@ public enum MinimumSizePolicy {
                height: max(stored?.height ?? 0, unprobedFloor.height))
     }
 
+    // MARK: - What a handle drag previews with
+
+    /// The minimum a pill or knob drag clamps a window's preview at: **its own, or
+    /// `Settings.Fixed.handlePreviewFloor` on both axes while the user lets handles go past a window's
+    /// smallest size** — whatever the window's own is, smaller or larger. Only the preview reads this;
+    /// the release and the re-fit keep the window's own.
+    public static func previewFloor(own: CGSize, ignoringMinimums: Bool) -> CGSize {
+        ignoringMinimums ? Settings.Fixed.handlePreviewFloor : own
+    }
+
     // MARK: - A window nobody has measured
 
     /// How small a window is presumed to go when nobody has measured it, which is how far an

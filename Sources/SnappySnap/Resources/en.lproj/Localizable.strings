@@ -120,6 +120,10 @@
 "Every app has a smallest size its windows accept, and macOS does not say what it is. On, an unknown app's window blinks once while SnappySnap measures it, and handles then stop exactly where the window stops. Off, nothing blinks, but a handle can be dragged further than a window can shrink, and the windows settle after you let go." = "Every app has a smallest size its windows accept, and macOS does not say what it is. On, an unknown app's window blinks once while SnappySnap measures it, and handles then stop exactly where the window stops. Off, nothing blinks, but a handle can be dragged further than a window can shrink, and the windows settle after you let go.";
 "Apps already in the list below are never measured." = "Apps already in the list below are never measured.";
 "Measure an app the first time you use a handle next to it" = "Measure an app the first time you use a handle next to it";
+"Past the smallest size" = "Past the smallest size";
+"On, a handle follows the pointer until a window is %@, and a window that cannot be that small stops at its own size when you let go. Off, the handle stops where the window stops." = "On, a handle follows the pointer until a window is %@, and a window that cannot be that small stops at its own size when you let go. Off, the handle stops where the window stops.";
+"Let handles go past a window's smallest size" = "Let handles go past a window's smallest size";
+"%lld × %lld pt" = "%lld × %lld pt";
 
 /* SettingsHandlesPage.swift — the Apps list, its columns and its buttons */
 "Apps" = "Apps";

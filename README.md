@@ -266,6 +266,7 @@ still where a snap left them; and **Tip** is where you can offer a coffee.
 | Snap Bar | Snap Assist | Animation: Smooth · Balanced · Battery | Balanced |
 | Handles | Handles | Show handles between windows | on |
 | Handles | Smallest window sizes | Measure an app the first time you use a handle next to it | on |
+| Handles | Past the smallest size | Let handles go past a window's smallest size | off |
 | Handles | Apps | The list of window sizes, one row per app, with Add…, Remove and Reset | the built-in list |
 | Custom Areas | Custom areas | Hold ⌘ Command while dragging to use your own areas | on |
 | System | Compatibility | Use hidden macOS features | on |

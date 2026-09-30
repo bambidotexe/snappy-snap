@@ -80,7 +80,7 @@ import Foundation
             // Layout
             "gapEnabled", "correctOversizedWindows",
             // Handles
-            "handleBar", "probeMinimumSizes",
+            "handleBar", "probeMinimumSizes", "handlesIgnoreMinimums",
             // Motion
             "smoothness",
             // Compatibility
@@ -124,6 +124,21 @@ import Foundation
             s.probeMinimumSizes = chosen
             let round = try JSONDecoder().decode(Settings.self, from: JSONEncoder().encode(s))
             #expect(round.probeMinimumSizes == chosen)
+        }
+    }
+
+    /// Letting handles go past a window's smallest size is **off** by default, and a settings file
+    /// written before it existed comes back off: the preview keeps stopping where the window stops
+    /// until the user asks otherwise.
+    @Test func theIgnoreMinimumsSwitchDefaultsToOffAndSurvivesAFileWrittenBeforeItExisted() throws {
+        #expect(Settings().handlesIgnoreMinimums == false)
+        let old = Data("{\"gap\": 12}".utf8)
+        #expect(try JSONDecoder().decode(Settings.self, from: old).handlesIgnoreMinimums == false)
+        for chosen in [true, false] {
+            var s = Settings()
+            s.handlesIgnoreMinimums = chosen
+            let round = try JSONDecoder().decode(Settings.self, from: JSONEncoder().encode(s))
+            #expect(round.handlesIgnoreMinimums == chosen)
         }
     }
 

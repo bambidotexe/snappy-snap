@@ -32,6 +32,11 @@ struct HandlesPage: View {
                 ToggleRow(L("Measure an app the first time you use a handle next to it"),
                           isOn: $store.settings.probeMinimumSizes)
             }
+            SettingsGroup(title: L("Past the smallest size"),
+                          hint: L("On, a handle follows the pointer until a window is \(Self.previewFloor), and a window that cannot be that small stops at its own size when you let go. Off, the handle stops where the window stops.")) {
+                ToggleRow(L("Let handles go past a window's smallest size"),
+                          isOn: $store.settings.handlesIgnoreMinimums)
+            }
             SettingsGroup(title: L("Apps"),
                           hint: L("The smallest size of each app's windows, in points. SnappySnap fills this in as it measures apps, and lowers a size whenever it sees a smaller window. Edit a size if a handle stops too early or too late."),
                           notes: [L("Remove an app to have it measured again.")]) {
@@ -102,6 +107,12 @@ struct HandlesPage: View {
     private func height(of row: MinimumRow) -> Binding<Double> {
         Binding(get: { minimums.list.row(for: row.bundleID)?.height ?? row.height },
                 set: { minimums.edit(row.bundleID, height: $0) })
+    }
+
+    /// `Settings.Fixed.handlePreviewFloor` as a sentence says it.
+    private static var previewFloor: String {
+        let floor = SnapCore.Settings.Fixed.handlePreviewFloor
+        return L("\(Int(floor.width)) × \(Int(floor.height)) pt")
     }
 
     /// Where the row's numbers came from, as the last column shows it.

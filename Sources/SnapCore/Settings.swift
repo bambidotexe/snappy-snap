@@ -116,6 +116,11 @@ public struct Settings: Codable, Hashable, Sendable {
         public static let handleMaxGap: Double = 16
         /// How much two windows must overlap along their shared edge to be offered a handle.
         public static let handleMinOverlap: Double = 60
+        /// The one floor a pill or knob drag previews with while `handlesIgnoreMinimums` is on, in
+        /// place of each window's own minimum: small enough that no application's real minimum is
+        /// under it, large enough that a divider cannot take a window down to a point. The owner's
+        /// number; no measurement establishes it.
+        public static let handlePreviewFloor = CGSize(width: 50, height: 50)
         /// How many windows the Snap Assist deck will animate. Above it the overflow is placed with
         /// no animation, because a deck that stutters is worse than one that does not play.
         public static let deckCeiling: Int = 20
@@ -230,6 +235,12 @@ public struct Settings: Codable, Hashable, Sendable {
     /// Assist deck's own opportunistic probe, and learning a floor from a refusal, are unaffected
     /// either way — the switch is about the blink, not about what the app is allowed to know.
     public var probeMinimumSizes = true
+    /// Whether a pill or knob drag previews with `Fixed.handlePreviewFloor` instead of each window's
+    /// own minimum. **Default off.** It changes the preview and only the preview: the press still
+    /// probes and reads the minimums as ever, the release asks for exactly the frames the preview
+    /// showed, and a window that refuses lands at its own size, raises its floor and has its
+    /// neighbour re-fitted, as with any other refusal.
+    public var handlesIgnoreMinimums = false
     // Compatibility
     /// The one global switch over every private macOS symbol the app uses. **Default on**, because
     /// the private routes are what make the app faster and smoother; off is the promise that each of
@@ -292,6 +303,8 @@ public struct Settings: Codable, Hashable, Sendable {
         smoothness = try c.decodeIfPresent(Smoothness.self, forKey: .smoothness) ?? d.smoothness
         handleBar = try c.decodeIfPresent(Bool.self, forKey: .handleBar) ?? d.handleBar
         probeMinimumSizes = try c.decodeIfPresent(Bool.self, forKey: .probeMinimumSizes) ?? d.probeMinimumSizes
+        handlesIgnoreMinimums = try c.decodeIfPresent(Bool.self, forKey: .handlesIgnoreMinimums)
+            ?? d.handlesIgnoreMinimums
         correctOversizedWindows = try c.decodeIfPresent(Bool.self, forKey: .correctOversizedWindows)
             ?? d.correctOversizedWindows
         usePrivateAPIs = try c.decodeIfPresent(Bool.self, forKey: .usePrivateAPIs) ?? d.usePrivateAPIs

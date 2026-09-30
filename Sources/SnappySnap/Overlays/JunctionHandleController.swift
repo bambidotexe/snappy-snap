@@ -68,7 +68,8 @@ final class JunctionHandleController {
         /// from these, so nothing can drift a point per frame — and where the release animation starts.
         let pressFrame: CGRect
         /// This window's floor, resolved once at the press: stored, probed, or `MinimumProbe.fallback`.
-        /// It is what clamps the crossing, and what a re-fit clamps this window's size to.
+        /// It is what a re-fit clamps this window's size to, and what the preview clamps the crossing at
+        /// unless `handlesIgnoreMinimums` was on at the press.
         let minSize: CGSize
         /// Where the crossing's current position puts this window: what its preview is drawn at, and on
         /// the release what it is animated to. Seeded with the press frame, so a press that never moves
@@ -96,6 +97,9 @@ final class JunctionHandleController {
         var members: [Member]
         /// The gap the drag normalizes to — the gap setting, read once when the press landed.
         let gap: Double
+        /// Whether the preview clamps at `Settings.Fixed.handlePreviewFloor` instead of each member's
+        /// own floor — `handlesIgnoreMinimums`, read once when the press landed.
+        let ignoresMinimums: Bool
         /// The working area of the display under the crossing, read once when the press landed. What
         /// keeps a one-sided axis — the members' shared edge growing outwards with nothing else to
         /// stop it — from being dragged over the menu bar or behind the Dock.
@@ -127,6 +131,13 @@ final class JunctionHandleController {
         var settled: Bool { members.allSatisfy { !$0.animating } }
         var minSizes: [UInt32: CGSize] {
             Dictionary(uniqueKeysWithValues: members.map { ($0.id, $0.minSize) })
+        }
+        /// What the drag's preview clamps at: `minSizes`, or the fixed preview floor for every member.
+        /// The re-fit never reads it.
+        var previewMinSizes: [UInt32: CGSize] {
+            Dictionary(uniqueKeysWithValues: members.map {
+                ($0.id, MinimumSizePolicy.previewFloor(own: $0.minSize, ignoringMinimums: ignoresMinimums))
+            })
         }
 
         func index(of handle: WindowHandle) -> Int? { members.firstIndex { $0.handle == handle } }
@@ -486,6 +497,7 @@ final class JunctionHandleController {
         }
         let knobCentre = JunctionGeometry.knobCentre(for: fresh)
         drag = Drag(junction: fresh, members: members, gap: settingsStore.settings.gap,
+                    ignoresMinimums: settingsStore.settings.handlesIgnoreMinimums,
                     visibleFrame: pressDisplay.visibleFrame,
                     began: CACurrentMediaTime(), lastEventAt: CACurrentMediaTime())
         hovered = fresh
@@ -506,7 +518,8 @@ final class JunctionHandleController {
         Logger.junction.debug("""
             junction drag started: a \(kind, privacy: .public) of \(fresh.members.count) windows at \
             \(Int(fresh.point.x)),\(Int(fresh.point.y)); previewing only — every window moves on \
-            release; minimums \(minimums, privacy: .public)
+            release; minimums \(minimums, privacy: .public)\
+            \(self.settingsStore.settings.handlesIgnoreMinimums ? "; the preview ignores them" : "", privacy: .public)
             """)
         return true
     }
@@ -519,7 +532,7 @@ final class JunctionHandleController {
     /// from the last pass's targets, so the outer edges cannot drift and a pass is a function of the
     /// pointer alone.
     ///
-    /// `minSizes` is the gesture's, fixed at the press and never revised: nothing during the drag could
+    /// `previewMinSizes` is the gesture's, fixed at the press and never revised: nothing during the drag could
     /// revise it, because nothing during the drag asks a window anything. The per-axis clamp inside
     /// `JunctionDragMath.frames` is what stops the crossing at a window's floor while the pointer
     /// carries on, and because the whole pass is a pure function of `point` there is nothing to unwind
@@ -530,7 +543,7 @@ final class JunctionHandleController {
         // window drag does.
         guard active else { cancel(); return }
         let result = JunctionDragMath.frames(for: live.junction, to: point, gap: live.gap,
-                                             visibleFrame: live.visibleFrame, minSizes: live.minSizes)
+                                             visibleFrame: live.visibleFrame, minSizes: live.previewMinSizes)
         for index in live.members.indices {
             if let frame = result.frames[live.members[index].id] { live.members[index].target = frame }
         }

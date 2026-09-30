@@ -126,6 +126,10 @@
 "Every app has a smallest size its windows accept, and macOS does not say what it is. On, an unknown app's window blinks once while SnappySnap measures it, and handles then stop exactly where the window stops. Off, nothing blinks, but a handle can be dragged further than a window can shrink, and the windows settle after you let go." = "Chaque app a une taille minimale que ses fenêtres acceptent, et macOS ne dit pas laquelle. Activé, la fenêtre d’une app inconnue clignote une fois pendant que SnappySnap la mesure, et les poignées s’arrêtent alors exactement là où la fenêtre s’arrête. Désactivé, rien ne clignote, mais une poignée peut aller plus loin qu’une fenêtre ne peut rétrécir, et les fenêtres se replacent quand vous relâchez.";
 "Apps already in the list below are never measured." = "Les apps déjà dans la liste ci-dessous ne sont jamais mesurées.";
 "Measure an app the first time you use a handle next to it" = "Mesurer une app la première fois que vous utilisez une poignée à côté d’elle";
+"Past the smallest size" = "Au-delà de la taille minimale";
+"On, a handle follows the pointer until a window is %@, and a window that cannot be that small stops at its own size when you let go. Off, the handle stops where the window stops." = "Activé, une poignée suit le pointeur jusqu’à ce qu’une fenêtre mesure %@, et une fenêtre qui ne peut pas être aussi petite s’arrête à sa propre taille quand vous relâchez. Désactivé, la poignée s’arrête là où la fenêtre s’arrête.";
+"Let handles go past a window's smallest size" = "Laisser les poignées dépasser la taille minimale d’une fenêtre";
+"%lld × %lld pt" = "%lld × %lld pt";
 
 /* SettingsHandlesPage.swift — la liste des apps, ses colonnes et ses boutons */
 "Apps" = "Apps";

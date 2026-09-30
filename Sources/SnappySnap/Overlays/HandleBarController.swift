@@ -121,9 +121,13 @@ final class HandleBarController {
         /// The gap the drag normalizes to — the gap setting, read once when the press landed.
         let gap: Double
         /// Each window's floor, resolved once at the press — stored, probed, or `MinimumProbe.fallback` —
-        /// and constant for the gesture. It is what clamps the divider, and it is also what a re-fit
-        /// clamps the neighbour's size to.
+        /// and constant for the gesture. It is what a re-fit clamps the neighbour's size to, and what
+        /// `previewMinSizes` is made from.
         let minSizes: HandleDragMath.MinSizes
+        /// What the divider's preview clamps at: `minSizes`, or `Settings.Fixed.handlePreviewFloor` for
+        /// both windows while `handlesIgnoreMinimums` is on — read once at the press. The re-fit never
+        /// reads it.
+        let previewMinSizes: HandleDragMath.MinSizes
         /// Whether a drag event has arrived at all. The gap is normalized on the first movement, so a
         /// press and release that never moved must leave both windows exactly as they were.
         var moved = false
@@ -616,10 +620,15 @@ final class HandleBarController {
             b: MinimumProbe.minimum(of: b, currentSize: pair.b.frame.size, area: areaB, ax: ax,
                                     store: minimums, log: Logger.handle,
                                     probingAllowed: settingsStore.settings.probeMinimumSizes))
+        let ignoresMinimums = settingsStore.settings.handlesIgnoreMinimums
+        let previewMinSizes = HandleDragMath.MinSizes(
+            a: MinimumSizePolicy.previewFloor(own: minSizes.a, ignoringMinimums: ignoresMinimums),
+            b: MinimumSizePolicy.previewFloor(own: minSizes.b, ignoringMinimums: ignoresMinimums))
         drag = Drag(pair: pair,
                     a: Side(handle: a, target: pair.a.frame),
                     b: Side(handle: b, target: pair.b.frame),
-                    gap: settingsStore.settings.gap, minSizes: minSizes, began: CACurrentMediaTime(),
+                    gap: settingsStore.settings.gap, minSizes: minSizes, previewMinSizes: previewMinSizes,
+                    began: CACurrentMediaTime(),
                     lastEventAt: CACurrentMediaTime())
         hovered = pair
         hideWork?.cancel()
@@ -633,7 +642,8 @@ final class HandleBarController {
             handle drag started between \(pair.a.id) and \(pair.b.id), gap \(gap, format: .fixed(precision: 1)); \
             previewing only — both windows move on release; minimums \
             \(minSizes.a.width, format: .fixed(precision: 0))×\(minSizes.a.height, format: .fixed(precision: 0)) / \
-            \(minSizes.b.width, format: .fixed(precision: 0))×\(minSizes.b.height, format: .fixed(precision: 0))
+            \(minSizes.b.width, format: .fixed(precision: 0))×\(minSizes.b.height, format: .fixed(precision: 0))\
+            \(ignoresMinimums ? "; the preview ignores them" : "", privacy: .public)
             """)
         return true
     }
@@ -646,7 +656,7 @@ final class HandleBarController {
     /// from the last pass's targets, so the far edges cannot drift and a pass is a function of the
     /// pointer alone.
     ///
-    /// `minSizes` is the pair's, fixed at the press and never revised: nothing during the drag could
+    /// `previewMinSizes` is the pair's, fixed at the press and never revised: nothing during the drag could
     /// revise it, because nothing during the drag asks a window anything. The clamp inside
     /// `HandleDragMath.frames` is what stops the divider at a window's floor while the pointer carries
     /// on, and because the whole pass is a pure function of `point` there is nothing to unwind when the
@@ -658,7 +668,7 @@ final class HandleBarController {
         guard active else { cancel(); return }
         let requested = live.pair.orientation == .horizontal ? point.x : point.y
         let result = HandleDragMath.frames(for: live.pair, divider: requested, gap: live.gap,
-                                           minSizes: live.minSizes)
+                                           minSizes: live.previewMinSizes)
         live.a.target = result.a.roundedToPoints()
         live.b.target = result.b.roundedToPoints()
         // The previews are glued to the targets with no animation of their own: at 120 Hz a 0.15 s
