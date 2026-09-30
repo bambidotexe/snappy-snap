@@ -17,7 +17,7 @@ import Testing
             #expect(MinimumSizePolicy.previewFloor(own: own, ignoringMinimums: true)
                     == Settings.Fixed.handlePreviewFloor)
         }
-        #expect(Settings.Fixed.handlePreviewFloor == CGSize(width: 50, height: 50))
+        #expect(Settings.Fixed.handlePreviewFloor == CGSize(width: 100, height: 100))
     }
 
     // MARK: - Clamping without a probe

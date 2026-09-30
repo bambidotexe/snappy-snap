@@ -1046,7 +1046,7 @@ is a picture:
 
 The divider follows the pointer, each window keeps its far edge, the gap between them is normalised
 to the standard gap, and the divider is clamped so neither window goes under its floor — or, with
-*Let handles go past a window's smallest size* on (§14), under **50 × 50 pt**, whatever its floor.
+*Let handles go past a window's smallest size* on (§14), under **100 × 100 pt**, whatever its floor.
 That setting changes the preview and nothing else: the press still probes and reads the floors, the
 release asks for exactly the frames the preview showed, and a window that cannot be that small lands
 at its own size and has its neighbour re-fitted, as every refusal does (*Release*). Because the
@@ -1133,7 +1133,7 @@ knob moves. What each axis means depends on what is around it:
   menu bar or behind the Dock. With the gap switched off it stops flush instead.
 - **A spanning member** is not resized on the axis it runs past, and says nothing about where that
   divider is.
-- Either axis may clamp on a minimum (the 50 × 50 pt floor instead, with *Let handles go past a
+- Either axis may clamp on a minimum (the 100 × 100 pt floor instead, with *Let handles go past a
   window's smallest size* on, as for the pill), or on the working area, independently — a drag
   blocked horizontally still moves vertically.
 
@@ -1401,7 +1401,7 @@ margins*; once it is green both are gone and the row stays. With the gap off the
 and the knobs so a window can be resized by its own edge** (§9 *Holding Command*). It is text and not
 a control: the behaviour is always on, and there is nothing to switch.
 
-**Under the probe switch, *Past the smallest size* lets a pill or knob preview go down to 50 × 50 pt**
+**Under the probe switch, *Past the smallest size* lets a pill or knob preview go down to 100 × 100 pt**
 (§9 *Drag*). Its hint states the trade: on, the handle follows the pointer and a window that cannot be
 that small stops at its own size on release; off, the handle stops where the window stops.
 

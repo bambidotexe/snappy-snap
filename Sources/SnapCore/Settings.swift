@@ -117,10 +117,10 @@ public struct Settings: Codable, Hashable, Sendable {
         /// How much two windows must overlap along their shared edge to be offered a handle.
         public static let handleMinOverlap: Double = 60
         /// The one floor a pill or knob drag previews with while `handlesIgnoreMinimums` is on, in
-        /// place of each window's own minimum: small enough that no application's real minimum is
-        /// under it, large enough that a divider cannot take a window down to a point. The owner's
-        /// number; no measurement establishes it.
-        public static let handlePreviewFloor = CGSize(width: 50, height: 50)
+        /// place of each window's own minimum, whether that is larger or smaller: large enough that a
+        /// divider cannot take a window down to something nobody could use or grab back. The owner's
+        /// number, chosen by hand; no measurement establishes it.
+        public static let handlePreviewFloor = CGSize(width: 100, height: 100)
         /// How many windows the Snap Assist deck will animate. Above it the overflow is placed with
         /// no animation, because a deck that stutters is worse than one that does not play.
         public static let deckCeiling: Int = 20
