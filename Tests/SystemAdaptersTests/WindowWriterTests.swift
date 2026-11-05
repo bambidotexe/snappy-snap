@@ -88,6 +88,8 @@ private final class FakeBackend: WindowWriter.Backend, @unchecked Sendable {
         let pid: pid_t
         let point: CGPoint?
         let size: CGSize?
+        /// Whether the call was made inside a `writing` pass of its pid.
+        let insideWriting: Bool
         let enter: UInt64
         var exit: UInt64 = 0
     }
@@ -106,6 +108,8 @@ private final class FakeBackend: WindowWriter.Backend, @unchecked Sendable {
     private var sizes: [Int: CGSize] = [:]
     private var writtenOrigins: [Int: CGPoint] = [:]
     private var writtenSizes: [Int: CGSize] = [:]
+    private var openPasses: [pid_t: Int] = [:]
+    private var passes: [pid_t: Int] = [:]
 
     // MARK: setup
 
@@ -175,6 +179,13 @@ private final class FakeBackend: WindowWriter.Backend, @unchecked Sendable {
 
     func kinds(window: Int) -> [Kind] { calls(window: window).map(\.kind) }
 
+    /// How many `writing` passes the writer opened for `pid`.
+    func writingPasses(pid: pid_t) -> Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return passes[pid] ?? 0
+    }
+
     func peakConcurrency(pid: pid_t) -> Int {
         lock.lock()
         defer { lock.unlock() }
@@ -194,6 +205,20 @@ private final class FakeBackend: WindowWriter.Backend, @unchecked Sendable {
     }
 
     // MARK: WindowWriter.Backend
+
+    /// Runs the writes once — a fake has no application whose attribute could be on — and books the
+    /// pass, so a test can see which calls were made inside one.
+    func writing(pid: pid_t, _ writes: () -> Bool) -> Bool {
+        lock.lock()
+        openPasses[pid, default: 0] += 1
+        passes[pid, default: 0] += 1
+        lock.unlock()
+        let applied = writes()
+        lock.lock()
+        openPasses[pid, default: 1] -= 1
+        lock.unlock()
+        return applied
+    }
 
     func setPosition(_ p: CGPoint, of element: AXUIElement) -> Bool {
         let (index, pid) = enter(.setPosition, element, point: p, size: nil)
@@ -251,6 +276,7 @@ private final class FakeBackend: WindowWriter.Backend, @unchecked Sendable {
         active[pid] = count
         peak[pid] = max(peak[pid] ?? 0, count)
         record.append(Call(kind: kind, window: window, pid: pid, point: point, size: size,
+                           insideWriting: (openPasses[pid] ?? 0) > 0,
                            enter: DispatchTime.now().uptimeNanoseconds))
         let index = record.count - 1
         lock.unlock()
@@ -594,6 +620,36 @@ private func makeWriter(_ backend: FakeBackend) -> WindowWriter { WindowWriter(b
         let outcome = try #require(collector.outcomes(for: window).first)
         #expect(outcome.landedSize == CGSize(width: 300, height: 200))
         #expect(backend.kinds(window: window.index).contains(.readSize))
+    }
+
+    /// The live back end turns the application's `AXEnhancedUserInterface` off around a pass, so every
+    /// write of a step has to be inside one — a write outside it would be the asynchronous, lossy write
+    /// that attribute makes — and every read outside it, where it costs nothing extra. One pass per
+    /// step, not per write, so a frame's two writes share one bracket.
+    @Test func everyStepWritesInsideOneWritingPassAndReadsOutsideIt() async throws {
+        let backend = FakeBackend()
+        let writer = makeWriter(backend)
+        let window = FakeWindow(0, pid: 100)
+        backend.register(window.element, window: window.index, pid: 100)
+        backend.answer(size: CGSize(width: 300, height: 200), window: window.index)
+
+        writer.begin(window.handle, current: CGRect(x: 0, y: 0, width: 400, height: 400))
+        writer.post(WindowWriter.Request(frame: CGRect(x: 10, y: 0, width: 300, height: 200), readBack: true),
+                    to: window.handle)
+        _ = try #require(await flushed(writer, window))
+        writer.post(WindowWriter.Request(frame: CGRect(x: 20, y: 10, width: 500, height: 300)), to: window.handle)
+        _ = try #require(await flushed(writer, window))
+
+        let calls = backend.calls(window: window.index)
+        let writes = calls.filter { $0.kind == .setPosition || $0.kind == .setSize }
+        let reads = calls.filter { $0.kind == .readSize || $0.kind == .readFrame }
+        let writesOutside = writes.filter { !$0.insideWriting }.count
+        let readsInside = reads.filter(\.insideWriting).count
+        #expect(writes.count == 4)
+        #expect(writesOutside == 0)
+        #expect(!reads.isEmpty)
+        #expect(readsInside == 0)
+        #expect(backend.writingPasses(pid: 100) == 2, "one pass per step")
     }
 
     // MARK: flush semantics

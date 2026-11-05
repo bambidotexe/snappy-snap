@@ -303,6 +303,49 @@ failures as well as successes, clears `dlerror()` between the open and the looku
 
 **How to avoid.** Never declare a private symbol; resolve it.
 
+### 59. An assistive client's `AXEnhancedUserInterface` makes window writes lossy
+
+**Symptom.** One application's windows stop snapping and resizing properly while every other
+application's still do: a window lands at a frame an earlier step of its animation had reached, keeps
+its old origin with the new size, or takes a width it was never asked for. Seen on Chrome with a Google
+Meet open, and still there after the Meet tab is closed. The writes all answer success.
+
+**Why.** The application element's `AXEnhancedUserInterface` is on. VoiceOver turns it on, and so does
+any client that wants a web page's accessibility tree: Granola turns it on in Chrome while a Meet is
+open, and turns it on again every 0.56 s (measured: 13 flips in 4 s) whenever something turns it off.
+The application keeps it until someone turns it off, hence the defect outliving the tab. While it is
+on, AppKit applies Accessibility frame writes asynchronously: each `set` answers in under 1 ms, and a
+write that arrives while the previous one is still being applied is dropped. Measured on Chrome:
+
+| Writes | Attribute on | Attribute off around each pass |
+|---|---|---|
+| size, position, size to (200, 150, 900 × 650) | (760, 42, 752 × 650): position dropped, width wrong | exact, 18 ms |
+| size, position, size to (760, 42, 744 × 873) | (760, 42, 744 × 799): second size dropped | exact, 14 ms |
+| 20 steps from (339, 123, 900 × 650) to (760, 42, 744 × 873) | (339, 123, 744 × 799): never moved | exact, 6 animations of 6 |
+| 20 steps, the attribute turned off once before them | stopped where step 15 was: Granola had turned it back on | — |
+| the probe's pattern — 1 × 1, read, the size back | the size back dropped once in three | — |
+
+A single write, hundreds of milliseconds after the last one, lands even with the attribute on. Safari,
+with it off, lands every row exactly.
+
+**What the code does.** `WindowWriter` makes each step's writes inside one `Backend.writing` pass, and
+the live pass is `EnhancedUserInterface.suspended`: read the attribute, turn it off, write, read it
+again, turn it back on. A read that finds it on again — a client turned it on while the writes ran —
+runs the writes once more with it off. The setter answers `kAXErrorNotImplemented` (-25208) on every
+application measured and applies anyway, so its answer is ignored and the read is believed. The
+toggles cost about 0.1 ms each on Chrome during a Meet; the read is one more round trip per pass for
+every application. The `app` log category says once, per application, when it is found on.
+
+The minimum-size probe and Snap Assist's restore pass write directly on the main thread and stay
+outside the bracket: the restore pass makes single writes, which land, and the bracket's read would
+push the probe's worst case against a hung application from 0.75 s to the ~1 s stall that disables
+the tap (7). An application with a row in the minimum-size list is never probed.
+
+**How to avoid.** Measure a write against an application with the attribute both ways before
+concluding anything about that application's windows (`axprobe frame`, then read
+`AXEnhancedUserInterface` on `AXUIElementCreateApplication(pid)`). A new direct write off the
+`WindowWriter` that follows another write closely needs the bracket.
+
 ---
 
 ## AppKit, SwiftUI and overlays

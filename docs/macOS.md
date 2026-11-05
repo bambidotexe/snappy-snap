@@ -108,6 +108,12 @@ companion: the facts that look otherwise until measured. Every API named here ha
   queue per pid at `.userInteractive`. A position is clamped by the window server so that a
   40 × 91 pt sliver stays on screen. `kAXRaiseAction` raises a window and activates its application
   asynchronously.
+- `AXEnhancedUserInterface`, on the application element, is turned on by assistive clients
+  (VoiceOver; Granola in Chrome during a Google Meet, again every 0.56 s) and kept by the application
+  until someone turns it off. While it is on, frame writes that follow each other are applied
+  asynchronously and dropped; with it off they are synchronous and exact. Its setter answers
+  `kAXErrorNotImplemented` and applies anyway. Every `WindowWriter` pass turns it off around its
+  writes and back on after them (`EnhancedUserInterface`, `pitfalls.md` 59).
 - There is no attribute for a minimum size (`AXMinSize`, `AXMinimumSize` are unsupported everywhere
   measured). A floor is learned by writing 1 × 1 and reading back, or from a landing larger than asked.
 - One private symbol, `_AXUIElementGetWindow`, links an element to its `CGWindowID` in one call. Its

@@ -47,7 +47,9 @@ Four mechanisms hold that line, and they are why several things look more elabor
    (`AccessibilityWindows.messagingTimeout`), so no single call can stall the loop.
 2. **No window write happens on the main thread at all.** Every one goes through `WindowWriter`, on a
    serial queue belonging to the target window's **pid**. The main thread's whole share of a write is
-   the post: 0.01 ms.
+   the post: 0.01 ms. On that queue each step's writes are made with the application's
+   `AXEnhancedUserInterface` off (`EnhancedUserInterface`), because while an assistive client has it
+   on, writes that follow each other are dropped (`pitfalls.md` 59).
 3. **The drag path makes at most one Accessibility read per frame**, and never in front of the frame
    that first shows the preview. `DragSessionController.lastKnownFrame` is a cache; the preview's
    appear-morph and the drop both read it rather than Accessibility.
@@ -386,7 +388,8 @@ It is the one background feature that writes, which is why every guard above is 
 | `AccessibilityWindows.swift` | Window at a point — by the application's hit test, and by the window list where that answers an error other than a timeout — frame and size reads, direct position/size writes for the probe and the restore pass, title, raise, `isResizable`, `isMinimized`, windows of a pid, CGWindowID for an AX window. **Every element carries the 0.25 s messaging timeout** |
 | `WindowList.swift` | Three `CGWindowList` reads, **no names**: `snapshot` (layer 0, regular apps, ≥ 50 × 50, own pid excluded) and `snapshotWithCoverers`, the same read with the `CoveringSurface`s beside it, `onScreenSurfaces` (unfiltered, for Mission Control), `onScreenIDsAndFrames` (for the sentinels) |
 | `PointerHit.swift` | What a click at a point reaches (`NSWindow.windowNumber(at:)`: click-through and alpha ≤ 0.02 windows skipped), its owner, and the frontmost app |
-| `WindowWriter.swift` | **Every window write in the app.** One serial queue per pid, one single-slot mailbox per window; `begin`/`post`/`flush`/`cancel`, generations, outcomes back on the main actor |
+| `WindowWriter.swift` | **Every window write in the app.** One serial queue per pid, one single-slot mailbox per window; `begin`/`post`/`flush`/`cancel`, generations, outcomes back on the main actor; each step's writes in one `Backend.writing` pass |
+| `EnhancedUserInterface.swift` | The bracket every `WindowWriter` pass is made in: `AXEnhancedUserInterface` read, turned off for the writes, read again (on again: the writes once more) and turned back on; logs once per application when it is found on |
 | `MouseEvents.swift` | Listen-only session `CGEventTap` over the four left-button/move events **and `flagsChanged`**, beside a device-level one for presses and releases only, reconciled by `PressReconciler` so a gesture the window server keeps from the session still has its press and its release (`hearsDevicePresses`); which reports Command (⌘), Option (⌥) and Shift (⇧) — the app's three modifiers, named here and nowhere else; `onTapDisabled(reason, count)`, the pauses counted by reason, and `isListening`, whether macOS has the tap switched on |
 | `Screens.swift` | Displays in CG space — the camera housing included, from the two auxiliary top areas — display under a point, shared edges, change notifications |
 | `CoordinateSpace.swift` | Cocoa ↔ CG, used only at the panel boundary |
@@ -515,8 +518,8 @@ the zone preview animates, and a per-frame mask rebuild starves it (`pitfalls.md
   plus a row on the page it belongs to (`UI/Settings…Page.swift`); `SettingsTests` pins the roster.
 - **Private symbols**: a case in `PrivateSymbol`, a call site that asks `pointer(for:)` on every use,
   a public route, and a row in `docs/private-api-index.md`.
-- **Seams**: `ScreensProviding` (displays), `WindowWriter.Backend` (the four raw AX calls; the tests
-  use a fake), `SettingsStore(defaults:)`, `MinimumSizeStore(defaults:)`, `ParkedWindowsStore`.
+- **Seams**: `ScreensProviding` (displays), `WindowWriter.Backend` (the raw AX calls and the writing
+  pass around them; the tests use a fake), `SettingsStore(defaults:)`, `MinimumSizeStore(defaults:)`, `ParkedWindowsStore`.
 
 ## 15. Build, signing, entitlements
 

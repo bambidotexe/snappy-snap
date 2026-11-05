@@ -31,7 +31,7 @@ public final class AccessibilityWindows {
     /// the run loop that services our `CGEventTap`. An app busy in its own drag-tracking loop
     /// would otherwise stall us for the system default, the tap would be disabled by timeout and
     /// mouse events would be lost. Nothing we ask for is worth more than a quarter second.
-    public static let messagingTimeout: Float = 0.25
+    public nonisolated static let messagingTimeout: Float = 0.25
 
     private let systemWide: AXUIElement
 

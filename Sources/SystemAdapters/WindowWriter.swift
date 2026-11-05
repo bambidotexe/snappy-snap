@@ -25,6 +25,10 @@ import Foundation
 /// - **Order within one pid is the queue's order**, and windows of one pid take turns: a step writes at
 ///   most one frame and re-enqueues itself, so a window posted at the display rate cannot starve its
 ///   siblings.
+/// - **A step's writes are made with the application's `AXEnhancedUserInterface` off**, in one
+///   `Backend.writing` pass: while an assistive client has it on, writes that follow each other are
+///   applied asynchronously and dropped (see `EnhancedUserInterface`), and an animation is nothing but
+///   writes that follow each other. The reads stay outside the pass.
 /// - **Everything comes home on the main actor** — `onOutcome` for every applied write, and the flush
 ///   completions. Nothing else does; in particular a caller must make **no main-thread Accessibility
 ///   read** of a window with posts in flight (four such reads cost a measured 121 → 83.5 Hz), which is
@@ -89,8 +93,8 @@ public final class WindowWriter: @unchecked Sendable {
         public let landedSize: CGSize?
         /// Only on a flush.
         public let landedFrame: CGRect?
-        /// Wall time of the write or writes, in seconds — not the read-back, and not the wait in the
-        /// mailbox. This is the number a cost model learns from.
+        /// Wall time of the write or writes, in seconds, with the `writing` pass around them — not the
+        /// read-back, and not the wait in the mailbox. This is the number a cost model learns from.
         public let cost: TimeInterval
         /// Posts replaced in the mailbox since the previous outcome for this window.
         public let superseded: Int
@@ -100,9 +104,13 @@ public final class WindowWriter: @unchecked Sendable {
         public let succeeded: Bool
     }
 
-    /// The four raw Accessibility calls, behind a seam. The app uses `live()`; the tests use a fake, so
+    /// The raw Accessibility calls, behind a seam. The app uses `live()`; the tests use a fake, so
     /// every property of the mailbox is provable without a window, a permission or a real app to hang.
     public protocol Backend: Sendable {
+        /// One step's writes, answering what they answered. The live back end runs them with the
+        /// application's enhanced user interface off and may run them twice (`EnhancedUserInterface`),
+        /// which is safe because a step's writes are absolute.
+        func writing(pid: pid_t, _ writes: () -> Bool) -> Bool
         func setPosition(_ p: CGPoint, of element: AXUIElement) -> Bool
         func setSize(_ s: CGSize, of element: AXUIElement) -> Bool
         func size(of element: AXUIElement) -> CGSize?
@@ -367,13 +375,16 @@ public final class WindowWriter: @unchecked Sendable {
             let current = box.lastKnown
             lock.unlock()
 
-            var succeeded = true
             let start = Self.now()
-            for write in Self.plan(request, current: current) {
-                switch write {
-                case .position: succeeded = backend.setPosition(request.frame.origin, of: element) && succeeded
-                case .size: succeeded = backend.setSize(request.frame.size, of: element) && succeeded
+            var succeeded = backend.writing(pid: handle.pid) {
+                var applied = true
+                for write in Self.plan(request, current: current) {
+                    switch write {
+                    case .position: applied = backend.setPosition(request.frame.origin, of: element) && applied
+                    case .size: applied = backend.setSize(request.frame.size, of: element) && applied
+                    }
                 }
+                return applied
             }
             let cost = Self.seconds(from: start)
 
@@ -558,6 +569,10 @@ public final class WindowWriter: @unchecked Sendable {
     // MARK: - The real back end
 
     private struct AXBackend: Backend {
+        func writing(pid: pid_t, _ writes: () -> Bool) -> Bool {
+            EnhancedUserInterface.suspended(for: pid, writes)
+        }
+
         func setPosition(_ p: CGPoint, of element: AXUIElement) -> Bool {
             AX.set(element, kAXPositionAttribute, point: p)
         }

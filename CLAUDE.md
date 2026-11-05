@@ -109,13 +109,13 @@ commit, and the newer of a request and a written rule wins only after the user h
 | a private symbol | `SystemAdapters/PrivateAPI.swift` + a call site that asks `pointer(for:)` every time + a public route | `private-api-index.md` |
 | whether a launch opens Settings | `SystemAdapters/QuietLaunch.swift` (the marker and its freshness), `AppDelegate.applicationDidFinishLaunching` (`openedByHand`), `Scripts/install.sh` and `UpdateController.installAndRelaunch` (write the marker) | `functional.md` §14 |
 | the uninstall | `SystemAdapters/Uninstall.swift` (what is removed and in what order), the Uninstall group of `UI/SettingsGeneralPage.swift`, `Uninstall.helperScript` (the preferences and the folder go to a process that outlives the app: cfprefsd writes the domain back as this one exits) | `functional.md` §14 *Uninstalling* |
-| how windows are written | `SystemAdapters/WindowWriter.swift` | `architecture.md` §2, `macOS.md` |
+| how windows are written | `SystemAdapters/WindowWriter.swift`, `EnhancedUserInterface.swift` (the bracket each pass is written in) | `architecture.md` §2, `macOS.md`, `pitfalls.md` 59 |
 
 ## Commands
 
 - `swift build` — builds all four code targets. **This is the truth**; SourceKit diagnostics in tool
   results are frequently stale.
-- `swift test` — two targets, `SnapCoreTests` (655 tests) and `SystemAdaptersTests` (122). Plain
+- `swift test` — two targets, `SnapCoreTests` (655 tests) and `SystemAdaptersTests` (128). Plain
   `swift test` prints **one summary line per target — count two**; a crashed target prints none, so a
   crash reads as a pass if you grep for one green line.
 - `swift test --filter <SuiteName>` — one suite by name. A filter matching nothing in a target means
@@ -192,7 +192,8 @@ Three targets, dependencies downward only. Full version in `docs/architecture.md
   `AX` + `AccessibilityWindows` (every element carries a **0.25 s** messaging timeout) ·
   **`WindowWriter`** (one serial queue per pid, one single-slot mailbox per window — **every animated
   window write in the app goes through it**; the probe's 1 × 1 press write and Snap Assist's bounded
-  restore pass are the two direct writes) · `WindowList` (CGWindowList, three reads, **never window
+  restore pass are the two direct writes) + `EnhancedUserInterface` (each pass is written with the
+  application's `AXEnhancedUserInterface` off, which an assistive client such as Granola turns on) · `WindowList` (CGWindowList, three reads, **never window
   names**) · `MouseEvents` (listen-only CGEventTap) · `PointerHit` (what a click at a point reaches) · `Screens` · `CoordinateSpace` (Cocoa↔CG, at the
   panel boundary only) · `SpaceWatcher` (the 60/10 Hz poll and the Space sentinels) · `PrivateAPI`
   (`dlsym`, never linked) + `BackgroundCursor` + `ElevatedSpace` + `BackdropLayers` (the notch
@@ -321,7 +322,7 @@ at 401. Their panel never moves while the shape animates, and nothing under it r
 
 ## Status
 
-`swift build` is clean and `swift test` is green (122 + 655 tests) at this commit. The app target has
+`swift build` is clean and `swift test` is green (128 + 655 tests) at this commit. The app target has
 no automated tests; `docs/manual-test-checklist.md` is its verification. The full account of the
 September 2026 audit is `docs/_audit.md`, and `docs/_coverage.md` is that audit's own file manifest;
 both describe the tree as the audit found it.

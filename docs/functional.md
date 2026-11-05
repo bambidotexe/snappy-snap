@@ -1924,6 +1924,13 @@ windows move on release.
 - **One visible blink** the first time a handle is pressed beside a window of an application that has
   no row, and one per card the deck probes. That is the minimum-size probe, and there is no other way
   to get the number.
+- **The minimum-size probe is not shielded from an application's enhanced interface.** Every animated
+  write is made with the application's `AXEnhancedUserInterface` off and put back after, because an
+  assistive client that turns it on (Granola in Chrome during a Google Meet) makes writes that follow
+  each other get dropped (`pitfalls.md` 59). The probe writes on the main thread outside that bracket,
+  so in such an application the size written back after the 1 × 1 can be dropped (once in three,
+  measured) and the window stays at its floor until it is next written. An application with a row is
+  never probed; Chrome has one.
 - **A window can be grabbed while the deck is still dealing it back.** It ends at its recorded home,
   so it is not a stranding.
 - **A press on a window with writes in flight arms no drag.** The press stops the animation; the next

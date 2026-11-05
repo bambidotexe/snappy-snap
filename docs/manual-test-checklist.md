@@ -474,6 +474,13 @@ the row says to.
 | [ ] | Find a window's pid (`swift run axprobe windows`), `kill -STOP` it, then drag the handle between it and a lively window and release. `kill -CONT` afterwards | The **lively** window lands exactly where its preview was; the frozen one does not and does not have to. The drag stays smooth and there is **no `event tap disabled` line** |
 | [ ] | Make a 2×2 of four windows of **one** application and drag the knob | The previews stay smooth — they are ours. The release is the slow part, and that is the documented floor |
 
+## 11b. An application with its enhanced interface on (3 min — needs Granola, or VoiceOver)
+
+| | Do this | Expect |
+|---|---|---|
+| [ ] | Open a Google Meet in Chrome with Granola running (or turn VoiceOver on). Snap the Chrome window to a half, then to a quarter, then drag the pill between it and its neighbour and release | Each landing is exactly the half, the quarter, the pill's preview, as it is for Safari. The `app` log says once `application <pid> has AXEnhancedUserInterface on` |
+| [ ] | Close the Meet tab and repeat the snaps | The same |
+
 ## 12. Two displays (2 min — skip if you have one)
 
 Edges, zones and the drop preview are verified on a three-display row, and the deck on two
